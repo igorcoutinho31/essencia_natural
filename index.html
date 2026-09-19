@@ -68,70 +68,96 @@
   .wa-float:hover{transform:translateY(-3px) scale(1.05)}
   .wa-float svg{width:26px;height:26px;fill:#100b04}
 
-  /* ---------- HERO ---------- */
+  /* ---------- HERO (sequência cinematográfica de 240 frames) ---------- */
   #hero{
-    min-height:100svh;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    overflow:hidden;
-    padding-block:min(10vw,90px);
-    background:
-      radial-gradient(ellipse 60% 45% at 50% 28%,rgba(201,164,76,.16),transparent 60%),
-      radial-gradient(ellipse 90% 60% at 50% 100%,rgba(60,44,14,.4),transparent 70%),
-      var(--bg);
+    position:relative;
+    overflow:clip;
+    background:var(--bg);
+    padding:0; /* remove o padding-block genérico de "section" — o hero ocupa a viewport inteira */
   }
-  #smoke-canvas{
-    position:absolute;inset:0;width:100%;height:100%;
-    opacity:.55;
+  /* Duração da rolagem do hero: aumente/diminua este valor para tornar o
+     scroll-scrubbing mais longo ou mais curto. 300vh = ~200vh de rolagem
+     real além da altura da tela fixa (sticky). */
+  #hero.hero--scrub{height:300vh}
+  .hero-pin{
+    position:sticky;
+    top:0;
+    height:100svh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  /* #hero-poster usa contain (nunca corta) só como estado inicial/fallback;
+     o canvas assume o desenho definitivo já recortando as barras pretas
+     nativas dos frames (ver comentário CROP_* no script). Reserva faixas
+     de altura fixas no topo/rodapé (mesmo cálculo do JS, ver bandsPx) para
+     a foto nunca ocupar o espaço onde o texto fica — em qualquer proporção
+     de tela, não só nas que testamos. */
+  #hero-poster{
+    position:absolute;
+    top:clamp(120px,22svh,220px);
+    bottom:clamp(100px,18svh,190px);
+    left:0;right:0;height:auto;
+    width:100%;
+    object-fit:contain;
+    background:var(--bg);
+    display:block;
+  }
+  #hero-canvas{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    display:block;
+  }
+  #hero-canvas[hidden]{display:none}
+  .hero-scrim{
+    position:absolute;inset:0;
+    background:
+      linear-gradient(180deg,rgba(11,9,6,.55) 0%,rgba(11,9,6,0) 22%,rgba(11,9,6,0) 72%,rgba(11,9,6,.65) 100%);
     pointer-events:none;
   }
-  .hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:22px}
-  .hero-stage{
-    position:relative;
-    width:min(60vw,260px);
-    height:min(60vw,340px);
-    margin-block:18px 8px;
+  .hero-copy{
+    position:absolute;left:50%;
+    width:min(88vw,640px);
+    text-align:center;
+    z-index:2;
+    pointer-events:none;
   }
-  .bottle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;filter:drop-shadow(0 30px 40px rgba(0,0,0,.55))}
-  .bottle-cap{
-    width:34%;height:9%;
-    background:linear-gradient(180deg,var(--gold-2),var(--gold-dim));
-    border-radius:6px 6px 2px 2px;
-    box-shadow:inset 0 2px 4px rgba(255,255,255,.4),inset 0 -3px 6px rgba(0,0,0,.4);
+  /* Os 4 "momentos" só existem quando o JS liga o scroll-scrubbing
+     (classe hero--scrub); por padrão ficam invisíveis para não empilhar
+     texto sobre texto no fallback estático abaixo. O JS controla a
+     opacidade de cada um via style inline conforme o progresso do scroll. */
+  .hero-moment{opacity:0}
+  /* Fallback estático: visível por padrão (sem JS, canvas indisponível ou
+     prefers-reduced-motion). Some automaticamente quando o scrubbing liga. */
+  .hero-fallback{opacity:1}
+  #hero.hero--scrub .hero-fallback{display:none}
+  .hero-copy--top{top:min(6vw,48px);transform:translateX(-50%)}
+  .hero-copy--bottom{bottom:min(7vw,56px);transform:translateX(-50%)}
+  .hero-copy .ar{
+    font-family:'Cinzel',serif;
+    font-size:1.1em;
+    color:var(--gold-2);
+    margin-inline-start:.6em;
+    opacity:.85;
   }
-  .bottle-neck{width:16%;height:8%;background:linear-gradient(180deg,rgba(238,203,132,.5),rgba(138,112,56,.35));border-inline:1px solid var(--line)}
-  .bottle-shoulder{
-    width:78%;height:9%;
-    clip-path:polygon(30% 0,70% 0,100% 100%,0 100%);
-    background:linear-gradient(180deg,rgba(244,236,216,.14),rgba(201,164,76,.1));
-    border-top:1px solid var(--line);
+  .hero-headline{font-size:clamp(1.5rem,4.6vw,3.2rem);max-width:16ch;color:var(--ink);margin:10px auto 0;line-height:1.15}
+  .hero-sub{max-width:40ch;color:var(--ink-dim);font-size:clamp(1rem,1.6vw,1.15rem);margin-inline:auto}
+  .scroll-cue{margin-top:12px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.22em;color:var(--gold);opacity:.85;animation:bob 2.6s ease-in-out infinite}
+  .hero-copy--bottom .btn{pointer-events:auto}
+  /* Bandas pretas do "contain" ficam curtas em telas baixas/estreitas —
+     encolhe ainda mais o bloco do topo para não vazar sobre a foto. */
+  @media (max-width:480px){
+    .hero-copy--top{top:14px}
+    .eyebrow{font-size:.62rem;letter-spacing:.22em}
+    .hero-headline{font-size:1.4rem;margin-top:6px}
+    .scroll-cue{margin-top:8px;font-size:.62rem}
   }
-  .bottle-body{
-    width:78%;flex:1;
-    border-radius:10px;
-    background:
-      linear-gradient(100deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 16%),
-      linear-gradient(200deg,rgba(238,203,132,.28),rgba(120,86,24,.22));
-    border:1px solid var(--line);
-    position:relative;overflow:hidden;
+  @media (max-height:700px){
+    .hero-copy--top{top:10px}
+    .hero-headline{font-size:1.25rem;margin-top:4px}
+    .scroll-cue{display:none}
   }
-  .bottle-body::before{
-    content:'';position:absolute;inset:10% 38% 10% auto;width:14%;
-    background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));
-    border-radius:6px;
-  }
-  .bottle-body::after{
-    content:'';position:absolute;left:0;right:0;bottom:0;height:62%;
-    background:linear-gradient(180deg,rgba(238,203,132,.5),rgba(150,110,30,.75));
-    border-top:1px solid rgba(238,203,132,.5);
-  }
-
-  .hero-headline{font-size:clamp(2rem,5.2vw,3.6rem);max-width:16ch;color:var(--ink)}
-  .hero-sub{max-width:46ch;color:var(--ink-dim);font-size:clamp(1rem,1.6vw,1.15rem)}
-  .scroll-cue{margin-top:28px;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.22em;color:var(--gold);opacity:.85;animation:bob 2.6s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
 
   /* ---------- NOTAS / SCROLL EXPLOSION ---------- */
@@ -256,21 +282,43 @@
   <svg viewBox="0 0 32 32"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.65 4.56 1.78 6.45L4 29l7.72-1.72a11.94 11.94 0 0 0 4.3.8h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.64 3 16.02 3Zm0 21.86h-.01a9.9 9.9 0 0 1-5.05-1.39l-.36-.21-4.58 1.02 1.04-4.47-.24-.37a9.86 9.86 0 0 1-1.5-5.42c0-5.46 4.44-9.9 9.9-9.9 5.45 0 9.88 4.44 9.88 9.9 0 5.46-4.43 9.84-9.08 9.84Zm5.42-7.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.36-1.46-.87-.78-1.46-1.74-1.63-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.47 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.22 5.1 4.5.71.3 1.27.49 1.7.63.72.23 1.36.2 1.88.12.57-.08 1.76-.72 2-1.42.24-.7.24-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
 </a>
 
-<section id="hero">
-  <canvas id="smoke-canvas"></canvas>
-  <div class="hero-inner">
-    <p class="eyebrow">Essência Natural</p>
-    <div class="hero-stage">
-      <div class="bottle" id="hero-bottle">
-        <div class="bottle-cap"></div>
-        <div class="bottle-neck"></div>
-        <div class="bottle-shoulder"></div>
-        <div class="bottle-body"></div>
-      </div>
+<section id="hero" aria-label="Essência Natural — abertura">
+  <div class="hero-pin">
+    <img id="hero-poster" src="assets/frames/frame-0001.webp" alt="Mulher borrifando perfume" width="1280" height="720">
+    <canvas id="hero-canvas" aria-hidden="true" hidden></canvas>
+    <div class="hero-scrim" aria-hidden="true"></div>
+
+    <!-- Fallback estático: sem JS, sem canvas ou prefers-reduced-motion.
+         Visível por padrão; escondido via CSS quando o scrubbing liga.
+         Dividido em topo/rodapé (mesmas zonas seguras dos 4 momentos
+         animados) para nunca cobrir rosto nem frasco. -->
+    <div class="hero-copy hero-copy--top hero-fallback">
+      <p class="eyebrow">Essência Natural<span class="ar" lang="ar" dir="rtl">العطور</span></p>
+      <h1 class="hero-headline">Sua essência.<br>Sua identidade.</h1>
+      <p class="hero-sub">Perfumes árabes e importados. Varejo e atacado.</p>
     </div>
-    <h1 class="hero-headline">O Oriente nunca foi tão presente.</h1>
-    <p class="hero-sub">Fragrâncias raras, compostas como joias — para quem entende que luxo não se anuncia, se sente.</p>
-    <p class="scroll-cue">Descubra sua Essência ↓</p>
+    <div class="hero-copy hero-copy--bottom hero-fallback">
+      <a class="btn btn-primary" href="#origem" style="pointer-events:auto">Conheça a Essência Natural</a>
+    </div>
+
+    <!-- 4 momentos do scroll-scrubbing (controlados via JS) -->
+    <div class="hero-copy hero-copy--top hero-moment" id="hero-copy-1">
+      <p class="eyebrow">Essência Natural<span class="ar" lang="ar" dir="rtl">العطور</span></p>
+      <h1 class="hero-headline">Sua essência.<br>Sua identidade.</h1>
+      <p class="scroll-cue">Role para descobrir ↓</p>
+    </div>
+
+    <div class="hero-copy hero-copy--top hero-moment" id="hero-copy-2">
+      <p class="hero-sub">Perfumes árabes e importados.</p>
+    </div>
+
+    <div class="hero-copy hero-copy--top hero-moment" id="hero-copy-3">
+      <p class="hero-sub">Varejo e atacado.</p>
+    </div>
+
+    <div class="hero-copy hero-copy--bottom hero-moment" id="hero-copy-cta">
+      <a class="btn btn-primary" href="#origem" style="pointer-events:auto">Conheça a Essência Natural</a>
+    </div>
   </div>
 </section>
 
@@ -380,93 +428,221 @@
 (function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- incense smoke on hero ---- */
-  var canvas = document.getElementById('smoke-canvas');
-  var ctx = canvas.getContext('2d');
-  var particles = [];
-  var raf = null;
-  var running = true;
+  /* ---- hero: sequência cinematográfica de 240 frames (scroll-scrubbing) ---- */
+  (function heroSequence(){
+    var FRAME_COUNT = 240;
+    var FRAME_DIR = 'assets/frames/';
+    function framePath(n){
+      var s = String(n);
+      while (s.length < 4) s = '0' + s;
+      return FRAME_DIR + 'frame-' + s + '.webp';
+    }
 
-  function resize(){
-    var hero = document.getElementById('hero');
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = hero.clientWidth * dpr;
-    canvas.height = hero.clientHeight * dpr;
-    canvas.style.width = hero.clientWidth + 'px';
-    canvas.style.height = hero.clientHeight + 'px';
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
+    // Os frames originais (1280x720) trazem barras pretas nativas nos
+    // lados (a cena real é quase quadrada). Recorte medido nos arquivos-
+    // fonte para descartar essas barras e usar a mulher/o perfume como
+    // protagonistas, sem distorcer nem esticar a imagem.
+    var CROP_X = 279, CROP_Y = 0, CROP_W = 722, CROP_H = 720;
 
-  function makeParticle(){
-    var hero = document.getElementById('hero');
-    return {
-      x: hero.clientWidth/2 + (Math.random()-0.5)*40,
-      y: hero.clientHeight*0.62,
-      r: 18 + Math.random()*26,
-      vy: -(0.25 + Math.random()*0.35),
-      vx: (Math.random()-0.5)*0.25,
-      life: 0,
-      maxLife: 220 + Math.random()*140,
-      alpha: 0.09 + Math.random()*0.08
+    var heroSection = document.getElementById('hero');
+    var canvas = document.getElementById('hero-canvas');
+    var poster = document.getElementById('hero-poster');
+    var supportsCanvas = !!(canvas && canvas.getContext && canvas.getContext('2d'));
+
+    var copyEls = {
+      c1: document.getElementById('hero-copy-1'),
+      c2: document.getElementById('hero-copy-2'),
+      c3: document.getElementById('hero-copy-3'),
+      cta: document.getElementById('hero-copy-cta')
     };
-  }
 
-  function initParticles(){
-    particles = [];
-    var count = reduced ? 0 : 26;
-    for (var i=0;i<count;i++){
-      var p = makeParticle();
-      p.life = Math.random()*p.maxLife;
-      particles.push(p);
+    // Fallback: sem canvas ou com prefers-reduced-motion, mantemos a seção
+    // com altura normal (100svh), o frame 1 estático como pôster e todos
+    // os textos visíveis ao mesmo tempo (opacidade padrão do CSS = 1).
+    if (reduced || !supportsCanvas) { return; }
+
+    heroSection.classList.add('hero--scrub');
+
+    var ctx = canvas.getContext('2d');
+    var supportsBitmap = typeof window.createImageBitmap === 'function';
+
+    // Orçamento de memória menor em telas pequenas / pouca RAM: cache de
+    // frames decodificados mais enxuto e um raio de pré-carregamento menor.
+    var isSmallScreen = window.matchMedia('(max-width: 820px)').matches;
+    var lowMemHint = (navigator.deviceMemory && navigator.deviceMemory <= 4);
+    var lowMem = isSmallScreen || lowMemHint;
+    var CACHE_RADIUS = lowMem ? 14 : 28;
+    var PRELOAD_RADIUS = lowMem ? 3 : 6;
+
+    var cache = new Map();   // índice do frame -> ImageBitmap | HTMLImageElement
+    var pending = new Map(); // índice do frame -> Promise em andamento
+    var currentIndex = 1;
+    var lastDrawnIndex = -1;
+    var lastProgress = 0;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function decode(blob){
+      if (supportsBitmap) {
+        try {
+          return createImageBitmap(blob, CROP_X, CROP_Y, CROP_W, CROP_H);
+        } catch (e) { /* alguns navegadores antigos não aceitam recorte */ }
+      }
+      return new Promise(function(resolve, reject){
+        var img = new Image();
+        img.onload = function(){ resolve(img); };
+        img.onerror = reject;
+        img.src = URL.createObjectURL(blob);
+      });
     }
-  }
 
-  function drawStatic(){
-    var hero = document.getElementById('hero');
-    ctx.clearRect(0,0,hero.clientWidth,hero.clientHeight);
-  }
-
-  function tick(){
-    if (!running){ raf = requestAnimationFrame(tick); return; }
-    var hero = document.getElementById('hero');
-    ctx.clearRect(0,0,hero.clientWidth,hero.clientHeight);
-    for (var i=0;i<particles.length;i++){
-      var p = particles[i];
-      p.life++;
-      p.x += p.vx;
-      p.y += p.vy;
-      var t = p.life / p.maxLife;
-      var a = p.alpha * (1 - t);
-      if (a < 0) a = 0;
-      var grad = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
-      grad.addColorStop(0, 'rgba(238,203,132,' + a + ')');
-      grad.addColorStop(1, 'rgba(238,203,132,0)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fill();
-      if (p.life >= p.maxLife){ particles[i] = makeParticle(); }
+    function loadFrame(n){
+      if (n < 1 || n > FRAME_COUNT) return Promise.resolve(null);
+      if (cache.has(n)) return Promise.resolve(cache.get(n));
+      if (pending.has(n)) return pending.get(n);
+      var p = fetch(framePath(n)).then(function(r){
+        if (!r.ok) throw new Error('frame ' + n + ' HTTP ' + r.status);
+        return r.blob();
+      }).then(decode).then(function(bmp){
+        cache.set(n, bmp);
+        pending.delete(n);
+        evictFar(n);
+        return bmp;
+      }).catch(function(err){
+        pending.delete(n);
+        if (window.console) console.warn('[hero] falha ao carregar', framePath(n), err);
+        return null;
+      });
+      pending.set(n, p);
+      return p;
     }
-    raf = requestAnimationFrame(tick);
-  }
 
-  window.addEventListener('resize', resize);
-  document.addEventListener('visibilitychange', function(){ running = !document.hidden; });
-  resize();
-  if (reduced){ drawStatic(); } else { initParticles(); raf = requestAnimationFrame(tick); }
+    function evictFar(center){
+      cache.forEach(function(bmp, idx){
+        if (Math.abs(idx - center) > CACHE_RADIUS) {
+          if (bmp && typeof bmp.close === 'function') bmp.close();
+          cache.delete(idx);
+        }
+      });
+    }
 
-  /* ---- hero bottle subtle parallax ---- */
-  if (!reduced && window.matchMedia('(hover:hover)').matches){
-    var stage = document.querySelector('.hero-stage');
-    var bottle = document.getElementById('hero-bottle');
-    document.getElementById('hero').addEventListener('mousemove', function(e){
-      var r = stage.getBoundingClientRect();
-      var cx = r.left + r.width/2, cy = r.top + r.height/2;
-      var dx = (e.clientX - cx) / r.width;
-      var dy = (e.clientY - cy) / r.height;
-      bottle.style.transform = 'rotate(' + (dx*4) + 'deg) translate(' + (dx*8) + 'px,' + (dy*6) + 'px)';
-    });
-  }
+    function prefetchAround(n){
+      for (var d = 0; d <= PRELOAD_RADIUS; d++){
+        loadFrame(n + d);
+        if (d > 0) loadFrame(n - d);
+      }
+    }
+
+    function resizeCanvas(){
+      var rect = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+      draw(lastDrawnIndex > 0 ? lastDrawnIndex : currentIndex, true);
+    }
+
+    // Faixa de segurança MENOR que a do fallback estático (#hero-poster
+    // usa clamp(120px,22svh,220/190px) porque precisa caber todo o texto
+    // ao mesmo tempo). Durante o scroll-scrubbing só um texto curto fica
+    // visível por vez (com fade), então a imagem pode ficar quase edge-
+    // to-edge — reservamos só uma margem pequena por segurança.
+    function bandPx(cssH, min, vhFrac, max){
+      return Math.min(max, Math.max(min, cssH * vhFrac)) * dpr;
+    }
+
+    // "contain" dentro da área útil (entre as faixas): nunca corta o
+    // rosto nem o frasco — a cena (quase quadrada, já sem as barras
+    // pretas) é sempre mostrada inteira, centralizada, com a própria cor
+    // de fundo do hero preenchendo a sobra (efeito de moldura
+    // cinematográfica) e nunca invade as faixas reservadas ao texto.
+    function draw(n, force){
+      var bmp = cache.get(n);
+      if (!bmp) return false;
+      if (!force && n === lastDrawnIndex) return true;
+      var cw = canvas.width, ch = canvas.height;
+      var cssH = ch / dpr;
+      var topBand = bandPx(cssH, 64, 0.09, 130);
+      var bottomBand = bandPx(cssH, 64, 0.09, 110);
+      var boxY = topBand, boxH = Math.max(1, ch - topBand - bottomBand);
+      var iw = bmp.width, ih = bmp.height;
+      var scale = Math.min(cw / iw, boxH / ih);
+      var dw = iw * scale, dh = ih * scale;
+      var dx = (cw - dw) / 2, dy = boxY + (boxH - dh) / 2;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(bmp, dx, dy, dw, dh);
+      lastDrawnIndex = n;
+      return true;
+    }
+
+    // ---- textos em 4 momentos da rolagem (com transição suave) ----
+    function segmentOpacity(p, start, end, feather){
+      if (p <= start - feather || p >= end + feather) return 0;
+      if (p >= start && p <= end) return 1;
+      if (p < start) return (p - (start - feather)) / feather;
+      return 1 - (p - end) / feather;
+    }
+    var MOMENTS = [
+      { el: copyEls.c1,  start: 0.00, end: 0.18, feather: 0.05 },
+      { el: copyEls.c2,  start: 0.28, end: 0.46, feather: 0.05 },
+      { el: copyEls.c3,  start: 0.56, end: 0.74, feather: 0.05 },
+      { el: copyEls.cta, start: 0.84, end: 1.00, feather: 0.05 }
+    ];
+    function updateCopy(p){
+      MOMENTS.forEach(function(m){
+        if (!m.el) return;
+        var op = segmentOpacity(p, m.start, m.end, m.feather);
+        m.el.style.opacity = op.toFixed(3);
+        m.el.style.transform = 'translateX(-50%) translateY(' + ((1 - op) * 10) + 'px)';
+      });
+    }
+
+    var ticking = false;
+    function onScroll(){
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function(){
+        ticking = false;
+        step();
+      });
+    }
+
+    function step(){
+      var scrollable = heroSection.offsetHeight - window.innerHeight;
+      var rect = heroSection.getBoundingClientRect();
+      var progress = scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0;
+      lastProgress = progress;
+      var idx = 1 + Math.round(progress * (FRAME_COUNT - 1));
+      currentIndex = idx;
+      prefetchAround(idx);
+      if (cache.has(idx)) {
+        draw(idx);
+      } else {
+        loadFrame(idx).then(function(){
+          if (currentIndex === idx) draw(idx);
+        });
+      }
+      updateCopy(progress);
+    }
+
+    function init(){
+      loadFrame(1).then(function(bmp){
+        if (!bmp) return; // fetch/decode falhou: mantém pôster + textos padrão
+        poster.hidden = true;
+        canvas.hidden = false;
+        // só agora o canvas tem layout real (não está mais [hidden]) —
+        // medir o tamanho antes disso resultaria em 0x0.
+        resizeCanvas();
+        draw(1, true);
+        prefetchAround(1);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', function(){
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          resizeCanvas();
+        });
+        step();
+      }).catch(function(){ /* mantém fallback estático */ });
+    }
+
+    init();
+  })();
 
   /* ---- stat counters ---- */
   var stats = document.querySelectorAll('.stat .num');
