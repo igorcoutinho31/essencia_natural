@@ -12,7 +12,17 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé — Sobreloja 215
 
 ## Equipe
-- Nomes confirmados até agora: Nicole, Bassan, Tamires.
+- Nomes confirmados até agora: Nicole, Bassan, Tamires, Larissa.
+- Fotos oficiais dos quatro entregues em 19/09/2026 e publicadas na seção
+  "Nossa equipe" da Home. Associação nome→foto confirmada pelo cliente
+  (ver tabela em `docs/TEAM.md`).
+- GRAFIA "BASSAN" — PENDENTE: o cliente levantou a dúvida Bassam x Bassan
+  e optou por manter **Bassan**, que é a grafia registrada aqui e em
+  `docs/TEAM.md`. Confirmar com a própria pessoa antes de considerar
+  fechado; se for Bassam, trocar no site e nos dois docs.
+- Cargos, sobrenomes, funções e histórias: NENHUM confirmado para nenhum
+  dos quatro. Por isso o site publica só o primeiro nome. Não preencher
+  sem confirmação.
 - Existem outros integrantes ainda não identificados corretamente (cargos,
   sobrenomes, função na loja) — não inventar nada até confirmação.
 - Há vídeo em que a Nicole apresenta a equipe de forma descontraída/cômica —
@@ -30,9 +40,24 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   função/uso ainda não definido — se é loja física, atacado, ou outra linha)
 
 ## Catálogo / Produtos
-- Ainda não existe lista real de produtos, marcas trabalhadas, preços de
-  varejo nem de atacado. `docs/PRODUCTS.md` está como placeholder até
-  levantamento.
+- Catálogo real de 34 itens integrado em 19/09/2026 a partir do pacote do
+  Instagram. Fonte de verdade: `data/catalog.json`. Ver `docs/PRODUCTS.md`.
+- PREÇOS — PENDENTE: nenhum dos 34 itens tem `price` ou `wholesale_price`.
+  O site NÃO exibe preço, nem "a partir de", nem "consultar preço" em
+  formato de preço — só o botão "Consultar no WhatsApp". Só publicar valor
+  depois de preencher o JSON com dados confirmados pelo cliente.
+- MARCAS — PENDENTE: só 3 dos 34 itens têm marca (QAWAFI, Paris Corner),
+  porque só nesses a legenda citava. Não deduzir marca pela foto do frasco.
+- NOTAS OLFATIVAS — PARCIAL: só 9 dos 34 têm notas estruturadas. Os demais
+  não exibem notas. Não preencher por semelhança nem por busca externa.
+- NOMES VINDOS DE LEGENDA — PENDENTE: quatro nomes carregam texto que não é
+  o nome do produto (`Elysian Fields Kiss, QAWAFI`, `Elysian Fields Silk,
+  QAWAFI`, `perfume FATIMA com sabonetes em formato de Rosas`, `Fakhar
+  Rose, o mais querido pelas mulheres`). Publicados como estão, sem
+  reescrita por conta própria. Confirmar o nome correto com o cliente e
+  corrigir em `data/catalog.json`.
+- `Aurora` está classificado como `Marca / Coleção` e pode não ser um
+  produto avulso — confirmar se deve sair do catálogo.
 
 ## Envios
 - Rede social menciona "Envios para todo o Brasil" — usar como informação
@@ -43,3 +68,35 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 - Sequência de 240 frames já existe em `assets/frames/` (ver
   `docs/SITE-ARCHITECTURE.md`) — confirmar apenas se este é o corte final
   aprovado do vídeo, ou se haverá recorte/ajuste posterior.
+
+
+## Conteúdo inventado REMOVIDO na passada final (19/09/2026)
+Estas afirmações estavam no ar e não tinham nenhuma fonte confirmada. Foram
+removidas do site. Se alguma for verdadeira, o cliente precisa confirmar por
+escrito antes de voltar:
+
+- Seção "A origem": "18 meses de maceração", "12 países de origem dos
+  ingredientes", "0% álcool sintético ou fixadores artificiais" e
+  "3 gerações de perfumistas árabes". Seção inteira substituída por
+  `#proposta`, que só usa fatos já confirmados no BRAND-BRIEF.
+- Seção "A explosão das notas": pirâmide olfativa inventada (Cardamomo &
+  Açafrão / Rosa Damascena & Oud / Âmbar & Almíscar Branco) apresentada
+  como se fosse de um produto da loja. Seção inteira removida.
+- Rodapé: endereço "Rua 25 de Março" e o aviso de protótipo. Substituídos
+  pelo endereço real da Galeria Pagé.
+- A vitrine fictícia (Oud Royal, Âmbar Noturno, Rosa do Deserto, Almíscar
+  Real) já havia sido substituída pelo catálogo real.
+
+## Textos comerciais publicados que NÃO são dado de origem
+Escritos para o site a partir de fatos já confirmados. Não afirmam preço,
+prazo, frete, garantia, mínimo de pedido nem originalidade. Vale o cliente
+ler e aprovar:
+- `#proposta`: os 4 blocos e o texto de apoio.
+- `#canais`: textos de varejo e atacado (os títulos e CTAs vieram do cliente).
+- `#comprar`: os 3 passos.
+- `#faq`: as 4 respostas.
+- `#rodape`: o CTA final.
+
+## SEO
+- `canonical` e `og:image` NÃO foram configurados: não existe domínio final
+  nem imagem social aprovada. Configurar quando o domínio for definido.
