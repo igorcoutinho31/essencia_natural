@@ -76,9 +76,9 @@
     padding:0; /* remove o padding-block genérico de "section" — o hero ocupa a viewport inteira */
   }
   /* Duração da rolagem do hero: aumente/diminua este valor para tornar o
-     scroll-scrubbing mais longo ou mais curto. 300vh = ~200vh de rolagem
-     real além da altura da tela fixa (sticky). */
-  #hero.hero--scrub{height:300vh}
+     scroll-scrubbing mais longo ou mais curto. 200vh = ~100vh de rolagem
+     real além da altura da tela fixa (sticky) — resposta mais rápida. */
+  #hero.hero--scrub{height:200vh}
   .hero-pin{
     position:sticky;
     top:0;
@@ -88,16 +88,15 @@
     justify-content:center;
     overflow:hidden;
   }
-  /* #hero-poster usa contain (nunca corta) só como estado inicial/fallback;
-     o canvas assume o desenho definitivo já recortando as barras pretas
-     nativas dos frames (ver comentário CROP_* no script). Reserva faixas
-     de altura fixas no topo/rodapé (mesmo cálculo do JS, ver bandsPx) para
-     a foto nunca ocupar o espaço onde o texto fica — em qualquer proporção
-     de tela, não só nas que testamos. */
+  /* #hero-poster: só aparece no instante antes do JS assumir (ou como
+     fallback sem JS/canvas). Sem cover/crop controlado aqui (não dá pra
+     fazer esse cálculo em CSS puro) — por isso usa contain com faixas de
+     texto generosas, e é substituído pelo canvas assim que o frame 1
+     carrega (ver init() no script). */
   #hero-poster{
     position:absolute;
-    top:clamp(120px,22svh,220px);
-    bottom:clamp(100px,18svh,190px);
+    top:clamp(90px,14svh,170px);
+    bottom:clamp(80px,13svh,150px);
     left:0;right:0;height:auto;
     width:100%;
     object-fit:contain;
@@ -132,8 +131,8 @@
      prefers-reduced-motion). Some automaticamente quando o scrubbing liga. */
   .hero-fallback{opacity:1}
   #hero.hero--scrub .hero-fallback{display:none}
-  .hero-copy--top{top:min(6vw,48px);transform:translateX(-50%)}
-  .hero-copy--bottom{bottom:min(7vw,56px);transform:translateX(-50%)}
+  .hero-copy--top{top:min(5vw,40px);transform:translate(-50%,0) scale(1)}
+  .hero-copy--bottom{bottom:min(6vw,48px);transform:translate(-50%,0) scale(1)}
   .hero-copy .ar{
     font-family:'Cinzel',serif;
     font-size:1.1em;
@@ -141,24 +140,18 @@
     margin-inline-start:.6em;
     opacity:.85;
   }
-  .hero-headline{font-size:clamp(1.5rem,4.6vw,3.2rem);max-width:16ch;color:var(--ink);margin:10px auto 0;line-height:1.15}
+  .hero-headline{font-size:clamp(1.4rem,4.4vw,3rem);max-width:16ch;color:var(--ink);margin:8px auto 0;line-height:1.15}
   .hero-sub{max-width:40ch;color:var(--ink-dim);font-size:clamp(1rem,1.6vw,1.15rem);margin-inline:auto}
-  .scroll-cue{margin-top:12px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.22em;color:var(--gold);opacity:.85;animation:bob 2.6s ease-in-out infinite}
   .hero-copy--bottom .btn{pointer-events:auto}
-  /* Bandas pretas do "contain" ficam curtas em telas baixas/estreitas —
-     encolhe ainda mais o bloco do topo para não vazar sobre a foto. */
   @media (max-width:480px){
-    .hero-copy--top{top:14px}
-    .eyebrow{font-size:.62rem;letter-spacing:.22em}
-    .hero-headline{font-size:1.4rem;margin-top:6px}
-    .scroll-cue{margin-top:8px;font-size:.62rem}
+    .hero-copy--top{top:12px}
+    .eyebrow{font-size:.6rem;letter-spacing:.2em}
+    .hero-headline{font-size:1.3rem;margin-top:6px}
   }
   @media (max-height:700px){
-    .hero-copy--top{top:10px}
-    .hero-headline{font-size:1.25rem;margin-top:4px}
-    .scroll-cue{display:none}
+    .hero-copy--top{top:8px}
+    .hero-headline{font-size:1.15rem;margin-top:4px}
   }
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
 
   /* ---------- NOTAS / SCROLL EXPLOSION ---------- */
   #notas{padding:0}
@@ -271,7 +264,6 @@
   .map-card .sub{font-size:.78rem;color:var(--ink-dim)}
 
   @media (prefers-reduced-motion:reduce){
-    .scroll-cue{animation:none}
     *{scroll-behavior:auto!important}
   }
 </style>
@@ -301,11 +293,11 @@
       <a class="btn btn-primary" href="#origem" style="pointer-events:auto">Conheça a Essência Natural</a>
     </div>
 
-    <!-- 4 momentos do scroll-scrubbing (controlados via JS) -->
+    <!-- 3 momentos do scroll-scrubbing (controlados via JS), com
+         intervalos de só-imagem entre eles. -->
     <div class="hero-copy hero-copy--top hero-moment" id="hero-copy-1">
       <p class="eyebrow">Essência Natural<span class="ar" lang="ar" dir="rtl">العطور</span></p>
       <h1 class="hero-headline">Sua essência.<br>Sua identidade.</h1>
-      <p class="scroll-cue">Role para descobrir ↓</p>
     </div>
 
     <div class="hero-copy hero-copy--top hero-moment" id="hero-copy-2">
@@ -315,7 +307,6 @@
     <div class="hero-copy hero-copy--top hero-moment" id="hero-copy-3">
       <p class="hero-sub">Varejo e atacado.</p>
     </div>
-
     <div class="hero-copy hero-copy--bottom hero-moment" id="hero-copy-cta">
       <a class="btn btn-primary" href="#origem" style="pointer-events:auto">Conheça a Essência Natural</a>
     </div>
@@ -539,58 +530,81 @@
       draw(lastDrawnIndex > 0 ? lastDrawnIndex : currentIndex, true);
     }
 
-    // Faixa de segurança MENOR que a do fallback estático (#hero-poster
-    // usa clamp(120px,22svh,220/190px) porque precisa caber todo o texto
-    // ao mesmo tempo). Durante o scroll-scrubbing só um texto curto fica
-    // visível por vez (com fade), então a imagem pode ficar quase edge-
-    // to-edge — reservamos só uma margem pequena por segurança.
+    // Faixa pequena reservada só para o texto (bem menor que o pôster,
+    // que precisa caber tudo de uma vez no fallback). Só 1-2 linhas por
+    // momento agora, então a faixa pode ser curta.
     function bandPx(cssH, min, vhFrac, max){
       return Math.min(max, Math.max(min, cssH * vhFrac)) * dpr;
     }
 
-    // "contain" dentro da área útil (entre as faixas): nunca corta o
-    // rosto nem o frasco — a cena (quase quadrada, já sem as barras
-    // pretas) é sempre mostrada inteira, centralizada, com a própria cor
-    // de fundo do hero preenchendo a sobra (efeito de moldura
-    // cinematográfica) e nunca invade as faixas reservadas ao texto.
+    // Limites de corte (fração mínima do conteúdo original — 722x720,
+    // já sem as barras pretas — que precisa continuar visível). Medidos
+    // olhando a sequência: o rosto ocupa quase toda a largura e do topo
+    // até ~80% da altura; o frasco+spray fica na metade esquerda, entre
+    // ~35% e ~80% da altura. Por isso cortamos pouquíssimo na largura
+    // (só sobra fundo/bokeh nas pontas) e um pouco mais na altura, sempre
+    // tirando mais de baixo (ombro/roupa) do que de cima.
+    var MIN_VISIBLE_WIDTH_FRACTION = 0.86;
+    var MIN_VISIBLE_HEIGHT_FRACTION = 0.76;
+    var VERTICAL_CROP_BIAS_TOP = 0.32; // 32% do corte vertical vem de cima, 68% de baixo
+
+    // "Cover controlado": preenche a área útil (entre as faixas de texto)
+    // como um cover normal, mas nunca corta mais do que os limites acima
+    // — evita as grandes barras pretas do "contain" sem arriscar cortar
+    // rosto/frasco. Quando o corte vertical é necessário, tira mais de
+    // baixo (ombro/roupa) do que de cima (rosto).
     function draw(n, force){
       var bmp = cache.get(n);
       if (!bmp) return false;
       if (!force && n === lastDrawnIndex) return true;
       var cw = canvas.width, ch = canvas.height;
       var cssH = ch / dpr;
-      var topBand = bandPx(cssH, 64, 0.09, 130);
-      var bottomBand = bandPx(cssH, 64, 0.09, 110);
+      var topBand = bandPx(cssH, 46, 0.065, 90);
+      var bottomBand = bandPx(cssH, 46, 0.065, 80);
       var boxY = topBand, boxH = Math.max(1, ch - topBand - bottomBand);
       var iw = bmp.width, ih = bmp.height;
-      var scale = Math.min(cw / iw, boxH / ih);
+
+      var scaleCover = Math.max(cw / iw, boxH / ih);
+      var scaleFloorW = cw / (iw * MIN_VISIBLE_WIDTH_FRACTION);
+      var scaleFloorH = boxH / (ih * MIN_VISIBLE_HEIGHT_FRACTION);
+      var scale = Math.min(scaleCover, scaleFloorW, scaleFloorH);
+
       var dw = iw * scale, dh = ih * scale;
-      var dx = (cw - dw) / 2, dy = boxY + (boxH - dh) / 2;
+      var dx = (cw - dw) / 2;
+      var overflowY = dh - boxH;
+      var dy = overflowY > 0
+        ? boxY - overflowY * VERTICAL_CROP_BIAS_TOP
+        : boxY + (boxH - dh) / 2;
       ctx.clearRect(0, 0, cw, ch);
       ctx.drawImage(bmp, dx, dy, dw, dh);
       lastDrawnIndex = n;
       return true;
     }
 
-    // ---- textos em 4 momentos da rolagem (com transição suave) ----
-    function segmentOpacity(p, start, end, feather){
+    // ---- textos em 3 momentos da rolagem, com easing suave ----
+    function easeInOutCubic(t){
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+    function segmentT(p, start, end, feather){
       if (p <= start - feather || p >= end + feather) return 0;
       if (p >= start && p <= end) return 1;
-      if (p < start) return (p - (start - feather)) / feather;
-      return 1 - (p - end) / feather;
+      var raw = p < start ? (p - (start - feather)) / feather : 1 - (p - end) / feather;
+      return easeInOutCubic(Math.max(0, Math.min(1, raw)));
     }
     var MOMENTS = [
-      { el: copyEls.c1,  start: 0.00, end: 0.18, feather: 0.05 },
-      { el: copyEls.c2,  start: 0.28, end: 0.46, feather: 0.05 },
-      { el: copyEls.c3,  start: 0.56, end: 0.74, feather: 0.05 },
-      { el: copyEls.cta, start: 0.84, end: 1.00, feather: 0.05 }
+      { el: copyEls.c1,  start: 0.00, end: 0.16, feather: 0.06 },
+      { el: copyEls.c2,  start: 0.38, end: 0.58, feather: 0.06 },
+      { el: copyEls.c3,  start: 0.80, end: 1.00, feather: 0.06 },
+      { el: copyEls.cta, start: 0.80, end: 1.00, feather: 0.06 }
     ];
     function updateCopy(p){
       MOMENTS.forEach(function(m){
         if (!m.el) return;
-        var op = segmentOpacity(p, m.start, m.end, m.feather);
-        m.el.style.opacity = op.toFixed(3);
-        m.el.style.transform = 'translateX(-50%) translateY(' + ((1 - op) * 10) + 'px)';
+        var t = segmentT(p, m.start, m.end, m.feather);
+        var translateY = (1 - t) * 14;   // pequeno deslocamento vertical
+        var scale = 0.97 + t * 0.03;      // escala sutil (0.97 -> 1)
+        m.el.style.opacity = t.toFixed(3);
+        m.el.style.transform = 'translate(-50%,' + translateY.toFixed(2) + 'px) scale(' + scale.toFixed(3) + ')';
       });
     }
 
