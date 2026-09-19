@@ -230,14 +230,44 @@
       rgba(11,9,6,0) 75%);
     filter:blur(30px);
   }
-  .hero-brasao picture{display:flex;position:relative;z-index:1}
+  /* o selo e a luz vivem no mesmo recorte circular; a sombra fica aqui
+     (e não na <img>) porque overflow:hidden cortaria um drop-shadow
+     aplicado no filho */
+  .brasao-selo{
+    position:relative;z-index:1;display:flex;
+    border-radius:50%;overflow:hidden;
+    filter:drop-shadow(0 26px 64px rgba(0,0,0,.7))
+           drop-shadow(0 0 40px rgba(201,164,76,.26));
+  }
+  .hero-brasao picture{display:flex}
   .hero-brasao img{
     display:block;
     width:clamp(220px,31vw,400px);
     height:auto;aspect-ratio:1;object-fit:contain;
-    border-radius:50%;
-    filter:drop-shadow(0 26px 64px rgba(0,0,0,.7))
-           drop-shadow(0 0 40px rgba(201,164,76,.26));
+  }
+  /* luz que atravessa o selo, como reflexo em metal polido */
+  .brasao-brilho{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:50%}
+  .brasao-brilho::before{
+    content:"";position:absolute;
+    top:-60%;height:220%;width:38%;left:-100%;
+    transform:rotate(20deg);
+    filter:blur(9px);
+    mix-blend-mode:overlay;
+    background:linear-gradient(90deg,
+      rgba(198,148,52,0) 0%,
+      rgba(226,176,72,.5) 30%,
+      rgba(255,240,198,1) 50%,
+      rgba(226,176,72,.5) 70%,
+      rgba(198,148,52,0) 100%);
+    animation:brasao-luz 7s cubic-bezier(.42,0,.28,1) infinite;
+  }
+  @keyframes brasao-luz{
+    0%   {left:-100%}
+    30%  {left:145%}
+    100% {left:145%}   /* pausa longa: o brilho passa, não fica piscando */
+  }
+  @media (prefers-reduced-motion:reduce){
+    .brasao-brilho::before{animation:none;opacity:0}
   }
 
   .hero-ar{letter-spacing:.1em}
@@ -762,12 +792,15 @@
 
   <div class="wrap hero-conteudo">
     <div class="hero-brasao">
-      <picture>
-        <source srcset="assets/images/logo-essencia-natural.webp" type="image/webp">
-        <img src="assets/images/logo-essencia-natural.png"
-             alt="Essência Natural — Perfumaria de perfumes árabes"
-             width="700" height="700" fetchpriority="high" decoding="async">
-      </picture>
+      <div class="brasao-selo">
+        <picture>
+          <source srcset="assets/images/logo-essencia-natural.webp" type="image/webp">
+          <img src="assets/images/logo-essencia-natural.png"
+               alt="Essência Natural — Perfumaria de perfumes árabes"
+               width="700" height="700" fetchpriority="high" decoding="async">
+        </picture>
+        <span class="brasao-brilho" aria-hidden="true"></span>
+      </div>
     </div>
 
     <p class="eyebrow hero-ar"><span class="ar" lang="ar" dir="rtl">العطور</span></p>
