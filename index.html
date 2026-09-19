@@ -175,31 +175,76 @@
     .brand .ar{display:none}
   }
 
-  /* ---------- HERO ESTÁTICO ---------- */
+  /* ---------- HERO — o brasão é o protagonista ---------- */
   #hero{
-    padding:0; /* anula o padding-block genérico de "section" */
+    position:relative;overflow:clip;
     background:var(--bg);
+    min-height:calc(100svh - var(--header-h));
+    display:flex;align-items:center;
+    padding-block:clamp(30px,3.2vw,50px);
+    padding-inline:max(18px,5vw);
+    text-align:center;
+  }
+
+  /* --- camadas de fundo --- */
+  .hero-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  /* trama girih em tela cheia, apagada nas bordas para não brigar com o topo */
+  .hero-pattern{
+    position:absolute;inset:0;width:100%;height:100%;opacity:.42;
+    -webkit-mask-image:radial-gradient(circle at 50% 33%,transparent 0,transparent 13%,rgba(0,0,0,.9) 36%,rgba(0,0,0,.55) 64%,transparent 88%);
+    mask-image:radial-gradient(circle at 50% 33%,transparent 0,transparent 13%,rgba(0,0,0,.9) 36%,rgba(0,0,0,.55) 64%,transparent 88%);
+  }
+  .hero-haze{position:absolute;border-radius:50%;filter:blur(90px)}
+  .hero-haze--a{width:46vw;aspect-ratio:1;left:-6vw;top:-8vh;background:rgba(238,203,132,.11)}
+  .hero-haze--b{width:42vw;aspect-ratio:1;right:-5vw;bottom:-10vh;background:rgba(160,96,28,.16)}
+  /* SLOT DE FOTO REAL: se um dia houver foto da loja, descomente o <img>
+     no HTML — ela entra como fundo e este véu garante a leitura do texto. */
+  .hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.3}
+  .hero-scrim{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(11,9,6,.22) 0%,rgba(11,9,6,0) 14%,rgba(11,9,6,0) 70%,rgba(11,9,6,.72) 100%);
+  }
+
+  /* --- conteúdo --- */
+  .hero-conteudo{
+    position:relative;z-index:2;
+    display:flex;flex-direction:column;align-items:center;
+    gap:clamp(13px,1.5vw,19px);
+    max-width:900px;
+  }
+
+  /* --- brasão --- */
+  .hero-brasao{
     position:relative;
-    overflow:clip;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:clamp(4px,1vw,12px);
   }
-  .hero-grid{
-    display:grid;
-    grid-template-columns:1.04fr .96fr;
-    align-items:stretch;
-    min-height:clamp(540px,calc(100svh - var(--header-h)),900px);
+  /* clareia a trama atrás do selo e acende um anel quente na borda dele */
+  .hero-brasao::before{
+    content:"";position:absolute;z-index:0;
+    width:clamp(380px,70vw,820px);aspect-ratio:1;border-radius:50%;
+    background:radial-gradient(circle,
+      rgba(158,120,42,.30) 0%,
+      rgba(124,94,30,.19) 36%,
+      rgba(72,53,16,.08) 56%,
+      rgba(11,9,6,0) 75%);
+    filter:blur(30px);
   }
-  .hero-copy-col{
-    display:flex;flex-direction:column;justify-content:center;
-    gap:clamp(16px,2vw,24px);
-    padding-block:clamp(48px,6vw,88px);
-    /* alinha o texto à mesma coluna de 1180px do header, deixando o
-       painel visual sangrar até a borda direita da tela */
-    padding-inline-start:max(20px,calc((100vw - 1180px)/2 + 18px));
-    padding-inline-end:clamp(24px,4.5vw,72px);
+  .hero-brasao picture{display:flex;position:relative;z-index:1}
+  .hero-brasao img{
+    display:block;
+    width:clamp(220px,31vw,400px);
+    height:auto;aspect-ratio:1;object-fit:contain;
+    border-radius:50%;
+    filter:drop-shadow(0 26px 64px rgba(0,0,0,.7))
+           drop-shadow(0 0 40px rgba(201,164,76,.26));
   }
+
+  .hero-ar{letter-spacing:.1em}
+  .hero-ar .ar{font-size:1.5em;color:var(--gold);opacity:.95}
   .hero-title{
-    font-size:clamp(2.05rem,4.5vw,3.5rem);
-    line-height:1.07;max-width:16ch;color:var(--ink);
+    font-size:clamp(1.9rem,4.3vw,3.05rem);
+    line-height:1.07;color:var(--ink);max-width:16ch;
   }
   .hero-title em{
     font-style:normal;display:block;
@@ -207,118 +252,50 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
   .hero-lede{
-    color:var(--ink-dim);max-width:46ch;
-    font-size:clamp(1rem,1.2vw,1.1rem);
+    color:var(--ink-dim);max-width:52ch;
+    font-size:clamp(.98rem,1.25vw,1.12rem);
   }
-  .hero-ctas{display:flex;flex-wrap:wrap;gap:13px}
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:13px;justify-content:center;margin-top:clamp(4px,1vw,10px)}
   .btn-lg{padding:17px 30px;font-size:.85rem}
   .hero-marks{
-    display:grid;grid-template-columns:1fr 1fr;gap:13px 26px;
-    max-width:540px;
-    padding-top:clamp(20px,2.4vw,28px);
+    display:flex;flex-wrap:wrap;justify-content:center;
+    gap:12px clamp(18px,2.8vw,38px);
+    margin-top:clamp(14px,2.4vw,26px);
+    padding-top:clamp(22px,2.6vw,32px);
     border-top:1px solid var(--line);
+    max-width:760px;width:100%;
   }
   .hero-mark{
-    display:flex;align-items:center;gap:11px;
-    font-size:.87rem;color:var(--ink-dim);line-height:1.35;
+    display:flex;align-items:center;gap:10px;
+    font-size:.86rem;color:var(--ink-dim);line-height:1.35;
   }
   .hero-mark::before{
-    content:"";flex:none;width:7px;height:7px;transform:rotate(45deg);
+    content:"";flex:none;width:6px;height:6px;transform:rotate(45deg);
     background:linear-gradient(140deg,var(--gold-2),var(--gold-dim));
-    box-shadow:0 0 0 3px rgba(201,164,76,.12);
   }
 
-  /* Painel visual: composição geométrica (sem foto por enquanto).
-     Camadas, de trás pra frente: gradiente > trama girih > brumas >
-     medalhão > [slot de foto real] > vinheta > moldura. */
-  .hero-visual{
-    position:relative;overflow:hidden;min-height:320px;
-    border-inline-start:1px solid var(--line);
-    background:
-      radial-gradient(ellipse 78% 60% at 60% 38%,rgba(201,164,76,.20),transparent 68%),
-      linear-gradient(205deg,var(--bg-3) 0%,var(--bg-2) 46%,var(--bg) 100%);
+  /* notebooks de tela baixa: o CTA principal tem de caber na primeira dobra */
+  @media (min-width:901px) and (max-height:860px){
+    .hero-brasao img{width:clamp(200px,24vw,320px)}
+    .hero-brasao::before{width:clamp(320px,56vw,660px)}
+    .hero-title{font-size:clamp(1.8rem,3.6vw,2.6rem)}
   }
-  /* o padrão girih é apagado no miolo para não competir com o brasão */
-  .hero-pattern{
-    position:absolute;inset:0;width:100%;height:100%;opacity:.5;
-    -webkit-mask-image:radial-gradient(circle at 50% 50%,transparent 0,transparent 27%,#000 64%);
-    mask-image:radial-gradient(circle at 50% 50%,transparent 0,transparent 27%,#000 64%);
-  }
-  .hero-haze{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
-  .hero-haze--a{width:52%;aspect-ratio:1;left:6%;top:10%;background:rgba(238,203,132,.16)}
-  .hero-haze--b{width:46%;aspect-ratio:1;right:2%;bottom:6%;background:rgba(160,96,28,.22)}
-  /* ---- brasão oficial ---- */
-  .hero-brasao{
-    position:absolute;inset:0;z-index:5;
-    display:flex;align-items:center;justify-content:center;
-    padding:clamp(26px,5vw,60px);            /* respiro generoso em volta */
-    pointer-events:none;
-  }
-  /* halo quente por trás: dá profundidade e separa o selo do padrão */
-  .hero-brasao::before{
-    content:"";position:absolute;
-    width:clamp(300px,44vw,540px);aspect-ratio:1;border-radius:50%;
-    background:radial-gradient(circle,
-      rgba(126,96,32,.52) 0%,
-      rgba(74,55,18,.30) 40%,
-      rgba(11,9,6,0) 72%);
-  }
-  /* <picture> é inline por padrão: sem isto o descender da linha-base
-     empurra o selo alguns px para baixo do centro do painel */
-  .hero-brasao picture{display:flex}
-  .hero-brasao img{
-    display:block;position:relative;
-    width:clamp(180px,24vw,300px);
-    height:auto;aspect-ratio:1;object-fit:contain;
-    border-radius:50%;                        /* preserva o recorte circular */
-    filter:drop-shadow(0 20px 48px rgba(0,0,0,.62))
-           drop-shadow(0 0 26px rgba(201,164,76,.20));
-  }
-  /* SLOT DE FOTO REAL — ver comentário no HTML. Quando o <img> existir,
-     ele cobre a composição e a vinheta se adapta automaticamente. */
-  .hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:3}
-  .hero-vignette{
-    position:absolute;inset:0;pointer-events:none;z-index:4;
-    background:
-      linear-gradient(90deg,rgba(11,9,6,.88) 0%,rgba(11,9,6,0) 28%),
-      linear-gradient(0deg,rgba(11,9,6,.55) 0%,rgba(11,9,6,0) 32%);
-  }
-  .hero-photo ~ .hero-vignette{
-    background:
-      linear-gradient(90deg,rgba(11,9,6,.92) 0%,rgba(11,9,6,.12) 46%,rgba(11,9,6,.4) 100%),
-      linear-gradient(0deg,rgba(11,9,6,.6) 0%,rgba(11,9,6,0) 38%);
-  }
-  .hero-frame{
-    position:absolute;inset:clamp(14px,1.8vw,26px);z-index:6;
-    border:1px solid rgba(201,164,76,.24);pointer-events:none;
-  }
-  .hero-frame span{position:absolute;width:11px;height:11px;border:1px solid var(--gold);opacity:.75}
-  .hero-frame span:nth-child(1){top:-1px;left:-1px;border-width:1px 0 0 1px}
-  .hero-frame span:nth-child(2){top:-1px;right:-1px;border-width:1px 1px 0 0}
-  .hero-frame span:nth-child(3){bottom:-1px;left:-1px;border-width:0 0 1px 1px}
-  .hero-frame span:nth-child(4){bottom:-1px;right:-1px;border-width:0 1px 1px 0}
-
   @media (max-width:900px){
-    .hero-grid{grid-template-columns:1fr;min-height:0}
-    .hero-visual{
-      order:-1;min-height:clamp(268px,34svh,350px);
-      border-inline-start:0;border-bottom:1px solid var(--line);
-    }
-    .hero-vignette{background:linear-gradient(0deg,rgba(11,9,6,.92) 0%,rgba(11,9,6,0) 58%)}
-    .hero-photo ~ .hero-vignette{background:linear-gradient(0deg,rgba(11,9,6,.94) 0%,rgba(11,9,6,.1) 62%)}
-    .hero-brasao{padding:clamp(20px,4.5vw,32px)}
-    .hero-brasao img{width:clamp(148px,42vw,232px)}
-    .hero-brasao::before{width:clamp(240px,64vw,360px)}
-    .hero-copy-col{
-      padding-inline:max(18px,5vw);
-      padding-block:clamp(34px,7vw,52px);
-    }
-    .hero-title{max-width:18ch}
+    #hero{min-height:0;padding-block:clamp(34px,8vw,56px)}
+    .hero-brasao img{width:clamp(210px,56vw,330px)}
+    .hero-brasao::before{width:clamp(320px,98vw,580px)}
+    .hero-pattern{opacity:.34}
   }
   @media (max-width:520px){
-    .hero-marks{grid-template-columns:1fr;gap:11px}
-    .hero-ctas .btn{flex:1 1 100%;justify-content:center}
-    .eyebrow{font-size:.64rem;letter-spacing:.22em}
+    .hero-ctas{width:100%}
+    .hero-ctas .btn{flex:1 1 100%}
+    /* coluna alinhada à esquerda, mas o bloco todo centrado: evita o
+       efeito escadinha de itens centralizados com larguras diferentes */
+    .hero-marks{
+      flex-direction:column;align-items:flex-start;gap:11px;
+      width:max-content;max-width:100%;margin-inline:auto;
+    }
+    .hero-mark{font-size:.83rem}
   }
 
   /* ---------- EQUIPE ---------- */
@@ -757,68 +734,57 @@
 </a>
 
 <section id="hero" aria-label="Essência Natural — abertura">
-  <div class="hero-grid">
+  <div class="hero-bg" aria-hidden="true">
+    <svg class="hero-pattern" role="presentation">
+      <defs>
+        <pattern id="girih" width="72" height="72" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="rgba(201,164,76,.22)" stroke-width="1">
+            <rect x="18" y="18" width="36" height="36"/>
+            <rect x="18" y="18" width="36" height="36" transform="rotate(45 36 36)"/>
+            <circle cx="36" cy="36" r="3.2"/>
+            <path d="M0 36h9M63 36h9M36 0v9M36 63v9"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#girih)"/>
+    </svg>
+    <div class="hero-haze hero-haze--a"></div>
+    <div class="hero-haze hero-haze--b"></div>
 
-    <div class="hero-copy-col">
-      <p class="eyebrow">Essência Natural <span class="ar" lang="ar" dir="rtl">العطور</span></p>
-      <h1 class="hero-title">Sua essência.<em>Sua identidade.</em></h1>
-      <p class="hero-lede">Perfumes árabes e importados, com atendimento próximo, loja física na Galeria Pagé e envios para todo o Brasil.</p>
+    <!-- SLOT DE FOTO REAL ————————————————————————————————————
+         Havendo foto da loja, descomente a linha abaixo: ela entra como
+         fundo do hero e o véu acima garante a leitura do texto.
+    <img class="hero-photo" src="assets/store/vitrine.jpg" alt="">
+         ———————————————————————————————————————————————————— -->
 
-      <div class="hero-ctas">
-        <a class="btn btn-primary btn-lg" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
-        <a class="btn btn-ghost btn-lg" href="#rodape">Visitar a loja</a>
-      </div>
+    <div class="hero-scrim"></div>
+  </div>
 
-      <ul class="hero-marks" role="list">
-        <li class="hero-mark">Perfumes árabes e importados</li>
-        <li class="hero-mark">Varejo e atacado</li>
-        <li class="hero-mark">Loja física em São Paulo</li>
-        <li class="hero-mark">Envios para todo o Brasil</li>
-      </ul>
+  <div class="wrap hero-conteudo">
+    <div class="hero-brasao">
+      <picture>
+        <source srcset="assets/images/logo-essencia-natural.webp" type="image/webp">
+        <img src="assets/images/logo-essencia-natural.png"
+             alt="Essência Natural — Perfumaria de perfumes árabes"
+             width="700" height="700" fetchpriority="high" decoding="async">
+      </picture>
     </div>
 
-    <div class="hero-visual">
-      <!-- Trama geométrica discreta (girih), conforme direção visual do
-           docs/BRAND-BRIEF.md: padrão árabe sutil, não decorativo genérico. -->
-      <svg class="hero-pattern" role="presentation">
-        <defs>
-          <pattern id="girih" width="72" height="72" patternUnits="userSpaceOnUse">
-            <g fill="none" stroke="rgba(201,164,76,.22)" stroke-width="1">
-              <rect x="18" y="18" width="36" height="36"/>
-              <rect x="18" y="18" width="36" height="36" transform="rotate(45 36 36)"/>
-              <circle cx="36" cy="36" r="3.2"/>
-              <path d="M0 36h9M63 36h9M36 0v9M36 63v9"/>
-            </g>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#girih)"/>
-      </svg>
+    <p class="eyebrow hero-ar"><span class="ar" lang="ar" dir="rtl">العطور</span></p>
+    <h1 class="hero-title">Sua essência.<em>Sua identidade.</em></h1>
+    <p class="hero-lede">Perfumes árabes e importados, com atendimento próximo, loja física na Galeria Pagé e envios para todo o Brasil.</p>
 
-      <div class="hero-haze hero-haze--a" aria-hidden="true"></div>
-      <div class="hero-haze hero-haze--b" aria-hidden="true"></div>
-
-      <div class="hero-brasao">
-        <picture>
-          <source srcset="assets/images/logo-essencia-natural.webp" type="image/webp">
-          <img src="assets/images/logo-essencia-natural.png"
-               alt="Essência Natural — Perfumaria de perfumes árabes"
-               width="700" height="700" fetchpriority="high" decoding="async">
-        </picture>
-      </div>
-
-      <!-- SLOT DE FOTO REAL ————————————————————————————————————————
-           Quando houver foto da loja / prateleiras / equipe, basta
-           descomentar a linha abaixo e apontar o src. O CSS já trata o
-           enquadramento (object-fit:cover) e escurece a vinheta sozinho.
-           A composição geométrica acima continua como fundo.
-      <img class="hero-photo" src="assets/store/vitrine.jpg"
-           alt="Interior da loja Essência Natural, na Galeria Pagé">
-      ———————————————————————————————————————————————————————————— -->
-
-      <div class="hero-vignette" aria-hidden="true"></div>
-      <div class="hero-frame" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="hero-ctas">
+      <a class="btn btn-primary btn-lg" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
+      <a class="btn btn-ghost btn-lg" href="#loja">Visitar a loja</a>
     </div>
 
+    <ul class="hero-marks" role="list">
+      <li class="hero-mark">Perfumes árabes e importados</li>
+      <li class="hero-mark">Varejo e atacado</li>
+      <li class="hero-mark">Loja física em São Paulo</li>
+      <li class="hero-mark">Envios para todo o Brasil</li>
+    </ul>
   </div>
 </section>
 
