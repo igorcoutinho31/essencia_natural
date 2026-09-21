@@ -771,6 +771,158 @@
     color:var(--ink-faint);font-size:.76rem;
   }
 
+
+  /* ---------- SACOLA (carrinho que finaliza no WhatsApp) ---------- */
+  .header-acoes{display:flex;align-items:center;gap:10px}
+  .bag-btn{
+    position:relative;width:42px;height:42px;padding:0;
+    background:none;border:1px solid var(--line);border-radius:9px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:border-color .25s ease,transform .25s ease;
+  }
+  .bag-btn:hover{border-color:var(--gold-dim)}
+  .bag-btn svg{width:21px;height:21px;fill:none;stroke:var(--gold-2);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+  .bag-n{
+    position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;
+    background:linear-gradient(155deg,var(--gold-2),var(--gold-dim));color:#100b04;
+    font:600 .68rem/19px 'Jost',system-ui,sans-serif;text-align:center;font-variant-numeric:tabular-nums;
+  }
+  .bag-btn.bump{animation:bump .5s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+  .prod-add{
+    position:absolute;right:10px;bottom:10px;z-index:3;
+    width:42px;height:42px;border-radius:50%;padding:0;cursor:pointer;
+    background:linear-gradient(155deg,var(--gold-2),var(--gold-dim));color:#100b04;
+    border:1px solid rgba(255,255,255,.25);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,.7);
+    transition:transform .25s cubic-bezier(.3,1.5,.5,1),filter .2s ease;
+  }
+  .prod-add svg{width:18px;height:18px;display:block}
+  .prod-add:hover{transform:scale(1.1);filter:brightness(1.08)}
+  .prod-add.ok{background:#e9dcae}
+  .prod-media{position:relative}
+  .prod-preco{font-family:'Cinzel',serif;font-size:.95rem;color:var(--gold-2);margin-top:2px;font-variant-numeric:tabular-nums}
+  .pd-preco{font-family:'Cinzel',serif;font-size:1.15rem;color:var(--gold-2);font-variant-numeric:tabular-nums}
+  .pd-cta{display:flex;flex-direction:column;gap:10px}
+  .pd-add{width:100%;font-size:.78rem;padding:14px 16px;cursor:pointer;border:0}
+
+  dialog.bag{
+    position:fixed;inset:0 0 0 auto;margin:0;padding:0;
+    width:min(430px,100vw);height:100dvh;max-height:100dvh;
+    background:var(--bg-2);color:var(--ink);
+    border:0;border-left:1px solid var(--line);border-radius:0;
+    box-shadow:-40px 0 90px -30px #000;
+    flex-direction:column;overflow:hidden;
+  }
+  dialog.bag[open]{display:flex;animation:bag-in .32s cubic-bezier(.2,.8,.2,1)}
+  dialog.bag::backdrop{background:rgba(6,4,2,.72);animation:fade-in .3s ease}
+  @keyframes bag-in{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+  @keyframes fade-in{from{opacity:0}to{opacity:1}}
+  .bag-topo{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+  .bag-topo h2{font-size:1.15rem}
+  .bag-fechar{
+    width:38px;height:38px;border-radius:50%;cursor:pointer;background:transparent;
+    border:1px solid var(--line);color:var(--ink);font-size:1.3rem;line-height:1;
+  }
+  .bag-fechar:hover{background:var(--gold);color:#100b04;border-color:var(--gold)}
+  .bag-corpo{flex:1;min-height:0;overflow-y:auto;padding:6px 22px 22px}
+  .bag-vazia{display:flex;flex-direction:column;align-items:flex-start;gap:16px;padding:38px 0;color:var(--ink-dim)}
+  .bag-lista{list-style:none;margin:0;padding:0}
+  .bag-item{display:grid;grid-template-columns:64px 1fr;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .bag-item img,.bag-item .bag-foto{width:64px;height:85px;object-fit:cover;border-radius:8px;background:var(--bg-3);border:1px solid var(--line);display:block}
+  .bag-info{min-width:0;display:flex;flex-direction:column;gap:4px}
+  .bag-marca{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+  .bag-nome{font-size:.93rem;color:var(--ink);line-height:1.3;font-weight:400}
+  .bag-preco{font-size:.85rem;color:var(--gold-2);font-variant-numeric:tabular-nums}
+  .bag-linha{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:6px}
+  .bag-qtd{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px}
+  .bag-qtd button{width:34px;height:34px;border:0;background:none;color:var(--ink);font-size:1.05rem;cursor:pointer;border-radius:50%}
+  .bag-qtd button:hover{color:var(--gold-2)}
+  .bag-qtd output{min-width:24px;text-align:center;font-variant-numeric:tabular-nums;font-size:.9rem}
+  .bag-rm{background:none;border:0;color:var(--ink-faint);font:inherit;font-size:.78rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px 2px}
+  .bag-rm:hover{color:var(--gold-2)}
+  .bag-form{display:flex;flex-direction:column;gap:16px;padding-top:20px}
+  .bag-entrega{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .bag-entrega legend{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);padding:0 0 9px}
+  .opt{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:10px;padding:13px 14px;cursor:pointer;font-size:.92rem;color:var(--ink-dim);transition:border-color .2s ease,color .2s ease}
+  .opt input{accent-color:var(--gold);width:17px;height:17px;margin:0}
+  .opt:has(input:checked){border-color:var(--gold-dim);color:var(--ink)}
+  .bag-campo{display:flex;flex-direction:column;gap:7px}
+  .bag-campo label{font-size:.82rem;color:var(--ink-dim)}
+  .bag-campo label span{color:var(--ink-faint)}
+  .bag-campo input[type=text],.bag-campo textarea{
+    width:100%;background:var(--bg-3);color:var(--ink);border:1px solid var(--line);border-radius:9px;
+    padding:12px 13px;font:inherit;font-size:.92rem;resize:vertical;
+  }
+  .bag-campo input:focus,.bag-campo textarea:focus{border-color:var(--gold-dim);outline:none}
+  .bag-campo input:focus-visible,.bag-campo textarea:focus-visible{outline:2px solid var(--gold-2);outline-offset:2px}
+  .bag-campo input[aria-invalid=true]{border-color:#c8735a}
+  .dica{font-size:.78rem;color:var(--ink-faint);line-height:1.5}
+  .bag-rodape{padding:16px 22px calc(18px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;flex-direction:column;gap:11px;background:var(--bg-2)}
+  .bag-total{display:flex;justify-content:space-between;font-family:'Cinzel',serif;color:var(--ink);font-size:1rem}
+  .bag-total b{color:var(--gold-2);font-weight:600;font-variant-numeric:tabular-nums}
+  .bag-enviar{width:100%;padding:17px 18px}
+  .bag-enviar[aria-disabled=true]{opacity:.45;pointer-events:none}
+  .bag-limpar{background:none;border:0;color:var(--ink-faint);font:inherit;font-size:.78rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;align-self:center;padding:4px}
+  .bag-limpar:hover{color:var(--gold-2)}
+  dialog.bag.vazia .bag-form,dialog.bag.vazia .bag-rodape{display:none}
+  dialog.bag:not(.vazia) .bag-vazia{display:none}
+
+  [hidden]{display:none!important}
+  .toast{
+    position:fixed;left:50%;top:calc(var(--header-h) + 14px);z-index:70;
+    transform:translateX(-50%);display:flex;align-items:center;gap:14px;width:max-content;
+    background:var(--bg-3);color:var(--ink);border:1px solid var(--gold-dim);border-radius:999px;
+    padding:11px 12px 11px 20px;font-size:.88rem;box-shadow:0 18px 50px -12px #000;max-width:calc(100vw - 32px);
+    animation:toast-in .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .toast button{background:linear-gradient(155deg,var(--gold-2),var(--gold-dim));color:#100b04;border:0;border-radius:999px;padding:8px 15px;font:inherit;font-size:.8rem;cursor:pointer;white-space:nowrap}
+  @keyframes toast-in{from{opacity:0;transform:translate(-50%,-14px)}to{opacity:1;transform:translate(-50%,0)}}
+
+  /* ---------- VIDA: movimento sutil (sempre desligado com reduced-motion) ---------- */
+  .progresso{position:absolute;left:0;bottom:-1px;height:2px;width:100%;transform-origin:0 50%;transform:scaleX(0);
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold-2));pointer-events:none}
+  .site-header{transition:background .3s ease,box-shadow .3s ease}
+  .site-header.rolou{background:rgba(11,9,6,.94);box-shadow:0 12px 34px -18px #000}
+  .hero-particulas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .hero-brasao{perspective:900px}
+  .brasao-selo{transition:transform .25s ease-out;will-change:transform}
+  @media (prefers-reduced-motion:no-preference){
+    .hero-brasao::before{animation:respira 9s ease-in-out infinite}
+    html.rv-on .hero-conteudo>*{animation:entra .9s cubic-bezier(.2,.7,.3,1) both}
+    html.rv-on .hero-conteudo>*:nth-child(2){animation-delay:.08s}
+    html.rv-on .hero-conteudo>*:nth-child(3){animation-delay:.16s}
+    html.rv-on .hero-conteudo>*:nth-child(4){animation-delay:.24s}
+    html.rv-on .hero-conteudo>*:nth-child(5){animation-delay:.32s}
+    html.rv-on .hero-conteudo>*:nth-child(6){animation-delay:.4s}
+    .rota{animation:fluxo 1.6s linear infinite}
+    .ping{transform-box:fill-box;transform-origin:center;animation:ping 2.6s ease-out infinite}
+    .prod{animation:card-in .6s cubic-bezier(.2,.7,.3,1) both;animation-delay:var(--d,0s)}
+    .loja-status .dot{animation:pulsa 2.2s ease-out infinite}
+  }
+  @keyframes respira{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.07);opacity:.82}}
+  @keyframes entra{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes fluxo{to{stroke-dashoffset:-13}}
+  @keyframes ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.4);opacity:0}}
+  @keyframes card-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes pulsa{0%{box-shadow:0 0 0 0 rgba(96,200,120,.55)}80%,100%{box-shadow:0 0 0 9px rgba(96,200,120,0)}}
+  html.rv-on .rv{opacity:0;transform:translateY(20px);
+    transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.3,1);transition-delay:var(--d,0s)}
+  html.rv-on .rv.in{opacity:1;transform:none}
+  .prod-media img{opacity:0;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.3,1)}
+  .prod-media img.ok{opacity:1}
+
+  .loja-status{display:inline-flex;align-items:center;gap:10px;font-size:.86rem;color:var(--ink);
+    border:1px solid var(--line);border-radius:999px;padding:7px 15px 7px 12px;margin-bottom:18px}
+  .loja-status .dot{width:9px;height:9px;border-radius:50%;background:#60c878}
+  .loja-status.fechada .dot{background:#b08a5a;animation:none}
+  .horarios div.hoje{background:rgba(201,164,76,.09)}
+  .horarios div.hoje dt{color:var(--gold-2)}
+  .horarios div.hoje dt::after{content:" · hoje";color:var(--ink-faint);font-size:.78rem}
+
+  @media (max-width:420px){.toast{border-radius:16px}}
+
   @media (prefers-reduced-motion:reduce){
     *{scroll-behavior:auto!important}
   }
@@ -793,11 +945,18 @@
       <a class="header-cta" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
     </nav>
 
-    <button class="nav-toggle" id="nav-toggle" type="button"
-            aria-expanded="false" aria-controls="nav" aria-label="Abrir menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="header-acoes">
+      <button class="bag-btn" id="bag-btn" type="button" aria-haspopup="dialog" aria-label="Abrir sacola">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8.5h13l1 11.5h-15l1-11.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
+        <span class="bag-n" id="bag-n" hidden>0</span>
+      </button>
+      <button class="nav-toggle" id="nav-toggle" type="button"
+              aria-expanded="false" aria-controls="nav" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
+  <div class="progresso" id="progresso" aria-hidden="true"></div>
 </header>
 
 <a class="wa-float" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
@@ -821,6 +980,7 @@
     </svg>
     <div class="hero-haze hero-haze--a"></div>
     <div class="hero-haze hero-haze--b"></div>
+    <canvas class="hero-particulas" id="hero-particulas"></canvas>
 
     <!-- SLOT DE FOTO REAL ————————————————————————————————————
          Havendo foto da loja, descomente a linha abaixo: ela entra como
@@ -1016,9 +1176,10 @@
     </div>
     <div class="envios-art" aria-hidden="true">
       <svg viewBox="0 0 320 190" fill="none" role="presentation">
-        <path d="M26 150C86 44 214 34 288 92" stroke="#b8933e" stroke-width="1.6" stroke-dasharray="5 8" stroke-linecap="round"/>
+        <path class="rota" d="M26 150C86 44 214 34 288 92" stroke="#b8933e" stroke-width="1.6" stroke-dasharray="5 8" stroke-linecap="round"/>
         <circle cx="26" cy="150" r="6" fill="#8a6b22"/>
         <circle cx="26" cy="150" r="13" stroke="#b8933e" stroke-opacity=".5"/>
+        <circle class="ping" cx="288" cy="77" r="15" stroke="#b8933e" stroke-width="1.4"/>
         <path d="M288 62a15 15 0 0 1 15 15c0 11-15 26-15 26s-15-15-15-26a15 15 0 0 1 15-15Z" fill="#8a6b22"/>
         <circle cx="288" cy="77" r="5.4" fill="#f4ecd8"/>
         <rect x="150" y="40" width="10" height="10" transform="rotate(45 155 45)" fill="#c9a44c" fill-opacity=".6"/>
@@ -1035,6 +1196,7 @@
     </div>
     <div class="loja-grid">
       <div>
+        <p class="loja-status" id="loja-status" role="status" hidden><span class="dot" aria-hidden="true"></span><span id="loja-status-t"></span></p>
         <address class="endereco">
           Rua Comendador Afonso Kherlakian, 79<br>
           Galeria Pagé — Sobreloja 215
@@ -1042,10 +1204,10 @@
         </address>
         <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&amp;destination=Rua%20Comendador%20Afonso%20Kherlakian%2C%2079%2C%20Galeria%20Pag%C3%A9%2C%20S%C3%A3o%20Paulo%2C%20SP" target="_blank" rel="noopener">Como chegar</a>
       </div>
-      <dl class="horarios">
-        <div><dt>Segunda a sexta</dt><dd>8h às 17h</dd></div>
-        <div><dt>Sábado</dt><dd>8h às 16h</dd></div>
-        <div><dt>Domingo</dt><dd>8h às 12h30</dd></div>
+      <dl class="horarios" id="horarios">
+        <div data-dias="1,2,3,4,5"><dt>Segunda a sexta</dt><dd>8h às 17h</dd></div>
+        <div data-dias="6"><dt>Sábado</dt><dd>8h às 16h</dd></div>
+        <div data-dias="0"><dt>Domingo</dt><dd>8h às 12h30</dd></div>
       </dl>
     </div>
   </div>
@@ -1128,6 +1290,50 @@
   </div>
 </section>
 
+<dialog class="bag" id="sacola" aria-labelledby="sac-titulo">
+  <div class="bag-topo">
+    <h2 id="sac-titulo">Sua sacola</h2>
+    <button class="bag-fechar" id="sac-fechar" type="button" aria-label="Fechar sacola">&times;</button>
+  </div>
+  <div class="bag-corpo" id="sac-corpo">
+    <div class="bag-vazia" id="sac-vazia">
+      <p>Sua sacola está vazia.</p>
+      <a class="btn btn-ghost" href="#catalogo" id="sac-ver">Ver o catálogo</a>
+    </div>
+    <ul class="bag-lista" id="sac-lista" role="list"></ul>
+    <form class="bag-form" id="sac-form" novalidate>
+      <fieldset class="bag-entrega">
+        <legend>Como você quer receber?</legend>
+        <label class="opt"><input type="radio" name="sac-entrega" value="loja" checked><span>Retirar na loja</span></label>
+        <label class="opt"><input type="radio" name="sac-entrega" value="casa"><span>Receber em casa</span></label>
+      </fieldset>
+      <div class="bag-campo" id="sac-cep-wrap" hidden>
+        <label for="sac-cep">CEP de entrega</label>
+        <input id="sac-cep" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000">
+        <p class="dica">O frete é calculado pela nossa equipe.</p>
+      </div>
+      <div class="bag-campo">
+        <label for="sac-nome">Seu nome <span>(opcional)</span></label>
+        <input id="sac-nome" type="text" autocomplete="name" maxlength="60">
+      </div>
+      <div class="bag-campo">
+        <label for="sac-obs">Observação <span>(opcional)</span></label>
+        <textarea id="sac-obs" rows="2" maxlength="300"></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="bag-rodape" id="sac-rodape">
+    <p class="bag-total" id="sac-total" hidden></p>
+    <a class="btn btn-primary bag-enviar" id="sac-enviar" href="#" target="_blank" rel="noopener">Finalizar no WhatsApp</a>
+    <p class="dica">Você envia o pedido e a equipe confirma disponibilidade, valores e frete.</p>
+    <button class="bag-limpar" id="sac-limpar" type="button">Esvaziar sacola</button>
+  </div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toast-t"></span>
+  <button type="button" id="toast-ver">Ver sacola</button>
+</div>
+
 <script>
 (function(){
 
@@ -1166,6 +1372,202 @@
                               : desktop.addListener.bind(desktop))(function(e){
       if (e.matches) fechar();                   // voltou pro desktop
     });
+  })();
+
+  /* ---- sacola: carrinho que finaliza no WhatsApp ----
+     Não processa pagamento nem calcula frete: monta o pedido e abre a
+     conversa com a equipe, que confirma estoque, valores e frete. Guarda
+     só id, quantidade e o nome no localStorage (com try/catch: pode estar
+     bloqueado). Quando o catálogo ganhar `price` (número, em reais), os
+     valores e o total aparecem sozinhos — sem preço, nada é exibido. */
+  (function sacola(){
+    var KEY = 'en_sacola_v1', WA = '5511949614608', MAX = 99;
+    var dlg = document.getElementById('sacola');
+    if (!dlg) return;
+    var btn = document.getElementById('bag-btn'), badge = document.getElementById('bag-n');
+    var lista = document.getElementById('sac-lista'), total = document.getElementById('sac-total');
+    var enviar = document.getElementById('sac-enviar'), limpar = document.getElementById('sac-limpar');
+    var form = document.getElementById('sac-form');
+    var cepWrap = document.getElementById('sac-cep-wrap'), cep = document.getElementById('sac-cep');
+    var nome = document.getElementById('sac-nome'), obs = document.getElementById('sac-obs');
+    var toast = document.getElementById('toast'), toastT = document.getElementById('toast-t');
+    var toastVer = document.getElementById('toast-ver'), toastTimer = null;
+
+    var st = { itens:{}, entrega:'loja', cep:'', nome:'', obs:'' };
+    var cat = {};                                   // id -> produto (quando o catálogo carrega)
+
+    function el(tag, cls, txt){
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (txt != null) e.textContent = txt;
+      return e;
+    }
+    function ler(){
+      try {
+        var r = JSON.parse(localStorage.getItem(KEY) || 'null');
+        if (r && typeof r === 'object' && r.itens) {
+          Object.keys(r.itens).forEach(function(id){
+            var it = r.itens[id];
+            if (it && it.q > 0 && it.n) st.itens[id] = { q: Math.min(MAX, it.q|0), n: String(it.n), m: it.m ? String(it.m) : '', p: Number(it.p) || 0 };
+          });
+          st.entrega = r.entrega === 'casa' ? 'casa' : 'loja';
+          st.cep = String(r.cep || '').slice(0, 9);
+          st.nome = String(r.nome || '').slice(0, 60);
+          st.obs = String(r.obs || '').slice(0, 300);
+        }
+      } catch (e) {}
+    }
+    function salvar(){ try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+
+    /* preço: só existe se o JSON trouxer um número positivo */
+    window.ENpreco = function(p){ var v = Number(p && p.price); return isFinite(v) && v > 0 ? v : 0; };
+    function brl(v){ return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
+    window.ENbrl = brl;
+
+    function qtdTotal(){ return Object.keys(st.itens).reduce(function(a,id){ return a + st.itens[id].q; }, 0); }
+    function atualizarBadge(){
+      var n = qtdTotal();
+      badge.hidden = n === 0;
+      badge.textContent = String(n);
+      btn.setAttribute('aria-label', n ? 'Abrir sacola, ' + n + (n === 1 ? ' item' : ' itens') : 'Abrir sacola');
+    }
+
+    function mensagem(){
+      var linhas = ['Olá! Vim pelo site da Essência Natural e gostaria de fazer este pedido:', ''];
+      var soma = 0, todos = true;
+      Object.keys(st.itens).forEach(function(id){
+        var it = st.itens[id];
+        linhas.push('• ' + it.q + 'x ' + it.n + (it.m ? ' (' + it.m + ')' : ''));
+        if (it.p) soma += it.p * it.q; else todos = false;
+      });
+      linhas.push('');
+      linhas.push(st.entrega === 'casa'
+        ? 'Entrega: receber em casa' + (st.cep ? ' — CEP ' + st.cep : '')
+        : 'Entrega: retirar na loja (Galeria Pagé)');
+      if (st.nome.trim()) linhas.push('Nome: ' + st.nome.trim());
+      if (st.obs.trim()) linhas.push('Observação: ' + st.obs.trim());
+      if (todos && soma > 0) linhas.push('Total dos produtos: ' + brl(soma));
+      linhas.push('');
+      linhas.push(st.entrega === 'casa' ? 'Pode confirmar a disponibilidade, os valores e o frete?' : 'Pode confirmar a disponibilidade e os valores?');
+      return linhas.join('\n');
+    }
+    function cepOk(){ return st.entrega !== 'casa' || !st.cep || /^\d{5}-?\d{3}$/.test(st.cep); }
+
+    function render(){
+      var ids = Object.keys(st.itens);
+      dlg.classList.toggle('vazia', ids.length === 0);
+      lista.textContent = '';
+      var soma = 0, todos = ids.length > 0;
+
+      ids.forEach(function(id){
+        var it = st.itens[id], prod = cat[id];
+        var preco = prod ? window.ENpreco(prod) : it.p;
+        if (preco) soma += preco * it.q; else todos = false;
+
+        var li = el('li','bag-item');
+        if (prod && prod.image) {
+          var img = new Image(); img.src = prod.image; img.alt = ''; img.width = 64; img.height = 85; img.decoding = 'async';
+          li.appendChild(img);
+        } else li.appendChild(el('div','bag-foto'));
+
+        var info = el('div','bag-info');
+        if (it.m) info.appendChild(el('p','bag-marca', it.m));
+        info.appendChild(el('p','bag-nome', it.n));
+        if (preco) info.appendChild(el('p','bag-preco', brl(preco)));
+
+        var linha = el('div','bag-linha');
+        var q = el('div','bag-qtd');
+        var menos = el('button', null, '−'); menos.type = 'button';
+        menos.setAttribute('aria-label','Diminuir quantidade de ' + it.n);
+        var out = el('output', null, String(it.q));
+        var mais = el('button', null, '+'); mais.type = 'button';
+        mais.setAttribute('aria-label','Aumentar quantidade de ' + it.n);
+        menos.addEventListener('click', function(){ mudar(id, -1); });
+        mais.addEventListener('click', function(){ mudar(id, +1); });
+        q.appendChild(menos); q.appendChild(out); q.appendChild(mais);
+        var rm = el('button','bag-rm','Remover'); rm.type = 'button';
+        rm.setAttribute('aria-label','Remover ' + it.n + ' da sacola');
+        rm.addEventListener('click', function(){ delete st.itens[id]; salvar(); atualizarBadge(); render(); });
+        linha.appendChild(q); linha.appendChild(rm);
+        info.appendChild(linha);
+        li.appendChild(info);
+        lista.appendChild(li);
+      });
+
+      if (todos && soma > 0) {
+        total.hidden = false; total.textContent = '';
+        total.appendChild(el('span', null, 'Total dos produtos'));
+        total.appendChild(el('b', null, brl(soma)));
+      } else total.hidden = true;
+
+      [].forEach.call(form.querySelectorAll('input[name=sac-entrega]'), function(r){ r.checked = r.value === st.entrega; });
+      cepWrap.hidden = st.entrega !== 'casa';
+      if (document.activeElement !== cep) cep.value = st.cep;
+      if (document.activeElement !== nome) nome.value = st.nome;
+      if (document.activeElement !== obs) obs.value = st.obs;
+
+      var ok = ids.length > 0 && cepOk();
+      cep.setAttribute('aria-invalid', String(!cepOk()));
+      enviar.setAttribute('aria-disabled', String(!ok));
+      enviar.href = ok ? 'https://wa.me/' + WA + '?text=' + encodeURIComponent(mensagem()) : '#';
+    }
+
+    function mudar(id, d){
+      var it = st.itens[id]; if (!it) return;
+      it.q = Math.max(0, Math.min(MAX, it.q + d));
+      if (!it.q) delete st.itens[id];
+      salvar(); atualizarBadge(); render();
+    }
+
+    function abrir(){ render(); if (typeof dlg.showModal === 'function' && !dlg.open) dlg.showModal(); }
+    function fechar(){ if (dlg.open) dlg.close(); }
+
+    function aviso(txt){
+      toastT.textContent = txt; toast.hidden = false;
+      toast.style.animation = 'none'; void toast.offsetWidth; toast.style.animation = '';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ toast.hidden = true; }, 3200);
+    }
+
+    function add(p){
+      if (!p || p.id == null) return;
+      var id = String(p.id);
+      cat[id] = p;
+      var it = st.itens[id];
+      if (it) it.q = Math.min(MAX, it.q + 1);
+      else st.itens[id] = { q:1, n:String(p.name), m:p.brand ? String(p.brand) : '', p:window.ENpreco(p) };
+      salvar(); atualizarBadge();
+      btn.classList.remove('bump'); void btn.offsetWidth; btn.classList.add('bump');
+      aviso(p.name + ' foi para a sacola');
+    }
+
+    window.ENSacola = {
+      add: add, abrir: abrir,
+      catalogo: function(lista){ lista.forEach(function(p){ cat[String(p.id)] = p; }); if (dlg.open) render(); }
+    };
+
+    btn.addEventListener('click', abrir);
+    toastVer.addEventListener('click', function(){ toast.hidden = true; abrir(); });
+    document.getElementById('sac-fechar').addEventListener('click', fechar);
+    document.getElementById('sac-ver').addEventListener('click', fechar);
+    dlg.addEventListener('click', function(ev){ if (ev.target === dlg) fechar(); });
+    limpar.addEventListener('click', function(){ st.itens = {}; salvar(); atualizarBadge(); render(); });
+    enviar.addEventListener('click', function(ev){
+      if (enviar.getAttribute('aria-disabled') === 'true') { ev.preventDefault(); if (!cepOk()) cep.focus(); }
+    });
+    [].forEach.call(form.querySelectorAll('input[name=sac-entrega]'), function(r){
+      r.addEventListener('change', function(){ st.entrega = r.value; salvar(); render(); if (r.value === 'casa') cep.focus(); });
+    });
+    cep.addEventListener('input', function(){
+      var d = cep.value.replace(/\D/g,'').slice(0,8);
+      st.cep = d.length > 5 ? d.slice(0,5) + '-' + d.slice(5) : d;
+      cep.value = st.cep; salvar(); render();
+    });
+    nome.addEventListener('input', function(){ st.nome = nome.value; salvar(); render(); });
+    obs.addEventListener('input', function(){ st.obs = obs.value; salvar(); render(); });
+    form.addEventListener('submit', function(ev){ ev.preventDefault(); });
+
+    ler(); atualizarBadge();
   })();
 
   /* ---- catálogo real: renderizado a partir de data/catalog.json ----
@@ -1233,6 +1635,24 @@
       return texto.replace(/[^\p{L}\p{N}]/gu,'') ? texto : '';
     }
 
+    var ICON_MAIS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+    var ICON_OK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    function botaoAdd(p){
+      var b = el('button','prod-add');
+      b.type = 'button';
+      b.setAttribute('aria-label','Adicionar ' + p.name + ' à sacola');
+      b.innerHTML = ICON_MAIS;                    // string fixa
+      b.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        if (!window.ENSacola) return;
+        window.ENSacola.add(p);
+        b.classList.add('ok'); b.innerHTML = ICON_OK;
+        setTimeout(function(){ b.classList.remove('ok'); b.innerHTML = ICON_MAIS; }, 1300);
+      });
+      return b;
+    }
+    function precoDe(p){ return window.ENpreco ? window.ENpreco(p) : 0; }
+
     function paresDeNotas(p){
       var n = p.notes || {};
       return [['Topo',n.topo],['Coração',n.coracao],['Fundo',n.fundo]]
@@ -1295,7 +1715,11 @@
       img.loading = 'lazy';
       img.decoding = 'async';
       img.width = 700; img.height = 933;
+      var ok = function(){ img.classList.add('ok'); };
+      img.addEventListener('load', ok); img.addEventListener('error', ok);
+      if (img.complete) ok();
       media.appendChild(img);
+      media.appendChild(botaoAdd(p));
       art.appendChild(media);
 
       var body = el('div','prod-body');
@@ -1311,6 +1735,7 @@
       body.appendChild(h3);
 
       if (p.category) body.appendChild(el('p','prod-cat', p.category));
+      if (precoDe(p)) body.appendChild(el('p','prod-preco', window.ENbrl(precoDe(p))));
 
       var notas = paresDeNotas(p);
       if (notas.length) {
@@ -1347,6 +1772,7 @@
       if (p.brand) body.appendChild(el('p','pd-marca', p.brand));
       body.appendChild(el('h3','pd-nome', p.name));
       if (p.category) body.appendChild(el('p','pd-cat', p.category));
+      if (precoDe(p)) body.appendChild(el('p','pd-preco', window.ENbrl(precoDe(p))));
       var desc = descricaoUtil(p);
       if (desc) body.appendChild(el('p','pd-desc', desc));
 
@@ -1363,6 +1789,13 @@
       }
 
       var cta = el('div','pd-cta');
+      var addBtn = el('button','btn btn-primary pd-add','Adicionar à sacola');
+      addBtn.type = 'button';
+      addBtn.addEventListener('click', function(){
+        if (window.ENSacola) window.ENSacola.add(p);
+        pd.close();
+      });
+      cta.appendChild(addBtn);
       cta.appendChild(botaoWhatsApp(p));
       body.appendChild(cta);
       pdGrid.appendChild(body);
@@ -1401,7 +1834,14 @@
 
       var frag = document.createDocumentFragment();
       var fim = Math.min(mostrados, lista.length);
-      for (var i = 0; i < fim; i++) frag.appendChild(card(lista[i]));
+      for (var i = 0; i < fim; i++) {
+        var c = card(lista[i]);
+        // anima só o que é novo (filtro/busca: tudo; "Ver mais": só o lote)
+        if (i >= jaPintados) c.style.setProperty('--d', ((i - jaPintados) % 12) * 0.04 + 's');
+        else c.style.animation = 'none';
+        frag.appendChild(c);
+      }
+      jaPintados = fim;
       grid.appendChild(frag);
 
       var resta = lista.length - fim;
@@ -1410,7 +1850,8 @@
       contagem.textContent = 'Mostrando ' + fim + ' de ' + lista.length +
         (lista.length === 1 ? ' produto' : ' produtos');
     }
-    function reset(){ mostrados = LOTE; pintar(); }
+    var jaPintados = 0;
+    function reset(){ mostrados = LOTE; jaPintados = 0; pintar(); }
 
     moreBtn.addEventListener('click', function(){
       mostrados += LOTE;                        // revela em lotes, não tudo de uma vez
@@ -1431,6 +1872,7 @@
       .then(function(d){
         produtos = (d && d.products) || [];
         if (d && d.whatsapp) wa = String(d.whatsapp).replace(/\D/g,'');
+        if (window.ENSacola) window.ENSacola.catalogo(produtos);
         if (!produtos.length) throw new Error('nenhum produto no catálogo');
         status.hidden = true;
         montarChips();
@@ -1445,6 +1887,151 @@
           'Rode <code>python3 -m http.server</code> na pasta do projeto e acesse por ' +
           '<code>http://localhost:8000</code>.';
       });
+  })();
+
+  /* ---- vida: movimento sutil ----
+     Tudo aqui é decoração: com prefers-reduced-motion nada roda, e o
+     conteúdo fica visível sem depender de nenhum destes efeitos. */
+  var reduzido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* barra de progresso + cabeçalho que ganha corpo ao rolar */
+  (function rolagem(){
+    var barra = document.getElementById('progresso');
+    var head = document.querySelector('.site-header');
+    var ticking = false;
+    function calc(){
+      ticking = false;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var y = window.pageYOffset || 0;
+      if (barra) barra.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
+      if (head) head.classList.toggle('rolou', y > 12);
+    }
+    window.addEventListener('scroll', function(){
+      if (!ticking) { ticking = true; requestAnimationFrame(calc); }
+    }, { passive:true });
+    calc();
+  })();
+
+  /* aparecer ao rolar */
+  (function revelar(){
+    if (reduzido || !('IntersectionObserver' in window)) return;
+    var alvos = [
+      '.cat-head','.cat-tools','.cat-chips','#marcas .sec-head','.marca','.canal','.canais-fluxo',
+      '.equipe-head','.pessoa','.social-wrap>*','.envios-copy>*','.envios-art',
+      '#loja .sec-head','.loja-grid>*','#faq .sec-head','.faq-lista details','.cta-final>*','.foot>*'
+    ];
+    var nos = [].slice.call(document.querySelectorAll(alvos.join(',')));
+    document.documentElement.classList.add('rv-on');
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin:'0px 0px -6% 0px', threshold:0.05 });
+    nos.forEach(function(n, i){
+      var irmaos = [].indexOf.call(n.parentNode.children, n);
+      n.classList.add('rv');
+      n.style.setProperty('--d', Math.min(irmaos, 5) * 0.08 + 's');
+      io.observe(n);
+    });
+    // rede de segurança: se nada disparar (captura de tela, aba em segundo plano), mostra tudo
+    setTimeout(function(){ nos.forEach(function(n){ n.classList.add('in'); }); }, 6000);
+  })();
+
+  /* poeira dourada no hero */
+  (function poeira(){
+    var cv = document.getElementById('hero-particulas');
+    if (!cv || reduzido || !cv.getContext) return;
+    var ctx = cv.getContext('2d'), w = 0, h = 0, dpr = 1, P = [], rodando = false, raf = 0;
+    function tamanho(){
+      var r = cv.parentNode.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = r.width; h = r.height;
+      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.max(16, Math.min(46, Math.round(w * h / 24000)));
+      while (P.length < n) P.push(nova(true));
+      P.length = n;
+    }
+    function nova(inicio){
+      return { x:Math.random() * w, y:inicio ? Math.random() * h : h + 8, r:Math.random() * 1.5 + .5,
+               v:Math.random() * .22 + .07, d:Math.random() * 6.28, a:Math.random() * .45 + .2, f:Math.random() * .8 + .5 };
+    }
+    function quadro(t){
+      if (!rodando) return;
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < P.length; i++) {
+        var q = P[i];
+        q.y -= q.v; q.x += Math.sin(t * .0005 + q.d) * .22;
+        if (q.y < -10) { P[i] = nova(false); continue; }
+        var borda = Math.min(1, q.y / (h * .25), (h - q.y) / (h * .1) + .2);
+        var a = q.a * (.55 + .45 * Math.sin(t * .0016 * q.f + q.d)) * Math.max(0, borda);
+        var g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, q.r * 4);
+        g.addColorStop(0, 'rgba(238,203,132,' + a + ')');
+        g.addColorStop(1, 'rgba(238,203,132,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(q.x, q.y, q.r * 4, 0, 6.283); ctx.fill();
+      }
+      raf = requestAnimationFrame(quadro);
+    }
+    function ligar(){ if (!rodando) { rodando = true; raf = requestAnimationFrame(quadro); } }
+    function desligar(){ rodando = false; cancelAnimationFrame(raf); }
+    tamanho();
+    window.addEventListener('resize', tamanho);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function(es){ es[0].isIntersecting ? ligar() : desligar(); }).observe(cv);
+    } else ligar();
+    document.addEventListener('visibilitychange', function(){ document.hidden ? desligar() : ligar(); });
+  })();
+
+  /* o brasão acompanha o ponteiro, de leve (só com mouse) */
+  (function inclinar(){
+    var selo = document.querySelector('.brasao-selo');
+    var hero = document.getElementById('hero');
+    if (!selo || !hero || reduzido || !window.matchMedia('(hover:hover)').matches) return;
+    hero.addEventListener('pointermove', function(ev){
+      var r = selo.getBoundingClientRect();
+      var x = (ev.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2);
+      var y = (ev.clientY - (r.top + r.height / 2)) / (window.innerHeight / 2);
+      x = Math.max(-1, Math.min(1, x)); y = Math.max(-1, Math.min(1, y));
+      selo.style.transform = 'rotateY(' + (x * 7).toFixed(2) + 'deg) rotateX(' + (-y * 7).toFixed(2) + 'deg)';
+    });
+    hero.addEventListener('pointerleave', function(){ selo.style.transform = ''; });
+  })();
+
+  /* loja: aberta ou fechada agora (horário de Brasília, pelos horários do site) */
+  (function statusLoja(){
+    var box = document.getElementById('loja-status'), txt = document.getElementById('loja-status-t');
+    var quadro = document.getElementById('horarios');
+    if (!box || !txt || !window.Intl || !Intl.DateTimeFormat) return;
+    // abre/fecha em minutos desde 0h; 0=domingo … 6=sábado
+    var H = { 0:[480,750], 1:[480,1020], 2:[480,1020], 3:[480,1020], 4:[480,1020], 5:[480,1020], 6:[480,960] };
+    var NOME = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+    var DIAS = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+    function hm(min){ var h = Math.floor(min / 60), m = min % 60; return h + 'h' + (m ? String(m).padStart(2,'0') : ''); }
+    function agora(){
+      var f = new Intl.DateTimeFormat('en-US', { timeZone:'America/Sao_Paulo', weekday:'short', hour:'numeric', minute:'numeric', hourCycle:'h23' });
+      var o = {}; f.formatToParts(new Date()).forEach(function(p){ o[p.type] = p.value; });
+      return { d: DIAS[o.weekday], m: (parseInt(o.hour,10) % 24) * 60 + parseInt(o.minute,10) };
+    }
+    function pintar(){
+      var n; try { n = agora(); } catch (e) { return; }
+      if (n.d == null) return;
+      var h = H[n.d], aberta = n.m >= h[0] && n.m < h[1], t;
+      if (aberta) t = 'Aberto agora · até ' + hm(h[1]);
+      else if (n.m < h[0]) t = 'Fechado agora · abre hoje às ' + hm(h[0]);
+      else {
+        var prox = (n.d + 1) % 7;
+        t = 'Fechado agora · abre amanhã às ' + hm(H[prox][0]);
+      }
+      txt.textContent = t;
+      box.hidden = false;
+      box.classList.toggle('fechada', !aberta);
+      if (quadro) [].forEach.call(quadro.children, function(r){
+        r.classList.toggle('hoje', (r.getAttribute('data-dias') || '').split(',').indexOf(String(n.d)) > -1);
+      });
+    }
+    pintar();
+    setInterval(pintar, 60000);
   })();
 
 })();
