@@ -2,24 +2,13 @@
 
 ## Ativos confirmados
 
-### Sequência de 240 frames — APOSENTADA (19/09/2026)
-O cliente reprovou o hero animado: a sequência é gerada por IA, o rosto muda
-de identidade ao longo dos frames e o resultado caía no clichê de "estética
-árabe genérica de estoque" que o BRAND-BRIEF manda evitar. O hero passou a
-ser estático (composição geométrica em SVG/CSS, sem foto). Os 240 arquivos
-continuam em `assets/frames/` mas **nenhum é carregado pelo site** — ver
-"Pendências" no fim deste arquivo. Registro técnico original abaixo.
-
-### Sequência de 240 frames (hero cinematográfico)
-- Local: `assets/frames/`
-- Origem: vídeo cinematográfico já existente de uma mulher borrifando
-  perfume — sequência já extraída, NÃO regenerar/re-extrair.
-- Quantidade: 240 arquivos
-- Padrão de nome: `frame-0001.webp` … `frame-0240.webp` (4 dígitos,
-  zero-padded)
-- Formato: WebP
-- Resolução: 1280x720 (confirmado em frame-0001, frame-0120, frame-0240)
-- Tamanho total: ~23 MB (todos os 240 arquivos)
+### Sequência de 240 frames — REMOVIDA
+O hero animado foi reprovado pelo cliente (frames gerados por IA, rosto que
+muda de identidade, estética árabe genérica de estoque). O hero é estático
+e **a pasta `assets/frames/` (240 arquivos, ~23 MB) foi removida do
+repositório na V1.1**, depois de conferido que nenhum arquivo do site a
+referenciava. Continua acessível no histórico do git (commits anteriores a
+esta remoção) caso um dia seja necessária.
 
 Este é o único ativo de vídeo/frame a ser usado no hero. Vídeos e fotos do
 Instagram (ver `docs/SOCIAL-RESEARCH.md`) alimentam outras seções (vitrine
@@ -27,29 +16,26 @@ social, equipe, loja), não o hero.
 
 ## Home — estrutura IMPLEMENTADA (V1, 19/09/2026)
 
-Ordem real das `<section>` no `index.html`:
+Ordem real das `<section>` no `index.html` (V1.1, 21/09/2026 — enxuta):
 
-1. `#hero` — estático, composição geométrica em SVG (sem foto, sem canvas)
-2. `#proposta` — proposta de valor, 4 blocos, só fatos confirmados
-3. `#catalogo` — 34 produtos reais de `data/catalog.json`, com filtros por
+1. `#hero` — quem é a loja: logo em destaque, título, 2 CTAs
+2. `#catalogo` — 34 produtos reais de `data/catalog.json`, com filtros por
    categoria, busca por nome/marca, ordenação, modal de detalhes e
    "Ver mais" em lotes de 12
-4. `#canais` — Varejo x Atacado, CTAs distintos
+3. `#marcas` — marcas disponíveis (visual; slots em `assets/brands/`)
+4. `#canais` — Varejo x Atacado + linha discreta do processo de compra
 5. `#equipe` — 4 integrantes com foto real (ver docs/TEAM.md)
-6. `#social` — Instagram e TikTok
-7. `#comprar` — como comprar em 3 passos
-8. `#envios` — envios para todo o Brasil (único bloco claro, creme/areia)
-9. `#loja` — endereço, horários e link para o mapa
-10. `#faq` — 4 perguntas, `<details>` nativo
-11. `#rodape` — CTA final + footer
+6. `#social` — faixa compacta: Instagram e TikTok
+7. `#envios` — envios para todo o Brasil (único bloco claro, creme/areia)
+8. `#loja` — endereço, horários e "Como chegar" (Google Maps)
+9. `#faq` — 4 perguntas, `<details>` nativo
+10. `#rodape` — CTA final + footer de navegação
 
-Seção "Diferenciais" não foi implementada: não há diferencial confirmado
-que não repita a proposta de valor. "Vitrine/conteúdo social" virou o
-bloco `#social` com links, sem imagens do Instagram embutidas.
+Removidas na V1.1: `#proposta` (repetia hero/canais/envios/loja) e
+`#comprar` (virou uma linha dentro de `#canais`). Regra: cada seção tem UMA
+função; se duas dizem a mesma coisa, fica só a mais útil.
 
-Observação: marcas/categorias de perfumes devem aparecer em ponto
-estratégico da Home (provavelmente entre Catálogo e Diferenciais, ou como
-sub-bloco do Catálogo) — posição exata a decidir na implementação.
+Marcas: implementadas em `#marcas`, logo depois do catálogo (V1.1).
 
 ## Plano técnico do hero (240 frames) — a implementar
 
@@ -112,8 +98,5 @@ catálogo real, selos de confiança ainda não confirmados).
   acessibilidade de teclado e foco vêm do navegador, sem JS extra.
 
 ## Pendências
-- `assets/frames/` (240 arquivos, ~23 MB) não é mais usado por nenhuma
-  parte do site. Os arquivos foram mantidos porque o `AGENTS.md` proíbe
-  removê-los sem instrução explícita. Se a V1 for publicada como está,
-  são 23 MB de peso morto no repositório — decisão do cliente.
+- `assets/frames/` removida na V1.1 (sem referências no site).
 - Ver `docs/TODO-VERIFY.md` para as pendências de dados.

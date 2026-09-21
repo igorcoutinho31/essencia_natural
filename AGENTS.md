@@ -7,12 +7,11 @@ Instruções para agentes (Claude Code ou outros) trabalhando neste repositório
 2. Ler `docs/TODO-VERIFY.md` para saber o que ainda não está confirmado —
    nunca publicar essas informações como definitivas.
 3. Ler `docs/SITE-ARCHITECTURE.md` antes de mexer em qualquer coisa
-   relacionada ao hero/frames.
+   relacionada ao hero.
 
 ## Regras não-negociáveis
-- Não extrair, regenerar ou substituir os arquivos em `assets/frames/`
-  sem instrução explícita — essa sequência de 240 frames já é definitiva
-  como fonte do hero.
+- O hero animado de 240 frames foi aposentado e `assets/frames/` foi removida
+  na V1.1. Não reintroduzir animação de frames nem canvas/scroll-scrub no hero.
 - Não inventar nomes, cargos, histórico de equipe, preços, endereço ou
   telefone. Usar somente o que está em `docs/BRAND-BRIEF.md`,
   `docs/TEAM.md`, `docs/PRODUCTS.md` — e o que não estiver lá, tratar como

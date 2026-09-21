@@ -62,13 +62,31 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 ## Envios
 - Rede social menciona "Envios para todo o Brasil" — usar como informação
   válida, mas confirmar se há custo, prazo, transportadora antes de detalhar
-  na seção "Como comprar".
+  na linha de processo de `#canais` e no FAQ.
 
 ## Frames do hero
-- Sequência de 240 frames já existe em `assets/frames/` (ver
-  `docs/SITE-ARCHITECTURE.md`) — confirmar apenas se este é o corte final
-  aprovado do vídeo, ou se haverá recorte/ajuste posterior.
+- Resolvido na V1.1: `assets/frames/` (240 frames) removida do repositório.
+  Só existe no histórico do git.
 
+## Marcas (`#marcas`) — PENDENTE
+- A seção existe, mas só tem as duas marcas citadas no catálogo (QAWAFI e
+  Paris Corner), como texto — não há logo/foto delas. Lista completa de
+  marcas e logos/fotos: aguardando o cliente (pasta `assets/brands/`).
+- Não publicar marca sem confirmação. Não criar logo fictício.
+- Como adicionar: ver o comentário no `#marcas` do `index.html`.
+
+## Domínio final / SEO — PENDENTE
+- Sem domínio definido: `canonical`, `og:url`, URLs absolutas de `og:image`
+  e `twitter:image`, `url`/`image` do JSON-LD e o `sitemap.xml` (hoje
+  rascunho com host `DOMINIO-FINAL-PENDENTE`) dependem dele.
+- `og:image`/`twitter:image` estão com caminho relativo: o WhatsApp só
+  mostra a prévia com URL absoluta. Trocar quando o domínio existir.
+- `robots.txt` liberado para todos, sem a linha `Sitemap:` (acrescentar
+  depois do domínio).
+- JSON-LD sem CEP (não confirmado) e com endereço "Sobreloja 215" (ver o
+  conflito 213/215 acima).
+- O favicon usa o monograma EN recortado do logo redondo (699 px); um
+  logo vetorial melhoraria o ícone.
 
 ## Conteúdo inventado REMOVIDO na passada final (19/09/2026)
 Estas afirmações estavam no ar e não tinham nenhuma fonte confirmada. Foram
@@ -91,12 +109,11 @@ escrito antes de voltar:
 Escritos para o site a partir de fatos já confirmados. Não afirmam preço,
 prazo, frete, garantia, mínimo de pedido nem originalidade. Vale o cliente
 ler e aprovar:
-- `#proposta`: os 4 blocos e o texto de apoio.
+- (`#proposta` e `#comprar` foram removidas na V1.1.)
 - `#canais`: textos de varejo e atacado (os títulos e CTAs vieram do cliente).
-- `#comprar`: os 3 passos.
 - `#faq`: as 4 respostas.
 - `#rodape`: o CTA final.
 
 ## SEO
-- `canonical` e `og:image` NÃO foram configurados: não existe domínio final
-  nem imagem social aprovada. Configurar quando o domínio for definido.
+- Ver "Domínio final / SEO" acima. og:image, favicon, JSON-LD e robots já
+  existem; falta o que depende do domínio.

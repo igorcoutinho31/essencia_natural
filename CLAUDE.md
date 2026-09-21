@@ -15,9 +15,8 @@ build step por enquanto).
 - `index.html` na raiz é a versão inicial publicada (hero com garrafa CSS
   estática, placeholders de WhatsApp/endereço) — **será substituída**, mas
   só depois de aprovação explícita do cliente.
-- `assets/frames/`: sequência de 240 frames WebP (1280x720) já pronta,
-  fonte do hero cinematográfico. Ver `docs/SITE-ARCHITECTURE.md`. NÃO
-  regenerar/re-extrair esses frames.
+- `assets/frames/`: REMOVIDA na V1.1 (hero animado aposentado; a pasta de
+  240 frames, 23 MB, não era referenciada). Não reintroduzir a animação.
 - `docs/`: toda a documentação viva do projeto (brand, equipe, produtos,
   pesquisa social/benchmark, arquitetura do site, pendências).
 - `assets/`: estrutura de pastas para mídia organizada por finalidade

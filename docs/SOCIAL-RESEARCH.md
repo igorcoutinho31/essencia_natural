@@ -9,10 +9,9 @@
   que ainda está pendente é o download completo/organizado do perfil via
   ferramenta (bloqueado por proteção anti-bot / bug de extração do yt-dlp
   nesse perfil específico) — não a existência de material de referência.
-- Sequência de 240 frames (`assets/frames/`): já extraída previamente a
-  partir de um vídeo cinematográfico de uma mulher borrifando perfume. Ver
-  detalhes técnicos em `docs/SITE-ARCHITECTURE.md`. NÃO regenerar nem
-  extrair novos frames — usar exatamente essa sequência.
+- Sequência de 240 frames: já foi extraída de um vídeo cinematográfico, mas
+  foi aposentada e removida do repositório na V1.1 (ver
+  `docs/SITE-ARCHITECTURE.md`).
 
 ## Benchmark comercial: onuh.com.br
 
