@@ -18,7 +18,7 @@ JavaScript a partir desse arquivo — nenhum produto está escrito à mão no
 | `id`, `name`, `category`, `image`, `description`, `date`, `instagram_post_url` | 34/34 | |
 | `notes` (topo/coração/fundo) | 9/34 | só exibido quando existe |
 | `brand` | 3/34 | QAWAFI (2), Paris Corner (1) |
-| `price`, `wholesale_price` | 0/34 | **todos null** — ver TODO-VERIFY |
+| `price`, `wholesale_price` | 0/34 | **todos null** — ver TODO-VERIFY. `price` (número em reais) faz o site exibir valor e total da sacola |
 
 ### Categorias
 Perfume (30), Body Cream (3), Marca / Coleção (1).

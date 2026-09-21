@@ -117,3 +117,17 @@ ler e aprovar:
 ## SEO
 - Ver "Domínio final / SEO" acima. og:image, favicon, JSON-LD e robots já
   existem; falta o que depende do domínio.
+
+## Sacola / vendas online — PENDENTE
+- Preços: o cliente vai enviar a lista. Formato no JSON: `"price": 199.9`
+  (número, reais). Atacado (`wholesale_price`) segue sob consulta enquanto
+  não houver política definida. Confirmar com o cliente se o preço pode ser
+  público.
+- Frete/prazo/transportadora e pedido mínimo do atacado: não definidos. O
+  site só coleta o CEP e a equipe responde no WhatsApp.
+- Pagamento online, estoque em tempo real e nota fiscal: exigem plataforma
+  de loja virtual ou back-end (e API da Olisek, ainda sem acesso).
+- "Aberto agora" segue os horários fixos do site; não sabe de feriados ou
+  fechamentos extraordinários. Se isso incomodar, remover o bloco
+  `statusLoja` do script.
+

@@ -100,3 +100,30 @@ catálogo real, selos de confiança ainda não confirmados).
 ## Pendências
 - `assets/frames/` removida na V1.1 (sem referências no site).
 - Ver `docs/TODO-VERIFY.md` para as pendências de dados.
+
+## Sacola (carrinho) e movimento — V1.2 (21/09/2026)
+
+### Sacola que finaliza no WhatsApp
+- Botão "+" em cada card e "Adicionar à sacola" no modal; ícone da sacola
+  com contador no header; gaveta lateral (`<dialog id="sacola">`).
+- Escolha de entrega: **retirar na loja** ou **receber em casa** (pede CEP,
+  validado e com máscara). Nome e observação são opcionais.
+- "Finalizar no WhatsApp" abre `wa.me/5511949614608` com o pedido pronto
+  (itens, quantidades, entrega, CEP, nome, observação). **Não há pagamento
+  nem cálculo de frete no site**: a equipe confirma estoque, valores e frete.
+- Estado no `localStorage` (`en_sacola_v1`: id, quantidade, nome, marca,
+  entrega, CEP, nome, obs), sempre em try/catch.
+- Preços: aparecem sozinhos (card, modal, sacola e total) quando o
+  `data/catalog.json` trouxer `price` como número em reais. Sem preço, nada
+  é exibido. O total só aparece se TODOS os itens da sacola tiverem preço.
+- Caminho futuro: migrar para plataforma de loja virtual ou checkout próprio
+  quando houver preços, estoque e definição de frete (ver TODO-VERIFY).
+
+### Movimento sutil (desligado com `prefers-reduced-motion`)
+Poeira dourada em canvas no hero (pausa fora da tela/aba oculta), brasão
+que acompanha o mouse, entrada escalonada do hero, seções que aparecem ao
+rolar (com rede de segurança de 6 s), cards que entram em cascata, barra de
+progresso de leitura, header que ganha corpo ao rolar, rota de envios com
+pontos em movimento, e "Aberto agora / Fechado" na loja (horário de
+Brasília, calculado pelos horários do site; não conhece feriados).
+
