@@ -12,9 +12,49 @@
 <meta property="og:locale" content="pt_BR">
 <meta property="og:title" content="Essência Natural — Perfumes árabes e importados em São Paulo">
 <meta property="og:description" content="Perfumaria de perfumes árabes e importados na Galeria Pagé, centro de São Paulo. Varejo e atacado, atendimento pelo WhatsApp e envios para todo o Brasil.">
-<meta name="twitter:card" content="summary">
-<!-- sem canonical e sem og:image: o domínio final ainda não existe e não há
-     imagem social aprovada para isso (ver docs/TODO-VERIFY.md) -->
+<meta property="og:image" content="assets/social/og-essencia-natural.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Essência Natural — perfumes árabes e importados. Sua essência. Sua identidade.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Essência Natural — Perfumes árabes e importados em São Paulo">
+<meta name="twitter:description" content="Perfumaria de perfumes árabes e importados na Galeria Pagé, centro de São Paulo. Varejo e atacado, atendimento pelo WhatsApp e envios para todo o Brasil.">
+<meta name="twitter:image" content="assets/social/og-essencia-natural.jpg">
+<!-- DEPENDE DO DOMÍNIO FINAL (ainda não definido; não inventar):
+     1) <link rel="canonical" href="https://DOMINIO/">
+     2) og:image e twitter:image precisam de URL ABSOLUTA
+        (https://DOMINIO/assets/social/og-essencia-natural.jpg) para o
+        WhatsApp/Instagram exibirem a prévia; com caminho relativo, não.
+     3) og:url e "url"/"image" do JSON-LD abaixo; sitemap.xml e robots.txt.
+     Ver docs/TODO-VERIFY.md. -->
+<link rel="icon" href="assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "name": "Essência Natural",
+  "description": "Perfumaria de perfumes árabes e importados, com venda no varejo e no atacado e envios para todo o Brasil.",
+  "telephone": "+5511949614608",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé, Sobreloja 215",
+    "addressLocality": "São Paulo",
+    "addressRegion": "SP",
+    "addressCountry": "BR"
+  },
+  "openingHoursSpecification": [
+    {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "17:00"},
+    {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "16:00"},
+    {"@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "08:00", "closes": "12:30"}
+  ],
+  "sameAs": [
+    "https://www.instagram.com/essencianaturall__/",
+    "https://www.tiktok.com/@essencia.natura"
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap">
@@ -44,6 +84,7 @@
   /* compensa o header fixo ao pular para uma âncora (ex.: "Visitar a loja") */
   html{scroll-padding-top:calc(var(--header-h) + 12px);scroll-behavior:smooth}
   body{
+    margin:0;
     background:var(--bg);
     color:var(--ink);
     font-family:'Jost',system-ui,sans-serif;
@@ -333,14 +374,13 @@
     background:
       radial-gradient(ellipse 92% 55% at 50% -8%,rgba(201,164,76,.10),transparent 62%),
       var(--bg-2);
-    border-bottom:1px solid var(--line);
   }
   .equipe-head{display:flex;flex-direction:column;gap:14px;margin-bottom:min(6vw,54px)}
   .equipe-head h2{font-size:clamp(1.6rem,3.4vw,2.4rem)}
-  .equipe-head p{color:var(--ink-dim);max-width:54ch}
   /* auto-fit: novos integrantes entram sem mexer no layout — basta
      duplicar um <li class="pessoa"> no HTML. */
   .equipe-grid{
+    list-style:none;margin:0;padding:0;
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
     gap:clamp(14px,1.8vw,22px);
@@ -384,7 +424,7 @@
   }
 
   /* ---------- CATALOGO (renderizado a partir de data/catalog.json) ---------- */
-  #catalogo{background:var(--bg);border-top:1px solid var(--line)}
+  #catalogo{background:var(--bg)}
   .cat-head{display:flex;flex-direction:column;gap:14px;margin-bottom:clamp(26px,3.4vw,40px)}
   .cat-head h2{font-size:clamp(1.55rem,3.2vw,2.3rem);max-width:22ch}
   .cat-head p{color:var(--ink-dim);max-width:54ch}
@@ -595,18 +635,29 @@
   .sec-head h2{font-size:clamp(1.55rem,3.2vw,2.3rem);max-width:22ch}
   .sec-head p{color:var(--ink-dim);max-width:56ch}
 
-  /* ---------- PROPOSTA DE VALOR ---------- */
-  #proposta{background:var(--bg-2);border-top:1px solid var(--line)}
-  .propo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;
-    background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  .propo{background:var(--bg-2);padding:clamp(24px,2.6vw,32px);display:flex;flex-direction:column;gap:11px}
-  .propo h3{font-size:1.02rem;color:var(--ink);display:flex;align-items:center;gap:10px}
-  .propo h3::before{content:"";flex:none;width:7px;height:7px;transform:rotate(45deg);
-    background:linear-gradient(140deg,var(--gold-2),var(--gold-dim))}
-  .propo p{font-size:.89rem;color:var(--ink-dim);line-height:1.6}
+  /* ---------- MARCAS ---------- */
+  #marcas{background:var(--bg-2)}
+  .sec-head--c{align-items:center;text-align:center}
+  .sec-head--c h2{max-width:26ch}
+  .marcas-grid{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(14px,2vw,22px)}
+  .marcas-grid li{width:clamp(160px,22vw,236px)}
+  .marca{
+    display:flex;align-items:center;justify-content:center;
+    width:100%;aspect-ratio:3/2;padding:18px;
+    border:1px solid var(--line);border-radius:14px;
+    transition:border-color .25s ease,background-color .25s ease,transform .25s ease;
+  }
+  .marca:hover,.marca:focus-visible{border-color:var(--gold-dim);background:rgba(201,164,76,.06);transform:translateY(-2px)}
+  .marca-nome{font-family:'Cinzel',serif;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    font-size:clamp(.82rem,1.4vw,.98rem);color:var(--ink-dim);text-align:center;transition:color .25s ease}
+  .marca:hover .marca-nome,.marca:focus-visible .marca-nome{color:var(--gold-2)}
+  .marca img{max-width:72%;max-height:72%;width:auto;height:auto;object-fit:contain;opacity:.88;transition:opacity .25s ease}
+  .marca:hover img{opacity:1}
+  @media (max-width:560px){.marcas-grid li{width:calc(50% - 8px)}.marca{padding:12px}}
+  @media (prefers-reduced-motion:reduce){.marca{transition:none}.marca:hover{transform:none}}
 
   /* ---------- VAREJO x ATACADO ---------- */
-  #canais{background:var(--bg);border-top:1px solid var(--line)}
+  #canais{background:var(--bg)}
   .canais-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,24px)}
   @media (max-width:760px){.canais-grid{grid-template-columns:1fr}}
   .canal{
@@ -619,11 +670,14 @@
   .canal p{color:var(--ink-dim);font-size:.93rem;max-width:42ch}
   .canal .btn{margin-top:auto;align-self:flex-start}
   @media (max-width:560px){.canal .btn{align-self:stretch}}
+  .canais-fluxo{margin-top:clamp(22px,3vw,34px);text-align:center;color:var(--ink-faint);font-size:.88rem;line-height:1.7}
+  .canais-fluxo i{font-style:normal;color:var(--gold);margin-inline:.35em}
 
   /* ---------- REDES SOCIAIS ---------- */
-  #social{background:var(--bg-2);border-block:1px solid var(--line)}
-  .social-wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px}
-  .social-links{display:flex;flex-wrap:wrap;gap:12px}
+  #social{background:var(--bg);padding-block:clamp(30px,4.5vw,46px)}
+  .social-wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px 30px}
+  .social-txt{color:var(--ink-dim);font-size:.95rem}
+  .social-links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
   .social-link{
     display:flex;align-items:center;gap:11px;
     border:1px solid var(--line);border-radius:999px;padding:12px 22px 12px 18px;
@@ -634,17 +688,6 @@
   .social-link b{font-weight:500;color:var(--ink)}
   .social-link span{color:var(--ink-faint);font-size:.82rem}
 
-  /* ---------- COMO COMPRAR ---------- */
-  #comprar{background:var(--bg)}
-  .passos{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(20px,2.4vw,30px)}
-  .passo{display:flex;flex-direction:column;gap:11px}
-  .passo .num{
-    font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.2em;color:var(--gold);
-    padding-bottom:12px;border-bottom:1px solid var(--line);
-  }
-  .passo h3{font-size:1.02rem;color:var(--ink)}
-  .passo p{font-size:.89rem;color:var(--ink-dim);line-height:1.6}
-
   /* ---------- ENVIOS (bloco claro, creme/areia) ---------- */
   #envios{
     background:linear-gradient(165deg,var(--creme) 0%,var(--areia) 100%);
@@ -653,8 +696,7 @@
   #envios .eyebrow{color:#6b5015}
   .envios-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(28px,4vw,56px);align-items:center}
   @media (max-width:820px){.envios-grid{grid-template-columns:1fr}}
-  .envios-copy h2{font-size:clamp(1.6rem,3.4vw,2.4rem);color:var(--tinta);margin-block:13px 6px}
-  .envios-sub{font-family:'Cinzel',serif;font-size:clamp(.95rem,1.5vw,1.1rem);color:#6b5015}
+  .envios-copy h2{font-size:clamp(1.6rem,3.4vw,2.4rem);color:var(--tinta);margin-block:13px 0}
   .envios-copy p.txt{color:var(--tinta-dim);max-width:52ch;margin-top:16px;font-size:.96rem}
   .envios-copy .btn{margin-top:26px}
   /* referência discreta a envio: rota pontilhada com destino marcado */
@@ -662,7 +704,7 @@
   .envios-art svg{width:min(100%,330px);height:auto}
 
   /* ---------- LOJA FÍSICA ---------- */
-  #loja{background:var(--bg-2);border-bottom:1px solid var(--line)}
+  #loja{background:var(--bg-2)}
   .loja-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,3.4vw,52px)}
   @media (max-width:760px){.loja-grid{grid-template-columns:1fr;gap:30px}}
   .endereco{font-style:normal;color:var(--ink);font-size:1.02rem;line-height:1.75}
@@ -709,7 +751,6 @@
   .cta-final{text-align:center;display:flex;flex-direction:column;align-items:center;gap:15px;
     padding-bottom:clamp(44px,5vw,70px);border-bottom:1px solid var(--line)}
   .cta-final h2{font-size:clamp(1.7rem,3.6vw,2.5rem);max-width:18ch}
-  .cta-final p{color:var(--ink-dim);max-width:46ch}
   .cta-row{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:12px}
   @media (max-width:520px){.cta-row{flex-direction:column;align-self:stretch}.cta-row .btn{width:100%}}
   .foot{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:clamp(26px,3.4vw,48px);padding-top:clamp(40px,4.5vw,60px)}
@@ -724,7 +765,6 @@
   .foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
   .foot a{color:var(--ink-dim);font-size:.87rem;transition:color .2s ease}
   .foot a:hover{color:var(--gold-2)}
-  .foot .hora{color:var(--ink-dim);font-size:.85rem;line-height:1.8}
   .foot-base{
     margin-top:clamp(34px,4vw,52px);padding-top:22px;border-top:1px solid var(--line);
     display:flex;flex-wrap:wrap;gap:10px 20px;justify-content:space-between;
@@ -746,6 +786,7 @@
 
     <nav class="nav" id="nav" aria-label="Navegação principal">
       <a href="#catalogo">Catálogo</a>
+      <a href="#marcas">Marcas</a>
       <a href="#canais">Atacado</a>
       <a href="#envios">Envios</a>
       <a href="#loja">Loja</a>
@@ -825,40 +866,12 @@
 
 
 
-<section id="proposta">
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">A Essência Natural</p>
-      <h2>Perfumaria de verdade, com gente de verdade atrás do balcão.</h2>
-      <p>Somos uma loja física no centro de São Paulo, com atendimento próximo e um time que conhece cada fragrância da prateleira.</p>
-    </div>
-    <div class="propo-grid">
-      <article class="propo">
-        <h3>Árabes e importados</h3>
-        <p>Fragrâncias árabes e importadas, escolhidas uma a uma para a prateleira da loja.</p>
-      </article>
-      <article class="propo">
-        <h3>Varejo e atacado</h3>
-        <p>Atendemos quem leva um frasco e quem compra para revender, pelo mesmo WhatsApp.</p>
-      </article>
-      <article class="propo">
-        <h3>Loja física na Galeria Pagé</h3>
-        <p>Você sente o perfume antes de decidir. Estamos na Rua Comendador Afonso Kherlakian, 79.</p>
-      </article>
-      <article class="propo">
-        <h3>Envios para todo o Brasil</h3>
-        <p>Não está em São Paulo? Consulte com a nossa equipe o envio para a sua cidade.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
 <section id="catalogo">
   <div class="wrap">
     <div class="cat-head">
       <p class="eyebrow">Catálogo</p>
-      <h2>Conheça algumas fragrâncias disponíveis na Essência Natural.</h2>
-      <p>Uma seleção do que passa pela loja. Para disponibilidade, tamanho e valores, fale com a gente no WhatsApp.</p>
+      <h2>Encontre sua próxima fragrância.</h2>
+      <p>Consulte disponibilidade e valores pelo WhatsApp.</p>
     </div>
 
     <!-- Toda esta seção é alimentada por data/catalog.json. Os filtros são
@@ -894,26 +907,48 @@
   <div class="pd-grid" id="pd-grid"></div>
 </dialog>
 
-<section id="canais">
+<section id="marcas" aria-labelledby="marcas-t">
   <div class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">Como você compra</p>
-      <h2>Varejo e atacado, no mesmo atendimento.</h2>
+    <div class="sec-head sec-head--c">
+      <p class="eyebrow">Marcas</p>
+      <h2 id="marcas-t">Marcas que você encontra na Essência Natural</h2>
     </div>
+
+    <!-- COMO ADICIONAR UMA MARCA
+         Duplique um <li> abaixo. Com logo/foto (coloque o arquivo em
+         assets/brands/, de preferência WebP, fundo liso ou transparente):
+           <li><a class="marca" href="LINK_WHATSAPP" target="_blank" rel="noopener">
+             <img src="assets/brands/nome.webp" alt="NOME" width="400" height="400" loading="lazy" decoding="async">
+           </a></li>
+         Sem logo, use só o nome (como abaixo). LINK_WHATSAPP =
+         https://wa.me/5511949614608?text= + mensagem codificada:
+         "Olá! Vim pelo site da Essência Natural e gostaria de conhecer os
+         perfumes da marca NOME."
+         Só entram marcas confirmadas pelo cliente (ver docs/TODO-VERIFY.md). -->
+    <ul class="marcas-grid" role="list">
+      <li><a class="marca" href="https://wa.me/5511949614608?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20conhecer%20os%20perfumes%20da%20marca%20QAWAFI." target="_blank" rel="noopener" aria-label="Conhecer os perfumes da marca QAWAFI no WhatsApp"><span class="marca-nome">QAWAFI</span></a></li>
+      <li><a class="marca" href="https://wa.me/5511949614608?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20conhecer%20os%20perfumes%20da%20marca%20Paris%20Corner." target="_blank" rel="noopener" aria-label="Conhecer os perfumes da marca Paris Corner no WhatsApp"><span class="marca-nome">Paris Corner</span></a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="canais" aria-label="Varejo e atacado">
+  <div class="wrap">
     <div class="canais-grid">
       <article class="canal">
         <p class="eyebrow">Varejo</p>
         <h3>Encontre sua próxima fragrância.</h3>
-        <p>Para você, para presentear ou para experimentar na loja. Fale com a equipe e descubra o que está disponível.</p>
-        <a class="btn btn-primary" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20comprar%20um%20perfume." target="_blank" rel="noopener">Comprar pelo WhatsApp</a>
+        <p>Para você, para presentear ou para conhecer algo novo.</p>
+        <a class="btn btn-primary" href="https://wa.me/5511949614608?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20comprar%20um%20perfume." target="_blank" rel="noopener">Comprar pelo WhatsApp</a>
       </article>
       <article class="canal">
         <p class="eyebrow">Atacado</p>
-        <h3>Condições especiais para lojistas e revendedores.</h3>
-        <p>Quer revender perfumes árabes e importados? Converse com a nossa equipe sobre as condições de atacado.</p>
-        <a class="btn btn-ghost" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20atacado%20e%20revenda." target="_blank" rel="noopener">Consultar atacado</a>
+        <h3>Perfumes para quem também quer vender.</h3>
+        <p>Consulte condições para lojistas e revendedores.</p>
+        <a class="btn btn-ghost" href="https://wa.me/5511949614608?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20atacado%20e%20revenda." target="_blank" rel="noopener">Consultar atacado</a>
       </article>
     </div>
+    <p class="canais-fluxo">Escolha sua fragrância <i aria-hidden="true">→</i> fale com a equipe <i aria-hidden="true">→</i> retire na loja ou consulte envio.</p>
   </div>
 </section>
 
@@ -922,7 +957,6 @@
     <div class="equipe-head">
       <p class="eyebrow">Nossa equipe</p>
       <h2>Quem faz a Essência acontecer.</h2>
-      <p>A Essência Natural é feita por pessoas, não por catálogo. Estas são as caras que te recebem na loja da Galeria Pagé.</p>
     </div>
 
     <!-- Só o nome é publicado: cargo, sobrenome, função e história ainda
@@ -958,11 +992,7 @@
 
 <section id="social">
   <div class="wrap social-wrap">
-    <div class="sec-head" style="margin-bottom:0">
-      <p class="eyebrow">Redes sociais</p>
-      <h2>Acompanhe a Essência Natural.</h2>
-      <p>Lançamentos, novidades, bastidores e a rotina da loja.</p>
-    </div>
+    <p class="social-txt">Acompanhe novidades e bastidores.</p>
     <div class="social-links">
       <a class="social-link" href="https://www.instagram.com/essencianaturall__/" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.43.42.7.82.9 1.4.18.4.38 1 .43 2.2.06 1.3.07 1.7.07 4.9s0 3.6-.07 4.9c-.05 1.2-.25 1.8-.42 2.2-.22.6-.48 1-.9 1.4-.42.43-.82.7-1.4.9-.4.18-1 .38-2.2.43-1.3.06-1.7.07-4.9.07s-3.6 0-4.9-.07c-1.2-.05-1.8-.25-2.2-.42-.6-.22-1-.48-1.4-.9-.43-.42-.7-.82-.9-1.4-.18-.4-.38-1-.43-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.9c.05-1.2.25-1.8.42-2.2.22-.6.48-1 .9-1.4.42-.43.82-.7 1.4-.9.4-.18 1-.38 2.2-.43C8.4 2.2 8.8 2.2 12 2.2Zm0 1.98c-3.14 0-3.5.01-4.74.07-1.14.05-1.76.24-2.17.4-.55.21-.94.47-1.35.88-.4.4-.66.8-.88 1.35-.16.4-.35 1.03-.4 2.17-.06 1.24-.07 1.6-.07 4.74s.01 3.5.07 4.74c.05 1.14.24 1.76.4 2.17.21.55.47.94.88 1.35.4.4.8.66 1.35.88.4.16 1.03.35 2.17.4 1.24.06 1.6.07 4.74.07s3.5-.01 4.74-.07c1.14-.05 1.76-.24 2.17-.4.55-.21.94-.47 1.35-.88.4-.4.66-.8.88-1.35.16-.4.35-1.03.4-2.17.06-1.24.07-1.6.07-4.74s-.01-3.5-.07-4.74c-.05-1.14-.24-1.76-.4-2.17-.21-.55-.47-.94-.88-1.35-.4-.4-.8-.66-1.35-.88-.4-.16-1.03-.35-2.17-.4-1.24-.06-1.6-.07-4.74-.07Zm0 3.37a4.45 4.45 0 1 1 0 8.9 4.45 4.45 0 0 1 0-8.9Zm0 7.34a2.89 2.89 0 1 0 0-5.78 2.89 2.89 0 0 0 0 5.78Zm5.67-7.53a1.04 1.04 0 1 1-2.08 0 1.04 1.04 0 0 1 2.08 0Z"/></svg>
@@ -976,40 +1006,13 @@
   </div>
 </section>
 
-<section id="comprar">
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">Como comprar</p>
-      <h2>Três passos, sem complicação.</h2>
-    </div>
-    <div class="passos">
-      <article class="passo">
-        <p class="num">Passo 01</p>
-        <h3>Escolha no catálogo</h3>
-        <p>Navegue pelas fragrâncias aqui no site e guarde o nome da que te interessou.</p>
-      </article>
-      <article class="passo">
-        <p class="num">Passo 02</p>
-        <h3>Fale no WhatsApp</h3>
-        <p>Mande o nome do perfume. A nossa equipe confirma a disponibilidade e passa as condições.</p>
-      </article>
-      <article class="passo">
-        <p class="num">Passo 03</p>
-        <h3>Retire na loja ou receba em casa</h3>
-        <p>Você busca na Galeria Pagé ou consulta com a equipe o envio para a sua cidade.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
 <section id="envios">
   <div class="wrap envios-grid">
     <div class="envios-copy">
       <p class="eyebrow">Envios</p>
       <h2>Envios para todo o Brasil</h2>
-      <p class="envios-sub">Sua fragrância favorita, onde você estiver.</p>
-      <p class="txt">A Essência Natural realiza envios para todo o Brasil. Fale com nossa equipe pelo WhatsApp para consultar disponibilidade, frete e condições de envio.</p>
-      <a class="btn btn-dark" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20consultar%20envio%20para%20minha%20cidade." target="_blank" rel="noopener">Consultar envio pelo WhatsApp</a>
+      <p class="txt">Consulte disponibilidade, frete e condições com nossa equipe.</p>
+      <a class="btn btn-dark" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20consultar%20envio%20para%20minha%20cidade." target="_blank" rel="noopener">Consultar envio</a>
     </div>
     <div class="envios-art" aria-hidden="true">
       <svg viewBox="0 0 320 190" fill="none" role="presentation">
@@ -1037,7 +1040,7 @@
           Galeria Pagé — Sobreloja 215
           <span class="cidade">Centro — São Paulo, SP</span>
         </address>
-        <a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&amp;query=Rua%20Comendador%20Afonso%20Kherlakian%2C%2079%20%E2%80%94%20Galeria%20Pag%C3%A9%20%E2%80%94%20Sobreloja%20215%2C%20S%C3%A3o%20Paulo%2C%20SP" target="_blank" rel="noopener">Ver no mapa</a>
+        <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&amp;destination=Rua%20Comendador%20Afonso%20Kherlakian%2C%2079%2C%20Galeria%20Pag%C3%A9%2C%20S%C3%A3o%20Paulo%2C%20SP" target="_blank" rel="noopener">Como chegar</a>
       </div>
       <dl class="horarios">
         <div><dt>Segunda a sexta</dt><dd>8h às 17h</dd></div>
@@ -1069,7 +1072,7 @@
       </details>
       <details>
         <summary>Onde fica a loja?</summary>
-        <p class="resposta">Na Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé, Sobreloja 215, no centro de São Paulo. Abrimos de segunda a sexta das 8h às 17h, sábado das 8h às 16h e domingo das 8h às 12h30.</p>
+        <p class="resposta">Na Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé, Sobreloja 215, centro de São Paulo. Horários na seção <a href="#loja">Loja física</a>.</p>
       </details>
     </div>
   </div>
@@ -1080,7 +1083,6 @@
     <div class="cta-final">
       <p class="eyebrow">Sua essência <span class="ar" lang="ar" dir="rtl">العطور</span></p>
       <h2>Vamos encontrar o seu perfume.</h2>
-      <p>Mande uma mensagem para a nossa equipe. A gente responde pelo WhatsApp e ajuda você a escolher.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
         <a class="btn btn-ghost" href="#catalogo">Ver o catálogo</a>
@@ -1101,6 +1103,7 @@
         <h3>Navegue</h3>
         <ul>
           <li><a href="#catalogo">Catálogo</a></li>
+          <li><a href="#marcas">Marcas</a></li>
           <li><a href="#canais">Varejo e atacado</a></li>
           <li><a href="#equipe">Nossa equipe</a></li>
           <li><a href="#envios">Envios</a></li>
@@ -1115,8 +1118,6 @@
           <li><a href="https://www.instagram.com/essencianaturall__/" target="_blank" rel="noopener">Instagram @essencianaturall__</a></li>
           <li><a href="https://www.tiktok.com/@essencia.natura" target="_blank" rel="noopener">TikTok @essencia.natura</a></li>
         </ul>
-        <h3 style="margin-top:22px">Horários</h3>
-        <p class="hora">Seg a sex, 8h às 17h<br>Sábado, 8h às 16h<br>Domingo, 8h às 12h30</p>
       </div>
     </footer>
 

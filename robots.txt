@@ -1,0 +1,6 @@
+# Essência Natural
+# Sem linha "Sitemap:" por enquanto: o sitemap precisa de URL absoluta e o
+# domínio final ainda não foi definido. Depois de definido, acrescente:
+#   Sitemap: https://DOMINIO/sitemap.xml
+User-agent: *
+Allow: /

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- RASCUNHO: troque DOMINIO-FINAL-PENDENTE pelo domínio real quando existir
+     (e referencie este arquivo em robots.txt). Não é um endereço válido. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://DOMINIO-FINAL-PENDENTE/</loc>
+  </url>
+</urlset>
