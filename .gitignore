@@ -1,0 +1,13 @@
+# Banco de dados da V2 — gerado localmente por server/seed.js +
+# server/migrate-images.js, nunca deve ser commitado (evita conflitos e
+# não expõe hash de senha nem sessões). Ver README-V2.md para recriar.
+data/essencia.sqlite
+data/essencia.sqlite-wal
+data/essencia.sqlite-shm
+data/essencia.sqlite-journal
+
+# Segredos locais (nunca existe .env commitado neste projeto)
+.env
+.env.*
+
+node_modules/
