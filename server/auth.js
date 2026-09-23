@@ -64,6 +64,24 @@ function parseCookies(header) {
   return out;
 }
 
+/** Detecta HTTPS mesmo atrás de um proxy reverso que termina o TLS antes do
+ *  Node (Railway, Render, Fly, um Nginx na frente, etc.) — nesses casos
+ *  `req.socket.encrypted` é sempre falso, porque a conexão que chega ao
+ *  processo Node já é HTTP puro; sem isso o cookie de sessão nunca ganha
+ *  `Secure` em produção atrás de proxy, mesmo o site sendo https:// de
+ *  verdade pro visitante. Só confia no cabeçalho `X-Forwarded-Proto` quando
+ *  `TRUST_PROXY=1` está explicitamente configurado (nunca por padrão — esse
+ *  cabeçalho é fácil de forjar se não houver de fato um proxy confiável na
+ *  frente barrando isso). Ver README-V2.md, checklist de publicação. */
+function isSecureRequest(req) {
+  if (req.socket && req.socket.encrypted) return true;
+  if (process.env.TRUST_PROXY === '1') {
+    const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+    if (proto === 'https') return true;
+  }
+  return false;
+}
+
 function setSessionCookie(res, sessionId, { secure } = {}) {
   const maxAge = SESSION_DAYS * 86400;
   const parts = [
@@ -97,6 +115,7 @@ module.exports = {
   createSession,
   destroySession,
   parseCookies,
+  isSecureRequest,
   setSessionCookie,
   clearSessionCookie,
   attachUser,

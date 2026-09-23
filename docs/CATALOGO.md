@@ -11,14 +11,18 @@ OliSek) sem tocar em mais nada.
 
 ### Tabelas (ver `server/db.js` para o schema completo)
 - `products` — nome, marca, categoria, notas, preço, `compare_price`
-  (preço "de", para promoção), estoque, `active` (publicado ou não),
-  `featured` (destaque), e os três campos de vínculo com a OliSek:
-  `olisek_id`, `olisek_name`, `olisek_match_confidence`.
+  (preço "de", para promoção), estoque, `stock_source` (`'olisek_import'` /
+  `'manual'` / `'none'` — de onde veio o número, ver seção "Estoque"
+  abaixo), `active` (publicado ou não), `featured` (destaque), e os três
+  campos de vínculo com a OliSek: `olisek_id`, `olisek_name`,
+  `olisek_link_status` (`'confirmed'` / `'probable'` / `'needs_review'` /
+  `'unlinked'` — ver `docs/OLISEK-INTEGRATION.md`).
 - `product_images` — um produto tem N fotos; uma é `is_main`.
 - `price_history` — toda vez que `catalogService.setPrice()` roda, uma
   linha nova é gravada aqui (preço antigo, novo, quem mudou, quando).
   Nunca é apagada, nem quando o produto é despublicado.
-- `brands` — nome + slug; hoje sem logo (a loja ainda vai enviar).
+- `brands` — nome + slug + `logo_path` (17 das 18 marcas confirmadas já
+  têm logo, ver seção "Grade de marcas" abaixo).
 - `users` / `sessions` — login do admin (ver `docs/ADMIN.md`).
 
 ### `olisekId` / `olisekName` — nunca renomeados
@@ -41,24 +45,71 @@ vínculo está certo, sem depender de decorar qual produto é qual.
   e para o schema.org `Product` (`offers` só ganha o campo `price` quando
   ele existe de verdade).
 
-## Estoque: nunca o número exato pro cliente
+## Estoque: nunca o número exato pro cliente, nunca um número inventado
 
-`catalogService.stockStatus(stock)` traduz o número em um dos três
-selos, e é isso — nunca o número — que qualquer tela pública mostra:
+**Atualizado no segundo fechamento da V2 (23/09/2026):** o selo de
+estoque e a regra de "esse produto aparece no catálogo ou não" viraram
+duas perguntas separadas — antes eram uma coisa só (o antigo estado
+"Consulte disponibilidade"), agora cada uma tem sua própria função em
+`catalogService.js`.
 
-| Estoque         | Selo               |
-|-----------------|---------------------|
-| 0                | Indisponível         |
-| 1 a 10           | Últimas unidades      |
-| 11 ou mais       | Em estoque            |
+### 1. Qual selo mostrar (`computeAvailability(row)`)
+
+Olha só o número de `stock` — três estados, nunca o número exato:
+
+| `stock`      | Selo                     |
+|--------------|--------------------------|
+| `0`          | Indisponível no momento  |
+| `1` a `10`   | Últimas unidades         |
+| `11` ou mais | Em estoque               |
 
 O limite "10" é o único número mágico do sistema e está isolado em uma
 constante (`STOCK_THRESHOLD.ultimas`, topo de `catalogService.js`) —
 mudar o limite é editar um número, não reescrever lógica.
 
+### 2. Se o produto aparece no catálogo público (`isPubliclyVisible(row)`)
+
+```js
+function isPubliclyVisible(row) {
+  return row.stock > 0 || row.sales >= 10;
+}
+```
+
+Um produto só aparece na listagem pública, na página de produto e nos
+relacionados se **tiver estoque OU já tiver vendido 10 ou mais vezes**
+(`sales`, coluna nova — vendas acumuladas, dado real vindo da OliSek,
+nunca estimado, começa em `0` até existir uma importação real de vendas;
+ver `docs/OLISEK-INTEGRATION.md`). Isso dá três casos possíveis:
+
+- **Estoque > 0** → aparece normalmente, com o selo da tabela acima.
+- **Estoque zerado e `sales >= 10`** → continua aparecendo (é um produto
+  que já provou ter saída), mas com o selo "Indisponível no momento", sem
+  botão de comprar — só o link de consultar no WhatsApp.
+- **Estoque zerado e `sales < 10`** → some do catálogo público (a página
+  de produto devolve 404, como se estivesse despublicado) mas **nunca é
+  apagado do banco** — continua existindo normalmente em `/admin`, com o
+  filtro "Ocultos do catálogo" pra achar esses produtos rápido.
+
+`isStockReliable(row)` (vínculo OliSek confirmado/provável ou número
+digitado à mão) continua existindo no código, mas hoje é só informação
+pro admin — não decide mais nada da vitrine pública.
+
+## Foto ausente: sempre um placeholder oficial, nunca uma imagem quebrada
+
+Quando um produto não tem nenhuma foto em `product_images`, a API pública e
+a página de produto devolvem `image: PLACEHOLDER_IMAGE`
+(`/assets/images/placeholder-produto.svg` — um SVG desenhado à mão, na
+identidade visual do site, sem nenhum byte de foto real embutido nele e
+sem base64) em vez de um campo vazio. O front-end nunca precisa checar "e
+se não tiver foto?" — sempre há uma imagem pra mostrar. `hasImage: false`
+no JSON da API indica que é o placeholder, caso algum consumidor precise
+distinguir os dois casos.
+
 ## API pública (`server/routes/publicApi.js`)
 
-- `GET /api/products` — lista os produtos publicados (`active=1`).
+- `GET /api/products` — lista os produtos publicados: `active=1` **e**
+  `isPubliclyVisible(row)` (ver seção "Estoque" acima — estoque zerado
+  com poucas vendas não entra nessa lista, mesmo estando `active`).
   Filtros por querystring: `q` (busca por nome/marca), `brand` (slug da
   marca), `genero`, `categoria`, `disponibilidade`
   (`em_estoque`/`ultimas`/`indisponivel`), `destaque=true`. O front-end
@@ -75,19 +126,57 @@ mudar o limite é editar um número, não reescrever lógica.
 Renderizada no servidor (não é a mesma SPA do catálogo). Cada produto tem
 URL própria, com `<title>`, `og:description`, `og:image` e um JSON-LD
 `Product` — só preenchidos com o que existe de verdade (ver seção acima).
-Mostra galeria, notas (topo/coração/fundo, quando existem), selo de
-estoque, preço ou "Consulte", botão de adicionar à sacola (desabilitado
-se `indisponivel`) e produtos relacionados.
+Um produto que não passa em `isPubliclyVisible(row)` nem chega a ter
+página renderizada: a rota devolve 404, igual a um produto despublicado.
+Mostra galeria (sempre com pelo menos uma imagem — o placeholder oficial
+quando não há foto real, com `onerror` cobrindo o caso de o arquivo
+existir no banco mas não existir mais em disco), notas (topo/coração/
+fundo, quando existem), selo de disponibilidade (um dos 3 estados),
+preço ou "Consulte", botão de adicionar à sacola (desabilitado quando o
+estado é `indisponivel` — inclusive no caso "zerado mas com 10+ vendas",
+que aparece só pra consulta no WhatsApp, nunca pra compra direta) e
+produtos relacionados.
 
 ## Grade de marcas (`/#marcas`)
 
 Vem de `GET /api/brands` (`assets/js/marcas.js`) — nenhuma marca é escrita
-à mão no `index.html`. As marcas que aparecem são exatamente as que
-`server/seed.js` cadastrou porque a loja confirmou trabalhar com elas (17
-nomes, mais QAWAFI e Paris Corner que já apareciam no catálogo antigo:
-ver a lista completa em `server/seed.js`, constante `MARCAS_CONFIRMADAS`).
-Sem logo enviado, cada marca vira um cartão só com o nome, linkando pro
-WhatsApp com uma mensagem pronta perguntando pelos perfumes daquela marca.
+à mão no `index.html`. As marcas cadastradas em `brands` são todas as que
+`server/seed.js` criou porque a loja confirmou trabalhar com elas
+(constante `MARCAS_CONFIRMADAS`), mais as marcas dos dois scripts de
+import de logo (ver abaixo) — mas nem toda marca cadastrada aparece
+necessariamente na grade pública; ver a regra de visibilidade logo a
+seguir.
+
+**Logos — atualizado 23/09/2026:** o cliente enviou `Marcas.zip` (22
+arquivos) e depois o logo da Armaf em separado.
+`server/import-marcas-logos-2026-09-23.js` e
+`server/import-marcas-novas-2026-09-23.js` (mantidos no repositório como
+registro do que foi importado) padronizaram os nomes pelo slug da marca,
+salvaram em `assets/brands/` e ligaram o logo de cada marca via
+`brands.logo_path`. Hoje as 24 marcas cadastradas têm logo — nenhuma
+ficou sem.
+
+Sem logo cadastrado — ou se o arquivo do logo quebrar/for removido depois
+— o cartão cai pro nome em texto (`cartaoTexto()` em `assets/js/marcas.js`,
+com um listener de `error` na `<img>` cobrindo o segundo caso), nunca um
+ícone de imagem quebrada. Nenhum logo é inventado: uma marca sem arquivo
+confirmado pela loja fica como texto até o logo real chegar.
+
+**Regra de visibilidade — `brands.requires_product`:** as 18 marcas
+confirmadas no primeiro fechamento da V2 sempre aparecem em `/#marcas`,
+mesmo sem nenhum produto do catálogo de 34 itens vinculado a elas ainda
+— é assim desde a V1 e o cliente confirmou manter esse comportamento. Já
+as marcas confirmadas depois só porque apareciam num relatório de
+estoque da loja, sem nenhum produto do site ligado a elas — hoje: Amouage,
+Anfar, Ferassa, Maison Asrar, Volaré e Ard Al Zaafaran — nascem com
+`requires_product = 1` e só entram na grade pública quando tiverem pelo
+menos um produto **ativo e publicamente visível** (`isPubliclyVisible`,
+ver seção "Estoque" acima) vinculado. Até lá, elas existem normalmente em
+`brands` (com logo já ligado) mas `getBrandsPublic()`
+(`server/services/catalogService.js`) as filtra do resultado — não
+aparecem em `GET /api/brands` nem em `/#marcas`. Nenhum produto foi
+criado só pra fazer essas marcas aparecerem — regra explícita do
+cliente.
 
 ## Curadoria: por que nem todo item da OliSek vira produto do site
 

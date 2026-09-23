@@ -7,8 +7,14 @@
     if (!grid) return;
     var WA = '5511949614608';
     function linkWhatsApp(nome){
-      var msg = 'Olá! Vim pelo site da Essência Natural e gostaria de conhecer os perfumes da marca ' + nome + '.';
+      var msg = 'Olá! Vim pelo site da Essência Natural e gostaria de conhecer os produtos da marca ' + nome + '.';
       return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
+    }
+    function cartaoTexto(a, nome){
+      var span = document.createElement('span');
+      span.className = 'marca-nome';
+      span.textContent = nome;
+      a.appendChild(span);
     }
     fetch('/api/brands').then(function(r){ return r.json(); }).then(function(data){
       var marcas = (data.brands || []).slice().sort(function(a, b){ return a.name.localeCompare(b.name, 'pt-BR'); });
@@ -23,13 +29,15 @@
         a.setAttribute('aria-label', 'Conhecer os perfumes da marca ' + m.name + ' no WhatsApp');
         if (m.logoPath) {
           var img = document.createElement('img');
-          img.src = m.logoPath; img.alt = m.name; img.width = 400; img.height = 400; img.loading = 'lazy'; img.decoding = 'async';
+          img.alt = m.name; img.width = 400; img.height = 400; img.loading = 'lazy'; img.decoding = 'async';
+          // Logo quebrado (arquivo ausente/apagado) nunca fica com o ícone
+          // de imagem quebrada — cai pro nome em texto, igual a uma marca
+          // sem logo nenhum.
+          img.addEventListener('error', function(){ img.remove(); cartaoTexto(a, m.name); });
+          img.src = m.logoPath;
           a.appendChild(img);
         } else {
-          var span = document.createElement('span');
-          span.className = 'marca-nome';
-          span.textContent = m.name;
-          a.appendChild(span);
+          cartaoTexto(a, m.name);
         }
         li.appendChild(a);
         grid.appendChild(li);

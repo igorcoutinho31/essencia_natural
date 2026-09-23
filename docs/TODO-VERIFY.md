@@ -68,12 +68,24 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 - Resolvido na V1.1: `assets/frames/` (240 frames) removida do repositório.
   Só existe no histórico do git.
 
-## Marcas (`#marcas`) — PENDENTE
-- A seção existe, mas só tem as duas marcas citadas no catálogo (QAWAFI e
-  Paris Corner), como texto — não há logo/foto delas. Lista completa de
-  marcas e logos/fotos: aguardando o cliente (pasta `assets/brands/`).
+## Marcas (`#marcas`)
+- **Atualizado 23/09/2026 (segundo fechamento da V2, resolvido):** o
+  cliente enviou `Marcas.zip` com 22 logos, confirmou por mensagem as 6
+  marcas que estavam pendentes (apareciam em relatório de estoque da loja
+  mas não em `MARCAS_CONFIRMADAS`: Amouage, Anfar, Ferassa, Maison Asrar,
+  Volaré e Ard Al Zaafaran) e mandou também o logo da Armaf, que tinha
+  ficado de fora do zip original. Hoje as 24 marcas cadastradas têm logo
+  em `assets/brands/` (ver `server/import-marcas-logos-2026-09-23.js`,
+  `server/import-marcas-novas-2026-09-23.js` e `docs/CATALOGO.md`, seção
+  "Grade de marcas"). Nenhuma pendência de logo restante.
+- As 6 marcas novas foram cadastradas (`brands`) mas **não aparecem** em
+  `/#marcas` ainda, por regra explícita do cliente: só entram na grade
+  pública quando tiverem pelo menos um produto ativo/publicamente visível
+  do catálogo vinculado (`brands.requires_product = 1` — ver
+  `docs/CATALOGO.md`). Nenhum produto foi criado só pra fazer isso
+  acontecer — se algum produto existente for realmente de uma dessas
+  marcas, é só trocar o `brand_id` dele em `/admin`.
 - Não publicar marca sem confirmação. Não criar logo fictício.
-- Como adicionar: ver o comentário no `#marcas` do `index.html`.
 
 ## Domínio final / SEO — PENDENTE
 - Sem domínio definido: `canonical`, `og:url`, URLs absolutas de `og:image`
@@ -135,11 +147,39 @@ ler e aprovar:
   `statusLoja` de `assets/js/vida.js`.
 
 ## V2 — pendências específicas do catálogo/admin (23/09/2026)
-- Confirmar se o vínculo "SABAH" → OliSek 803958 está mesmo certo (está
-  marcado como "provável", não "confirmado" — ver
-  `docs/OLISEK-INTEGRATION.md`).
-- Lista completa de vínculos OliSek para os outros ~29 produtos — o
-  cliente disse que vai enviar.
+- **Atualizado 23/09/2026 (tarde):** o cliente enviou o relatório de
+  movimentação da OliSek e 27 dos 34 produtos já foram vinculados (ver
+  `docs/OLISEK-INTEGRATION.md`). Do que falta:
+  - 3 vínculos marcados **"provável"** (SABAH, KHAMARAH QAWAH, MUSAMAM
+    BLACK) e 2 marcados **"precisa revisão"** (Fakhar Black, Fakhar Gold —
+    reclassificados em 24/09/2026, correspondência mais fraca que um
+    "provável" comum) — pedir para a loja confirmar olhando a OliSek
+    diretamente (motivo de cada um em `docs/OLISEK-INTEGRATION.md`).
+    **Atualizado no segundo fechamento da V2 (23/09/2026):** o vínculo não
+    muda mais o que aparece pro cliente — hoje o site mostra o estoque
+    numérico normalmente pros 5 (SABAH, KHAMARAH QAWAH e Fakhar Black em
+    estoque; MUSAMAM BLACK em "Últimas unidades"; só o Fakhar Gold está
+    oculto do catálogo, por estar zerado e sem vendas registradas ainda) —
+    a etiqueta "provável"/"precisa revisão" só aparece no admin, como aviso
+    pra equipe confirmar o vínculo antes de confiar 100% no número.
+  - 7 produtos **sem nenhum vínculo** por falta de nome parecido no
+    relatório: VICTORIOSO, MANDARINSKY, JAMRAH x BURKAN, MAAHIR BLACK x
+    WHITE, "perfume FATIMA com sabonetes em formato de Rosas", SO CANDID
+    e Aurora. Precisa perguntar pro cliente o nome exato desses itens na
+    OliSek (ou confirmar se ainda são vendidos). Como o estoque desses
+    ficou no padrão `0` sem vínculo confirmado, os 7 estão hoje **ocultos
+    do catálogo público** (continuam em `/admin`, aba "Ocultos do
+    catálogo") até a loja confirmar um vínculo com estoque real.
+- PREÇO — continua pendente. Nenhum dos dois arquivos que a loja mandou
+  (relatório de movimentação e lista mestre de estoque) tem coluna de
+  preço — só ID, nome, categoria e quantidade. Sem isso, o site continua
+  mostrando "Consulte" para os 34 produtos.
+- Lista de clientes (`clientes_2026-09-23_00-13-19.xls`, exportada da
+  OliSek, 199 pessoas com nome/telefone) foi recebida, mas **não foi
+  usada** — o site/admin de hoje não tem nenhuma tela de clientes ou CRM
+  (isso seria uma funcionalidade nova, fora do escopo já aprovado da V2).
+  Perguntar pro cliente o que ele quer fazer com esse arquivo antes de
+  criar qualquer coisa com dado de cliente (nome/telefone é dado pessoal).
 - Logos das marcas: nenhum foi enviado ainda (ver `docs/CATALOGO.md`,
   seção "Grade de marcas").
 - Otimização automática de imagem no upload do admin: não existe hoje

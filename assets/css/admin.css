@@ -68,6 +68,13 @@ tr:hover td{background:#fbf9f2}
 .badge-warn{background:#f7ead2; color:var(--a-warn)}
 .badge-danger{background:#f6e2e2; color:var(--a-danger)}
 .badge-muted{background:#eee; color:#777}
+.a-tabs{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px}
+.a-tab{
+  display:inline-flex; padding:7px 13px; border-radius:999px; border:1px solid var(--a-line);
+  background:#fff; color:var(--a-ink-dim); text-decoration:none; font-size:12.5px; white-space:nowrap;
+}
+.a-tab:hover{border-color:var(--a-gold)}
+.a-tab--ativo{background:var(--a-dark); border-color:var(--a-dark); color:#f4ecd8}
 .a-msg{padding:10px 14px; border-radius:6px; margin-bottom:16px; font-size:13.5px}
 .a-msg-ok{background:#e4f3e9; color:var(--a-ok)}
 .a-msg-err{background:#f6e2e2; color:var(--a-danger)}

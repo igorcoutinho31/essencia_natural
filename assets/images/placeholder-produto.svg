@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 933" role="img" aria-label="Foto do produto ainda não disponível">
+  <title>Essência Natural — imagem em breve</title>
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#141009"/>
+      <stop offset="100%" stop-color="#0b0906"/>
+    </linearGradient>
+    <pattern id="girih" width="72" height="72" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="rgba(201,164,76,.14)" stroke-width="1">
+        <rect x="18" y="18" width="36" height="36"/>
+        <rect x="18" y="18" width="36" height="36" transform="rotate(45 36 36)"/>
+        <circle cx="36" cy="36" r="3.2"/>
+      </g>
+    </pattern>
+  </defs>
+
+  <rect width="700" height="933" fill="url(#bgGrad)"/>
+  <rect width="700" height="933" fill="url(#girih)"/>
+
+  <rect x="28" y="28" width="644" height="877" fill="none" stroke="rgba(201,164,76,.35)" stroke-width="1.5"/>
+  <rect x="40" y="40" width="620" height="853" fill="none" stroke="rgba(201,164,76,.18)" stroke-width="1"/>
+
+  <g transform="translate(350,420)">
+    <circle r="92" fill="none" stroke="rgba(201,164,76,.45)" stroke-width="1.5"/>
+    <circle r="80" fill="none" stroke="rgba(201,164,76,.25)" stroke-width="1"/>
+    <text x="0" y="28" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="72" font-weight="600" fill="#c9a44c" letter-spacing="2">EN</text>
+  </g>
+
+  <text x="350" y="560" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="22" fill="#e9dcc0" letter-spacing="3">ESSÊNCIA NATURAL</text>
+
+  <text x="350" y="605" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#a08f6f" letter-spacing="2">IMAGEM EM BREVE</text>
+</svg>
