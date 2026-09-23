@@ -13,17 +13,19 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 
 ## Equipe
 - **Atualizado 23/09/2026 (fechamento final):** formação atual, nesta
-  ordem: Bassam, Nicole, Larissa, Livia (ver `docs/TEAM.md`). A Tamires
+  ordem: Bassam, Nicolly, Larissa, Livia (ver `docs/TEAM.md`). A Tamires
   saiu e foi removida do site. Fotos novas dos quatro entregues pelo
   cliente na mesma data.
 - Grafia "Bassam" — RESOLVIDO: o cliente escreveu **Bassam** no pedido de
   fechamento final; site e docs usam essa grafia.
+- Grafia "Nicolly" — RESOLVIDO: o cliente corrigiu Nicole → **Nicolly**
+  em 23/09/2026; site e docs atualizados.
 - Cargos, sobrenomes, funções e histórias: NENHUM confirmado para nenhum
   dos quatro. Por isso o site publica só o primeiro nome. Não preencher
   sem confirmação.
 - Existem outros integrantes ainda não identificados corretamente (cargos,
   sobrenomes, função na loja) — não inventar nada até confirmação.
-- Há vídeo em que a Nicole apresenta a equipe de forma descontraída/cômica —
+- Há vídeo em que a Nicolly apresenta a equipe de forma descontraída/cômica —
   possível fonte de copy/tom para a seção de equipe, mas roteiro exato ainda
   não transcrito/confirmado.
 
