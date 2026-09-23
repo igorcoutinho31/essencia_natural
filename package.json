@@ -1,0 +1,14 @@
+{
+  "name": "essencia-natural",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Site da Essência Natural — catálogo, página de produto e painel /admin. Sem dependências: só módulos nativos do Node.",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "start": "node server/start.js",
+    "dev": "node server/app.js",
+    "reset-admin-password": "node server/reset-admin-password.js"
+  }
+}

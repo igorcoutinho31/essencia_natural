@@ -13,7 +13,9 @@ const catalogService = require('../services/catalogService');
 const olisekService = require('../services/olisekService');
 const { sendJSON, readJsonBody, decodeImageDataUrl, randomId } = require('../util');
 
-const UPLOADS_ROOT = path.join(__dirname, '..', '..', 'uploads', 'products');
+const { UPLOADS_DIR, uploadPathToDisk } = require('../paths');
+
+const UPLOADS_ROOT = path.join(UPLOADS_DIR, 'products');
 
 function isAdmin(req) { return req.user && req.user.role === 'admin'; }
 
@@ -206,8 +208,8 @@ function deleteImage(req, res, id, imageId) {
   if (!product) return sendJSON(res, 404, { error: 'not_found' });
   const filePath = catalogService.removeImage(productId, Number(imageId));
   if (!filePath) return sendJSON(res, 404, { error: 'image_not_found' });
-  const abs = path.join(__dirname, '..', '..', filePath.replace(/^\//, ''));
-  fs.unlink(abs, () => {}); // best-effort; não trava a resposta se o arquivo já não existir
+  const abs = uploadPathToDisk(filePath);
+  if (abs) fs.unlink(abs, () => {}); // best-effort; não trava a resposta se o arquivo já não existir
   sendJSON(res, 200, { ok: true });
 }
 

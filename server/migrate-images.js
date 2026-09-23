@@ -9,8 +9,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const db = require('./db');
 const catalogService = require('./services/catalogService');
-
-const ROOT = path.join(__dirname, '..');
+const { ROOT, UPLOADS_DIR } = require('./paths');
 
 function run() {
   const raw = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'catalog.json'), 'utf8'));
@@ -27,7 +26,7 @@ function run() {
     const origem = path.join(ROOT, rel);
     if (!fs.existsSync(origem)) { console.warn('  faltando no disco:', origem); continue; }
 
-    const destDir = path.join(ROOT, 'uploads', 'products', prod.slug);
+    const destDir = path.join(UPLOADS_DIR, 'products', prod.slug);
     fs.mkdirSync(destDir, { recursive: true });
     const destino = path.join(destDir, 'principal.webp');
     fs.copyFileSync(origem, destino);
