@@ -1,0 +1,41 @@
+/* Página individual de produto (/produto/:slug). Carregado depois de
+   site.css — reaproveita as mesmas variáveis de cor/tipografia, não
+   redefine identidade nenhuma. */
+.pd-page{padding:calc(var(--header-h) + 28px) 0 60px}
+.pd-page-inner{max-width:1120px;margin:0 auto;padding:0 24px}
+.pd-trilha{font-size:.8rem;color:var(--ink-faint);margin:0 0 22px}
+.pd-trilha a{color:var(--ink-faint)}
+.pd-trilha a:hover{color:var(--gold-2)}
+.pd-layout{display:grid;grid-template-columns:minmax(0,460px) 1fr;gap:48px;align-items:start}
+@media (max-width:860px){.pd-layout{grid-template-columns:1fr;gap:28px}}
+
+.pd-galeria{display:flex;flex-direction:column;gap:10px}
+.pd-galeria img{width:100%;aspect-ratio:4/5.2;object-fit:cover;border-radius:14px;background:var(--bg-3);border:1px solid var(--line)}
+.pd-galeria--vazia{aspect-ratio:4/5.2;border-radius:14px;background:var(--bg-3);border:1px solid var(--line)}
+
+.pd-info{display:flex;flex-direction:column;gap:14px;padding-top:4px}
+.pd-marca{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0}
+.pd-nome{font-family:'Cinzel',serif;font-size:clamp(1.5rem,3vw,2.1rem);color:var(--ink);margin:0;line-height:1.25}
+.pd-selo{display:inline-flex;align-self:flex-start;padding:4px 12px;border-radius:999px;font-size:.72rem;letter-spacing:.04em}
+.pd-selo--em_estoque{background:rgba(96,200,120,.14);color:#8fd6a4}
+.pd-selo--ultimas{background:rgba(201,164,76,.16);color:var(--gold-2)}
+.pd-selo--indisponivel{background:rgba(200,115,90,.16);color:#e0a789}
+.pd-preco{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold-2);margin:2px 0 0;font-variant-numeric:tabular-nums}
+.pd-preco--consulte{color:var(--ink-dim);font-family:inherit;font-size:1rem}
+.pd-preco-de{color:var(--ink-faint);text-decoration:line-through;font-size:1rem;margin-right:10px;font-weight:400}
+.pd-notas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:6px 0 0}
+.pd-notas dt{font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 4px}
+.pd-notas dd{margin:0;font-size:.88rem;color:var(--ink-dim)}
+.pd-desc{color:var(--ink-dim);line-height:1.7;font-size:.95rem;max-width:52ch}
+.pd-acoes{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.pd-add:disabled{opacity:.5;cursor:not-allowed}
+
+.pd-relacionados{margin-top:64px;padding-top:36px;border-top:1px solid var(--line)}
+.pd-relacionados h2{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--ink);margin:0 0 20px}
+.pd-related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
+.prod-related{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit}
+.prod-related img{width:100%;aspect-ratio:4/5.2;object-fit:cover;border-radius:10px;background:var(--bg-3);border:1px solid var(--line)}
+.prod-related-vazio{width:100%;aspect-ratio:4/5.2;border-radius:10px;background:var(--bg-3);border:1px solid var(--line)}
+.prod-related-marca{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.prod-related-nome{font-size:.85rem;color:var(--ink)}
+.prod-related:hover .prod-related-nome{color:var(--gold-2)}
