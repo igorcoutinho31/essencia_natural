@@ -30,3 +30,4 @@ uploads/products/*/*
 # máquina de quem enviou; o site usa as versões .webp otimizadas).
 *.bundle
 assets/team/*nova.png
+assets/team/*certa.png
