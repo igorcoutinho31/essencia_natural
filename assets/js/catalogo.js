@@ -171,7 +171,11 @@
       art.appendChild(media);
 
       var body = el('div','prod-body');
-      if (p.brand) body.appendChild(el('p','prod-marca', p.brand));
+      // Sempre reserva a linha da marca — sem marca confirmada ela fica
+      // vazia (nunca deduzida), mas o nome continua alinhado com os vizinhos.
+      var marca = el('p','prod-marca', p.brand || '\u00a0');
+      if (!p.brand) marca.setAttribute('aria-hidden','true');
+      body.appendChild(marca);
 
       var h3 = el('h3','prod-nome');
       var trig = el('button','prod-trigger', p.name);

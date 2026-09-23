@@ -12,14 +12,12 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé — Sobreloja 215
 
 ## Equipe
-- Nomes confirmados até agora: Nicole, Bassan, Tamires, Larissa.
-- Fotos oficiais dos quatro entregues em 19/09/2026 e publicadas na seção
-  "Nossa equipe" da Home. Associação nome→foto confirmada pelo cliente
-  (ver tabela em `docs/TEAM.md`).
-- GRAFIA "BASSAN" — PENDENTE: o cliente levantou a dúvida Bassam x Bassan
-  e optou por manter **Bassan**, que é a grafia registrada aqui e em
-  `docs/TEAM.md`. Confirmar com a própria pessoa antes de considerar
-  fechado; se for Bassam, trocar no site e nos dois docs.
+- **Atualizado 23/09/2026 (fechamento final):** formação atual, nesta
+  ordem: Bassam, Nicole, Larissa, Livia (ver `docs/TEAM.md`). A Tamires
+  saiu e foi removida do site. Fotos novas dos quatro entregues pelo
+  cliente na mesma data.
+- Grafia "Bassam" — RESOLVIDO: o cliente escreveu **Bassam** no pedido de
+  fechamento final; site e docs usam essa grafia.
 - Cargos, sobrenomes, funções e histórias: NENHUM confirmado para nenhum
   dos quatro. Por isso o site publica só o primeiro nome. Não preencher
   sem confirmação.

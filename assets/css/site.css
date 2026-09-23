@@ -316,6 +316,7 @@
   }
   .equipe-head{display:flex;flex-direction:column;gap:14px;margin-bottom:min(6vw,54px)}
   .equipe-head h2{font-size:clamp(1.6rem,3.4vw,2.4rem)}
+  .equipe-sub{color:var(--ink-dim);font-size:.95rem;max-width:56ch;line-height:1.7}
   /* auto-fit: novos integrantes entram sem mexer no layout — basta
      duplicar um <li class="pessoa"> no HTML. */
   .equipe-grid{
@@ -326,7 +327,7 @@
   }
   .pessoa{
     position:relative;overflow:hidden;
-    aspect-ratio:4/5;                 /* mesma proporção dos arquivos: não corta */
+    aspect-ratio:3/4;                 /* mesma proporção dos arquivos (900x1200): não corta */
     border-radius:14px;border:1px solid var(--line);
     background:var(--bg-3);
     transition:transform .4s ease,border-color .4s ease,box-shadow .4s ease;
@@ -614,7 +615,9 @@
   .marca-nome{font-family:'Cinzel',serif;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
     font-size:clamp(.82rem,1.4vw,.98rem);color:var(--ink-dim);text-align:center;transition:color .25s ease}
   .marca:hover .marca-nome,.marca:focus-visible .marca-nome{color:var(--gold-2)}
-  .marca img{max-width:72%;max-height:72%;width:auto;height:auto;object-fit:contain;opacity:.88;transition:opacity .25s ease}
+  /* altura fixa pra todos os logos (os arquivos vêm em proporções bem
+     diferentes — quadrados e horizontais); a largura acompanha até 78%. */
+  .marca img{height:clamp(54px,6.2vw,86px);width:auto;max-width:80%;object-fit:contain;border-radius:6px;opacity:.9;transition:opacity .25s ease}
   .marca:hover img{opacity:1}
   @media (max-width:560px){.marcas-grid li{width:calc(50% - 8px)}.marca{padding:12px}}
   @media (prefers-reduced-motion:reduce){.marca{transition:none}.marca:hover{transform:none}}
@@ -650,6 +653,7 @@
   .social-link:hover{border-color:var(--gold-dim);background:rgba(201,164,76,.08)}
   .social-link b{font-weight:500;color:var(--ink)}
   .social-link span{color:var(--ink-faint);font-size:.82rem}
+  @media (max-width:560px){.social-links{flex-direction:column;align-items:stretch;width:min(100%,290px)}.social-link{justify-content:flex-start}}
 
   /* ---------- ENVIOS (bloco claro, creme/areia) ---------- */
   #envios{
@@ -665,6 +669,7 @@
   /* referência discreta a envio: rota pontilhada com destino marcado */
   .envios-art{position:relative;display:flex;align-items:center;justify-content:center;min-height:210px}
   .envios-art svg{width:min(100%,330px);height:auto}
+  @media (max-width:820px){.envios-art{min-height:0;margin-top:-6px}.envios-art svg{width:min(62%,230px)}}
 
   /* ---------- LOJA FÍSICA ---------- */
   #loja{background:var(--bg-2)}
@@ -733,6 +738,9 @@
     display:flex;flex-wrap:wrap;gap:10px 20px;justify-content:space-between;
     color:var(--ink-faint);font-size:.76rem;
   }
+  /* link interno das vendedoras (/admin/login): mesmo tom da linha, sem destaque */
+  .foot .foot-equipe{color:var(--ink-faint);font-size:.76rem;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease}
+  .foot .foot-equipe:hover{color:var(--ink-dim);text-decoration-color:currentColor}
 
 
   /* ---------- SACOLA (carrinho que finaliza no WhatsApp) ---------- */
@@ -862,11 +870,15 @@
     background:var(--bg-3);
     transition:border-color .25s ease,transform .25s ease;
   }
-  .at-pessoa img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 20%;border-radius:8px;display:block;background:var(--bg-2)}
+  .at-pessoa img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 20%;border-radius:8px;display:block;background:var(--bg-2)}
   .at-nome{font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.03em;color:var(--ink);text-align:center;margin:0}
   .at-escolher{width:100%;padding:9px 10px;font-size:.72rem;letter-spacing:.05em}
   @media (hover:hover){ .at-pessoa:hover{border-color:var(--gold-dim);transform:translateY(-3px)} }
   .at-sem{width:100%}
+  /* são <button>: sem isso o navegador pinta o fundo cinza padrão de botão */
+  .at-escolher,.at-sem{background:transparent;cursor:pointer;font-family:'Cinzel',serif}
+  .at-escolher:hover,.at-sem:hover{background:rgba(201,164,76,.1)}
+  .at-pessoa:hover .at-escolher{border-color:var(--gold);color:var(--gold-2)}
   @media (max-width:560px){
     .at-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   }
