@@ -10,6 +10,13 @@ const { sendHTML, escapeHTML } = require('../util');
 
 const WHATSAPP = '5511949614608';
 const SITE_NAME = 'Essência Natural';
+const PLACEHOLDER_IMAGE = catalogService.PLACEHOLDER_IMAGE;
+// Nunca deixa imagem quebrada: se o arquivo real falhar ao carregar (path
+// errado, arquivo apagado do disco), troca pro placeholder oficial. Página
+// é renderizada no servidor, então o fallback vai inline no atributo
+// `onerror` — sem precisar de mais um <script>. `this.onerror=null` evita
+// loop infinito se o próprio placeholder também falhar.
+const IMG_FALLBACK_ATTR = `onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}'"`;
 
 function waLink(texto) {
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
@@ -18,19 +25,14 @@ function waLink(texto) {
 function stockBadgeClass(code) {
   if (code === 'em_estoque') return 'pd-selo--em_estoque';
   if (code === 'ultimas') return 'pd-selo--ultimas';
-  if (code === 'consulte') return 'pd-selo--consulte';
   return 'pd-selo--indisponivel';
 }
 
-/* 'consulte' (sem estoque confiável) não tem estoque OutOfStock nem InStock
-   de verdade — é desconhecido. Omitir `availability` é o que o schema.org
-   prevê pra esse caso; inventar OutOfStock ali violaria a regra 11 do
-   fechamento V2 ("nunca inventar... estoque" no SEO/schema). */
 function schemaAvailability(code) {
   if (code === 'em_estoque') return 'https://schema.org/InStock';
   if (code === 'ultimas') return 'https://schema.org/LimitedAvailability';
   if (code === 'indisponivel') return 'https://schema.org/OutOfStock';
-  return null;
+  return null; // defensivo — hoje todo código chega em um dos 3 acima
 }
 
 function podeComprar(product) { return product.stockStatus === 'em_estoque' || product.stockStatus === 'ultimas'; }
@@ -57,7 +59,7 @@ function relatedCard(p) {
   // real) — não existe mais o caso "relacionado sem nenhuma imagem".
   return `
     <a class="prod-related" href="/produto/${p.slug}">
-      <img src="${escapeHTML(p.image)}" alt="" loading="lazy" width="220" height="290">
+      <img src="${escapeHTML(p.image)}" alt="" loading="lazy" width="220" height="290" ${IMG_FALLBACK_ATTR}>
       ${p.brand ? `<span class="prod-related-marca">${escapeHTML(p.brand)}</span>` : ''}
       <span class="prod-related-nome">${escapeHTML(p.name)}</span>
     </a>`;
@@ -94,7 +96,7 @@ function render(req, res, product, related) {
   // foto real, ver catalogService.PLACEHOLDER_IMAGE) — a galeria nunca fica
   // vazia, então não existe mais o caso "sem nenhuma imagem" aqui.
   const images = product.images && product.images.length ? product.images : [product.image];
-  const galeria = `<div class="pd-galeria">${images.map((src, i) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(product.name)}" ${i === 0 ? '' : 'loading="lazy"'} width="480" height="620">`).join('')}</div>`;
+  const galeria = `<div class="pd-galeria">${images.map((src, i) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(product.name)}" ${i === 0 ? '' : 'loading="lazy"'} width="480" height="620" ${IMG_FALLBACK_ATTR}>`).join('')}</div>`;
 
   const body = `
 <header class="site-header">
@@ -136,12 +138,12 @@ function render(req, res, product, related) {
         <p class="pd-desc">${escapeHTML(descBase)}</p>
         <div class="pd-acoes">
           <button type="button" class="btn btn-primary pd-add" id="pd-add" ${podeComprar(product) ? '' : 'disabled'}>
-            ${podeComprar(product) ? 'Adicionar à sacola' : product.stockStatus === 'indisponivel' ? 'Indisponível no momento' : 'Consulte disponibilidade'}
+            ${podeComprar(product) ? 'Adicionar à sacola' : 'Indisponível no momento'}
           </button>
           <a class="btn btn-ghost" href="${waLink(
             product.price == null
-              ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do perfume ' + product.name + '.'
-              : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o perfume ' + product.name + '.'
+              ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + product.name + '.'
+              : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + product.name + '.'
           )}" target="_blank" rel="noopener">Consultar no WhatsApp</a>
         </div>
       </div>

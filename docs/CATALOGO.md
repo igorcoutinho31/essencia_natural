@@ -46,32 +46,52 @@ vínculo está certo, sem depender de decorar qual produto é qual.
 
 ## Estoque: nunca o número exato pro cliente, nunca um número inventado
 
-**Atualizado no fechamento da V2 (24/09/2026):** `catalogService.stockStatus`
-(hoje `computeAvailability(row)`, olhando a linha inteira do produto, não só
-o número de estoque) traduz isso em um dos **quatro** selos que qualquer
-tela pública mostra — nunca o número exato, e nunca um selo de estoque
-inventado quando não há um número em que confiar:
+**Atualizado no segundo fechamento da V2 (23/09/2026):** o selo de
+estoque e a regra de "esse produto aparece no catálogo ou não" viraram
+duas perguntas separadas — antes eram uma coisa só (o antigo estado
+"Consulte disponibilidade"), agora cada uma tem sua própria função em
+`catalogService.js`.
 
-| Situação                                              | Selo                     |
-|--------------------------------------------------------|--------------------------|
-| Sem estoque confiável (sem vínculo OliSek, ou vínculo `needs_review`/`unlinked`, e ninguém digitou um número à mão) | **Consulte disponibilidade** |
-| Estoque confiável e igual a 0                           | Indisponível no momento  |
-| Estoque confiável, 1 a 10                               | Últimas unidades         |
-| Estoque confiável, 11 ou mais                           | Em estoque               |
+### 1. Qual selo mostrar (`computeAvailability(row)`)
 
-Um estoque só é "confiável" (`isStockReliable(row)`) quando veio de um
-vínculo OliSek `confirmed`/`probable` (`stock_source='olisek_import'`) ou
-foi digitado à mão em `/admin` (`stock_source='manual'`) — o valor padrão
-`0` da coluna (`stock_source='none'`) nunca é, por si só, uma afirmação de
-que o produto acabou. Isso é o que garante a regra "produto zerado nunca
-some do catálogo, só vira 'Indisponível no momento' quando alguém de fato
-confirmou o zero" (ver `docs/OLISEK-INTEGRATION.md` e
-`server/olisek-link-status-2026-09-24.js` pra um exemplo real de dois
-produtos que passaram a mostrar "Consulte" depois de uma reclassificação).
+Olha só o número de `stock` — três estados, nunca o número exato:
+
+| `stock`      | Selo                     |
+|--------------|--------------------------|
+| `0`          | Indisponível no momento  |
+| `1` a `10`   | Últimas unidades         |
+| `11` ou mais | Em estoque               |
 
 O limite "10" é o único número mágico do sistema e está isolado em uma
 constante (`STOCK_THRESHOLD.ultimas`, topo de `catalogService.js`) —
 mudar o limite é editar um número, não reescrever lógica.
+
+### 2. Se o produto aparece no catálogo público (`isPubliclyVisible(row)`)
+
+```js
+function isPubliclyVisible(row) {
+  return row.stock > 0 || row.sales >= 10;
+}
+```
+
+Um produto só aparece na listagem pública, na página de produto e nos
+relacionados se **tiver estoque OU já tiver vendido 10 ou mais vezes**
+(`sales`, coluna nova — vendas acumuladas, dado real vindo da OliSek,
+nunca estimado, começa em `0` até existir uma importação real de vendas;
+ver `docs/OLISEK-INTEGRATION.md`). Isso dá três casos possíveis:
+
+- **Estoque > 0** → aparece normalmente, com o selo da tabela acima.
+- **Estoque zerado e `sales >= 10`** → continua aparecendo (é um produto
+  que já provou ter saída), mas com o selo "Indisponível no momento", sem
+  botão de comprar — só o link de consultar no WhatsApp.
+- **Estoque zerado e `sales < 10`** → some do catálogo público (a página
+  de produto devolve 404, como se estivesse despublicado) mas **nunca é
+  apagado do banco** — continua existindo normalmente em `/admin`, com o
+  filtro "Ocultos do catálogo" pra achar esses produtos rápido.
+
+`isStockReliable(row)` (vínculo OliSek confirmado/provável ou número
+digitado à mão) continua existindo no código, mas hoje é só informação
+pro admin — não decide mais nada da vitrine pública.
 
 ## Foto ausente: sempre um placeholder oficial, nunca uma imagem quebrada
 
@@ -86,10 +106,12 @@ distinguir os dois casos.
 
 ## API pública (`server/routes/publicApi.js`)
 
-- `GET /api/products` — lista os produtos publicados (`active=1`).
+- `GET /api/products` — lista os produtos publicados: `active=1` **e**
+  `isPubliclyVisible(row)` (ver seção "Estoque" acima — estoque zerado
+  com poucas vendas não entra nessa lista, mesmo estando `active`).
   Filtros por querystring: `q` (busca por nome/marca), `brand` (slug da
   marca), `genero`, `categoria`, `disponibilidade`
-  (`em_estoque`/`ultimas`/`indisponivel`/`consulte`), `destaque=true`. O front-end
+  (`em_estoque`/`ultimas`/`indisponivel`), `destaque=true`. O front-end
   hoje busca a lista inteira uma vez e filtra no navegador (mais rápido
   pra quem tá navegando); os filtros de querystring existem para quem
   quiser consumir a API diretamente.
@@ -103,12 +125,16 @@ distinguir os dois casos.
 Renderizada no servidor (não é a mesma SPA do catálogo). Cada produto tem
 URL própria, com `<title>`, `og:description`, `og:image` e um JSON-LD
 `Product` — só preenchidos com o que existe de verdade (ver seção acima).
+Um produto que não passa em `isPubliclyVisible(row)` nem chega a ter
+página renderizada: a rota devolve 404, igual a um produto despublicado.
 Mostra galeria (sempre com pelo menos uma imagem — o placeholder oficial
-quando não há foto real), notas (topo/coração/fundo, quando existem), selo
-de disponibilidade (um dos 4 estados), preço ou "Consulte", botão de
-adicionar à sacola (desabilitado quando o estado é `indisponivel` ou
-`consulte` — só compra direta quando o estoque é confiável) e produtos
-relacionados.
+quando não há foto real, com `onerror` cobrindo o caso de o arquivo
+existir no banco mas não existir mais em disco), notas (topo/coração/
+fundo, quando existem), selo de disponibilidade (um dos 3 estados),
+preço ou "Consulte", botão de adicionar à sacola (desabilitado quando o
+estado é `indisponivel` — inclusive no caso "zerado mas com 10+ vendas",
+que aparece só pra consulta no WhatsApp, nunca pra compra direta) e
+produtos relacionados.
 
 ## Grade de marcas (`/#marcas`)
 
@@ -117,8 +143,15 @@ Vem de `GET /api/brands` (`assets/js/marcas.js`) — nenhuma marca é escrita
 `server/seed.js` cadastrou porque a loja confirmou trabalhar com elas (17
 nomes, mais QAWAFI e Paris Corner que já apareciam no catálogo antigo:
 ver a lista completa em `server/seed.js`, constante `MARCAS_CONFIRMADAS`).
-Sem logo enviado, cada marca vira um cartão só com o nome, linkando pro
-WhatsApp com uma mensagem pronta perguntando pelos perfumes daquela marca.
+
+Logos ficam em `assets/brands/` (pasta criada no segundo fechamento da
+V2, nomes de arquivo padronizados pelo slug da marca) e são ligados a
+cada marca via `brands.logo_path`. Sem logo cadastrado — ou se o arquivo
+do logo quebrar/for removido depois — o cartão cai pro nome em texto
+(`cartaoTexto()` em `assets/js/marcas.js`, com um listener de `error` na
+`<img>` cobrindo o segundo caso), nunca um ícone de imagem quebrada.
+Nenhum logo é inventado: uma marca sem arquivo confirmado pela loja fica
+como texto até o logo real chegar.
 
 ## Curadoria: por que nem todo item da OliSek vira produto do site
 

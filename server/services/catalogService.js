@@ -10,29 +10,36 @@ const { slugify, uniqueSlug } = require('../util');
 const STOCK_THRESHOLD = { ultimas: 10 }; // configurável: stock<=10 = "Últimas unidades"
 const PLACEHOLDER_IMAGE = '/assets/images/placeholder-produto.svg';
 
-/** Um estoque só é "confiável" o bastante para virar selo público quando:
- *  - veio de uma importação da OliSek com vínculo 'confirmed' ou 'probable'
- *    (um vínculo 'needs_review' já teve o número importado, mas a
- *    correspondência do produto em si é ambígua — não é seguro afirmar nada
- *    publicamente até alguém confirmar, ver docs/OLISEK-INTEGRATION.md); ou
- *  - foi digitado à mão por uma vendedora/admin no `/admin` (stock_source
- *    'manual' — sempre um ato deliberado, nunca o valor padrão da coluna).
- *  Um produto que nunca recebeu nenhum dos dois sinais (`stock_source`
- *  'none') não tem estoque confiável, mesmo que a coluna `stock` valha 0 —
- *  esse zero é só o padrão do banco, não uma afirmação de ninguém. */
+/** Informativo pro admin (de onde veio o número de estoque) — não decide
+ *  mais o que aparece no site público (ver `isPubliclyVisible`/
+ *  `computeAvailability` abaixo, fechamento V2 25/09/2026): um vínculo
+ *  'confirmed'/'probable' com a OliSek, ou um número digitado à mão
+ *  (`stock_source` 'manual'), contam como um estoque com origem conhecida;
+ *  `stock_source` 'none' é só o valor padrão da coluna, nunca uma afirmação
+ *  de ninguém. */
 function isStockReliable(row) {
   if (row.stock_source === 'olisek_import') return row.olisek_link_status === 'confirmed' || row.olisek_link_status === 'probable';
   if (row.stock_source === 'manual') return true;
   return false;
 }
 
-/** Os 4 estados públicos de disponibilidade (fechamento da V2, 24/09/2026):
- *  em_estoque (>10), últimas unidades (1–10), indisponível no momento
- *  (0 com estoque confiável) e "consulte disponibilidade" (sem estoque
- *  confiável / sem vínculo OliSek) — nunca inventamos um dos três primeiros
- *  quando não temos um número em que confiar. */
+/** Regra de visibilidade do catálogo público (fechamento V2, 25/09/2026):
+ *  um produto só aparece pro cliente se tiver estoque de verdade OU já
+ *  tiver vendido o bastante pra continuar valendo mostrar (mesmo zerado).
+ *  `sales` nunca é estimado — vem só de importação real da OliSek (hoje
+ *  sempre 0 até essa importação existir, ver docs/OLISEK-INTEGRATION.md).
+ *  Nunca exclui o produto do banco/admin — só decide o que o cliente vê. */
+function isPubliclyVisible(row) {
+  return row.stock > 0 || row.sales >= 10;
+}
+
+/** Os 3 estados públicos de disponibilidade (fechamento V2, 25/09/2026) —
+ *  só o número de estoque decide o selo; a regra de "aparece ou não"
+ *  (`isPubliclyVisible`) já filtrou antes quem chega até aqui, então um
+ *  produto zerado só recebe o selo "Indisponível no momento" quando já
+ *  passou por essa porta (ou seja, tem 10+ vendas). Nunca inventa um
+ *  número: mostra exatamente o que o `stock` real diz. */
 function computeAvailability(row) {
-  if (!isStockReliable(row)) return { code: 'consulte', label: 'Consulte disponibilidade' };
   if (row.stock <= 0) return { code: 'indisponivel', label: 'Indisponível no momento' };
   if (row.stock <= STOCK_THRESHOLD.ultimas) return { code: 'ultimas', label: 'Últimas unidades' };
   return { code: 'em_estoque', label: 'Em estoque' };
@@ -90,8 +97,10 @@ function rowToAdmin(row) {
     stock: row.stock,
     stockSource: row.stock_source,
     stockReliable: isStockReliable(row),
+    sales: row.sales,
     stockStatus: status.code,
     stockLabel: status.label,
+    publiclyVisible: isPubliclyVisible(row),
     active: !!row.active,
     featured: !!row.featured,
     hasImage: !!row.main_image,
@@ -117,7 +126,7 @@ function getImages(productId) {
 // ---------- catálogo público ----------
 
 function getPublicProducts({ q, brand, gender, category, availability, featured, sort } = {}) {
-  let rows = db.prepare(`${BASE_SELECT} WHERE p.active = 1`).all();
+  let rows = db.prepare(`${BASE_SELECT} WHERE p.active = 1`).all().filter(isPubliclyVisible);
   const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
   if (q) {
@@ -144,7 +153,10 @@ function getPublicProducts({ q, brand, gender, category, availability, featured,
 
 function getPublicProductBySlug(slug) {
   const row = db.prepare(`${BASE_SELECT} WHERE p.slug = ? AND p.active = 1`).get(slug);
-  if (!row) return null;
+  // Um produto oculto do catálogo (estoque 0 e menos de 10 vendas) não tem
+  // página pública própria — a regra de visibilidade vale pra ele inteiro,
+  // não só pra listagem (mas continua existindo no banco e no /admin).
+  if (!row || !isPubliclyVisible(row)) return null;
   const pub = rowToPublic(row);
   pub.images = getImages(row.id).map((i) => i.path);
   return pub;
@@ -153,7 +165,7 @@ function getPublicProductBySlug(slug) {
 function getRelated(slug, limit = 4) {
   const row = db.prepare('SELECT * FROM products WHERE slug = ?').get(slug);
   if (!row) return [];
-  let rows = db.prepare(`${BASE_SELECT} WHERE p.active = 1 AND p.id != ?`).all(row.id);
+  let rows = db.prepare(`${BASE_SELECT} WHERE p.active = 1 AND p.id != ?`).all(row.id).filter(isPubliclyVisible);
   const sameBrand = rows.filter((r) => row.brand_id && r.brand_id === row.brand_id);
   const sameCat = rows.filter((r) => r.category === row.category && !(row.brand_id && r.brand_id === row.brand_id));
   const pick = [...sameBrand, ...sameCat, ...rows].slice(0, limit);
@@ -176,11 +188,13 @@ function getBrandsPublic() {
  *  lista quanto contar cada balde sem duas fontes de verdade diferentes. */
 const ADMIN_FILTERS = {
   todos: () => true,
+  em_estoque: (r) => r.stock > 0,
+  vendidos: (r) => r.sales > 0,
+  indisponiveis: (r) => r.stock <= 0 && isPubliclyVisible(r), // zerado mas com 10+ vendas: visível como "Indisponível no momento"
+  oculto_catalogo: (r) => r.active === 1 && !isPubliclyVisible(r), // zerado e com menos de 10 vendas: some do site, mas não do admin
   sem_preco: (r) => r.price == null,
   sem_imagem: (r) => !r.main_image,
   sem_vinculo: (r) => r.olisek_link_status === 'unlinked',
-  indisponiveis: (r) => computeAvailability(r).code === 'indisponivel',
-  em_estoque: (r) => { const c = computeAvailability(r).code; return c === 'em_estoque' || c === 'ultimas'; },
   precisa_revisao: (r) => r.olisek_link_status === 'probable' || r.olisek_link_status === 'needs_review',
 };
 
@@ -293,19 +307,23 @@ function updateProductFull(id, data) {
  *  `linkStatus`: nunca inferimos "confirmado" sozinhos. Trocar só o status
  *  (sem mexer no id/nome/estoque) é o caminho normal para resolver um
  *  'probable'/'needs_review' depois que alguém confirma manualmente. */
-function setOlisekLink(id, { olisekId, olisekName, linkStatus, stock }) {
+function setOlisekLink(id, { olisekId, olisekName, linkStatus, stock, sales }) {
   const current = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
   if (!current) return null;
   if (!VALID_LINK_STATUS.includes(linkStatus)) throw Object.assign(new Error('invalid_link_status'), { status: 400 });
   const finalOlisekId = linkStatus === 'unlinked' ? null : (olisekId ?? current.olisek_id);
   const finalOlisekName = linkStatus === 'unlinked' ? null : (olisekName ?? current.olisek_name);
   const finalStock = stock != null ? Math.max(0, parseInt(stock, 10) || 0) : current.stock;
+  // `sales` só muda quando alguém passa um valor de verdade (import real da
+  // OliSek) — nunca inventado, nunca zerado de volta só por trocar o status
+  // do vínculo.
+  const finalSales = sales != null ? Math.max(0, parseInt(sales, 10) || 0) : current.sales;
   const stockSource = linkStatus === 'confirmed' || linkStatus === 'probable' ? 'olisek_import'
     : (linkStatus === 'unlinked' && current.stock_source === 'olisek_import' ? 'none' : current.stock_source);
   db.prepare(`
-    UPDATE products SET olisek_id=?, olisek_name=?, olisek_link_status=?, stock=?, stock_source=?, updated_at=datetime('now')
+    UPDATE products SET olisek_id=?, olisek_name=?, olisek_link_status=?, stock=?, sales=?, stock_source=?, updated_at=datetime('now')
     WHERE id=?
-  `).run(finalOlisekId, finalOlisekName, linkStatus, finalStock, stockSource, id);
+  `).run(finalOlisekId, finalOlisekName, linkStatus, finalStock, finalSales, stockSource, id);
   return getAdminProductById(id);
 }
 
@@ -395,6 +413,7 @@ function listBrandsAdmin() {
 module.exports = {
   stockStatus: computeAvailability,
   isStockReliable,
+  isPubliclyVisible,
   PLACEHOLDER_IMAGE,
   VALID_LINK_STATUS,
   getPublicProducts, getPublicProductBySlug, getRelated, getBrandsPublic,

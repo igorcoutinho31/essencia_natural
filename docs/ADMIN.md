@@ -54,13 +54,19 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
 - `/admin/trocar-senha` — obrigatória no primeiro acesso; disponível a
   qualquer momento depois disso.
 - `/admin/produtos` — lista com busca (nome, marca ou ID da OliSek) e uma
-  barra de abas com contador (`Todos`, `Sem preço (28)`, `Sem imagem`,
-  `Sem vínculo OliSek`, `Indisponíveis`, `Em estoque`, `Precisa revisão` —
-  regra 8 do fechamento V2), mostrando de cada produto: o vínculo com a
-  OliSek (`confirmado` / `provável` / `precisa revisão` / `sem vínculo` —
-  ver `docs/OLISEK-INTEGRATION.md`), se tem foto, preço, selo de
-  disponibilidade (agora com 4 estados — ver `docs/CATALOGO.md`), se está
-  publicado e se é destaque.
+  barra de abas com contador, na ordem definida no segundo fechamento da
+  V2: `Todos`, `Em estoque`, `Vendidos`, `Indisponíveis`, `Ocultos do
+  catálogo`, `Sem preço`, `Sem imagem`, `Sem vínculo OliSek`, `Precisa
+  revisão` (ver `ADMIN_FILTERS` em `server/services/catalogService.js`),
+  mostrando de cada produto: o vínculo com a OliSek (`confirmado` /
+  `provável` / `precisa revisão` / `sem vínculo` — ver
+  `docs/OLISEK-INTEGRATION.md`, hoje só informativo pro admin, não muda
+  mais o que aparece pro cliente), se tem foto, selo de disponibilidade
+  (3 estados baseados só no estoque — ver `docs/CATALOGO.md`) com o total
+  de vendas acumuladas embaixo quando existir, se está publicado (e,
+  quando publicado mas fora do catálogo — estoque zerado com menos de 10
+  vendas —, o selo "Oculto do catálogo" em vez de "Publicado"), preço e se
+  é destaque.
 - `/admin/produtos/novo` — só admin/gerente.
 - `/admin/produtos/:id` — a tela de edição de um produto: cadastro
   completo (só admin), vínculo OliSek (leitura pra todo mundo; formulário

@@ -56,20 +56,30 @@ do que foi importado e quando):
   | Fakhar Black | 804018 | LATTAFA FAKHAR PRETO EDP M 100ML | 57 | **precisa revisão** |
   | Fakhar Gold | 804020 | LATTAFA FAKHAR GOLD EDP U 100ML SELO NOVO | 0 | **precisa revisão** |
 
-  ⚠️ **Atualização 24/09/2026 (fechamento da V2):** o campo interno que guarda
-  essa confiança deixou de ser `olisek_match_confidence` (`'confirmado'` /
-  `'provavel'`) e virou `olisek_link_status`, com 4 valores:
-  `confirmed` / `probable` / `needs_review` / `unlinked`. Nessa migração,
-  **Fakhar Black** e **Fakhar Gold** foram reclassificados de "provável" para
-  **"precisa revisão"** (`needs_review`) — ver
-  `server/olisek-link-status-2026-09-24.js`. A diferença importa para o site
-  público: um vínculo `confirmed`/`probable` ainda deixa o estoque virar selo
-  normal (Em estoque/Últimas unidades/Indisponível); um `needs_review` não —
-  o produto mostra "Consulte disponibilidade" até alguém confirmar, porque a
-  correspondência desses dois é mais fraca que um "provável" comum:
+  ⚠️ **Atualização 24/09/2026 (primeiro fechamento da V2):** o campo interno
+  que guarda essa confiança deixou de ser `olisek_match_confidence`
+  (`'confirmado'` / `'provavel'`) e virou `olisek_link_status`, com 4
+  valores: `confirmed` / `probable` / `needs_review` / `unlinked`. Nessa
+  migração, **Fakhar Black** e **Fakhar Gold** foram reclassificados de
+  "provável" para **"precisa revisão"** (`needs_review`) — ver
+  `server/olisek-link-status-2026-09-24.js`.
 
-  ⚠️ **Os itens marcados "provável" ou "precisa revisão" precisam de
-  confirmação humana antes de confiar 100% no estoque:**
+  ⚠️ **Atualização 23/09/2026 (segundo fechamento da V2— regra mudou):**
+  no primeiro fechamento, um vínculo `needs_review`/`unlinked` fazia o selo
+  público virar "Consulte disponibilidade" em vez do estoque. Essa regra
+  **não existe mais**: o selo público hoje olha só o número de `stock` (ver
+  `docs/CATALOGO.md`, seção "Estoque"), e `olisek_link_status` virou
+  informação **só de admin** — ajuda o time a saber em quais produtos
+  confiar menos antes de confirmar o vínculo, mas não muda mais o que o
+  cliente vê. Na prática isso significa que **Fakhar Black** (estoque 57,
+  `needs_review`) hoje mostra "Em estoque" normalmente, e **Fakhar Gold**
+  (estoque 0, `needs_review`) mostra "Indisponível no momento" — e, como
+  ainda não vendeu 10 vezes (`sales=0`), fica oculto do catálogo público
+  até a loja confirmar o vínculo/estoque ou até acumular vendas reais.
+
+  ⚠️ **Os itens marcados "provável" ou "precisa revisão" continuam
+  precisando de confirmação humana antes de confiar 100% no estoque
+  mostrado, mesmo que ele já apareça publicamente:**
   - **SABAH**: nome do site mais curto que o da OliSek (já registrado desde
     a primeira importação).
   - **KHAMARAH QAWAH**: o relatório só tem "LATTAFA KHAMRAH QAHWA **SELO
@@ -80,20 +90,18 @@ do que foi importado e quando):
     a mais não deixa 100% certo que é o mesmo item do site.
   - **Fakhar Black** (`needs_review`): vinculado por tradução ("Preto" =
     "Black"), ao produto "LATTAFA FAKHAR **PRETO** EDP M 100ML" — não é o
-    mesmo texto, então vale confirmar com a loja se é essa a peça certa. Por
-    ser uma correspondência mais fraca que um "provável" comum, o site
-    público mostra "Consulte disponibilidade" em vez do estoque até alguém
-    confirmar.
+    mesmo texto, então vale confirmar com a loja se é essa a peça certa.
   - **Fakhar Gold** (`needs_review`): o relatório tem DOIS registros
     parecidos — "SELO ANTIGO" (ID 804583, estoque 0) e "SELO NOVO" (ID
     804020, estoque 0) — vinculamos ao "SELO NOVO" por ser a versão mais
     provável de estar em produção hoje, mas a loja precisa confirmar qual
-    dos dois é o produto do site (ou se são dois produtos diferentes). Mesma
-    razão do Fakhar Black: fica em "Consulte disponibilidade" até confirmar.
+    dos dois é o produto do site (ou se são dois produtos diferentes).
 
   Depois de confirmado, é só trocar o `olisek_link_status` para
   `'confirmed'` — pelo `/admin` (tela de produto → "Vínculo OliSek", campo
-  "Status do vínculo", só admin/gerente) ou direto no banco.
+  "Status do vínculo", só admin/gerente) ou direto no banco. Isso não muda
+  o que aparece pro cliente (o estoque já estava valendo), só limpa o
+  filtro "Precisa revisão" do admin.
 
 - **7 produtos continuam sem vínculo** — não encontramos, no relatório
   enviado, nenhum item com nome parecido o bastante para linkar com
@@ -110,10 +118,15 @@ do que foi importado e quando):
   | Aurora | Já sinalizado em `docs/TODO-VERIFY.md` como possivelmente não sendo um produto avulso; a OliSek tem várias linhas "Aurora Scents ..." mas nenhuma chamada só "Aurora". |
 
   Esses 7 ficam com `olisek_link_status = 'unlinked'` e, por não terem
-  nenhum estoque confiável (nem OliSek, nem número digitado à mão), o site
-  público mostra "Consulte disponibilidade" — nunca um selo de estoque
-  inventado, e nunca somem do catálogo (ver regras 4 a 6 do fechamento da
-  V2) — até a loja confirmar o nome certo ou decidir remover o item.
+  nenhum estoque confiável (nem OliSek, nem número digitado à mão), o
+  campo `stock` fica no padrão `0`. Pela regra de visibilidade atual
+  (`stock > 0 || sales >= 10` — ver `docs/CATALOGO.md`, seção "Estoque"),
+  como nenhum deles vendeu 10+ vezes ainda (`sales=0`, sem dado real de
+  vendas), **os 7 ficam ocultos do catálogo público** (a página do produto
+  devolve 404) até que a loja confirme o vínculo com um estoque real acima
+  de 0, digite um número à mão em `/admin`, ou eles acumulem vendas reais
+  suficientes. **Nenhum dos 7 é apagado do banco** — continuam existindo
+  normalmente em `/admin`, no filtro "Ocultos do catálogo".
 
 - `server/services/olisekService.js` já tem uma função `parseReport(texto)`
   que lê um relatório colado (exportado/copiado manualmente da OliSek, em

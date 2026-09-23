@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS products (
   compare_price REAL,
   stock INTEGER NOT NULL DEFAULT 0,
   stock_source TEXT NOT NULL DEFAULT 'none',     -- 'olisek_import' | 'manual' | 'none' (sem nenhum sinal real)
+  sales INTEGER NOT NULL DEFAULT 0,              -- vendas acumuladas (dado real da OliSek; nunca inventado — ver docs/OLISEK-INTEGRATION.md)
   active INTEGER NOT NULL DEFAULT 1,
   featured INTEGER NOT NULL DEFAULT 0,
   legacy_instagram_url TEXT,
@@ -138,16 +139,27 @@ CREATE INDEX IF NOT EXISTS idx_price_history_product ON price_history(product_id
 
 // `stock_source` ganha um terceiro valor, 'none': estoque 0 que nunca foi
 // afirmado por ninguém (nem OliSek, nem uma vendedora digitando à mão) —
-// diferente de 'manual' (alguém realmente digitou aquele número). Sem essa
-// distinção não dá para saber quando mostrar "Consulte disponibilidade" em
-// vez de confiar num zero que é só o valor padrão da coluna. Migração única
-// (marcada em `settings`) para não reclassificar, no futuro, um zero que uma
-// vendedora tenha digitado de propósito.
+// diferente de 'manual' (alguém realmente digitou aquele número). Migração
+// única (marcada em `settings`) para não reclassificar, no futuro, um zero
+// que uma vendedora tenha digitado de propósito.
 {
   const done = db.prepare("SELECT 1 FROM settings WHERE key = 'migration_stock_source_none'").get();
   if (!done) {
     db.exec("UPDATE products SET stock_source = 'none' WHERE olisek_id IS NULL AND stock_source = 'manual' AND stock = 0");
     db.prepare("INSERT INTO settings (key, value) VALUES ('migration_stock_source_none', datetime('now'))").run();
+  }
+}
+
+// Fechamento V2 (24/09/2026, segunda rodada): coluna `sales` (vendas
+// acumuladas) — usada pela regra de visibilidade do catálogo público
+// (mostrar produto com estoque=0 só se já vendeu 10 ou mais, nunca some do
+// banco/admin). Sempre 0 por padrão: só é preenchida por uma importação
+// real da OliSek (nunca digitada à mão nem estimada) — ver
+// docs/OLISEK-INTEGRATION.md.
+{
+  const productCols2 = db.prepare('PRAGMA table_info(products)').all().map((c) => c.name);
+  if (!productCols2.includes('sales')) {
+    db.exec('ALTER TABLE products ADD COLUMN sales INTEGER NOT NULL DEFAULT 0');
   }
 }
 

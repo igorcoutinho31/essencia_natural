@@ -142,14 +142,22 @@ ler e aprovar:
     BLACK) e 2 marcados **"precisa revisão"** (Fakhar Black, Fakhar Gold —
     reclassificados em 24/09/2026, correspondência mais fraca que um
     "provável" comum) — pedir para a loja confirmar olhando a OliSek
-    diretamente (motivo de cada um em `docs/OLISEK-INTEGRATION.md`). Até lá,
-    esses 5 mostram "Consulte disponibilidade" no site em vez de um selo de
-    estoque.
+    diretamente (motivo de cada um em `docs/OLISEK-INTEGRATION.md`).
+    **Atualizado no segundo fechamento da V2 (23/09/2026):** o vínculo não
+    muda mais o que aparece pro cliente — hoje o site mostra o estoque
+    numérico normalmente pros 5 (SABAH, KHAMARAH QAWAH e Fakhar Black em
+    estoque; MUSAMAM BLACK em "Últimas unidades"; só o Fakhar Gold está
+    oculto do catálogo, por estar zerado e sem vendas registradas ainda) —
+    a etiqueta "provável"/"precisa revisão" só aparece no admin, como aviso
+    pra equipe confirmar o vínculo antes de confiar 100% no número.
   - 7 produtos **sem nenhum vínculo** por falta de nome parecido no
     relatório: VICTORIOSO, MANDARINSKY, JAMRAH x BURKAN, MAAHIR BLACK x
     WHITE, "perfume FATIMA com sabonetes em formato de Rosas", SO CANDID
     e Aurora. Precisa perguntar pro cliente o nome exato desses itens na
-    OliSek (ou confirmar se ainda são vendidos).
+    OliSek (ou confirmar se ainda são vendidos). Como o estoque desses
+    ficou no padrão `0` sem vínculo confirmado, os 7 estão hoje **ocultos
+    do catálogo público** (continuam em `/admin`, aba "Ocultos do
+    catálogo") até a loja confirmar um vínculo com estoque real.
 - PREÇO — continua pendente. Nenhum dos dois arquivos que a loja mandou
   (relatório de movimentação e lista mestre de estoque) tem coluna de
   preço — só ID, nome, categoria e quantidade. Sem isso, o site continua

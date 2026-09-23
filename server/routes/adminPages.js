@@ -110,11 +110,8 @@ function changePasswordPage(req, res, user) {
 }
 
 function stockBadge(p) {
-  // 'consulte' (sem estoque confiável) não é a mesma coisa que "indisponível"
-  // (zerado confirmado) — usa um tom neutro, não o vermelho de "acabou".
   const cls = p.stockStatus === 'em_estoque' ? 'badge-ok'
     : p.stockStatus === 'ultimas' ? 'badge-warn'
-    : p.stockStatus === 'consulte' ? 'badge-muted'
     : 'badge-danger';
   return `<span class="badge ${cls}">${escapeHTML(p.stockLabel)}</span>`;
 }
@@ -130,15 +127,17 @@ function olisekBadge(p) {
   return `<span class="badge ${info.cls}" title="${p.olisekId ? 'ID OliSek ' + p.olisekId : 'sem ID OliSek'}">${p.olisekId ? 'OliSek' : 'Sem vínculo'}</span>`;
 }
 
-// Ordem e rótulos das abas de filtro do fechamento V2 (regra 8) — a chave
+// Ordem e rótulos das abas de filtro (fechamento V2, 25/09/2026) — a chave
 // bate exatamente com as chaves de ADMIN_FILTERS em catalogService.js.
 const FILTER_TABS = [
   ['todos', 'Todos'],
+  ['em_estoque', 'Em estoque'],
+  ['vendidos', 'Vendidos'],
+  ['indisponiveis', 'Indisponíveis'],
+  ['oculto_catalogo', 'Ocultos do catálogo'],
   ['sem_preco', 'Sem preço'],
   ['sem_imagem', 'Sem imagem'],
   ['sem_vinculo', 'Sem vínculo OliSek'],
-  ['indisponiveis', 'Indisponíveis'],
-  ['em_estoque', 'Em estoque'],
   ['precisa_revisao', 'Precisa revisão'],
 ];
 
@@ -152,8 +151,8 @@ function productsListPage(req, res, user, { q, filter }) {
       <td>${escapeHTML(p.name)}<div class="a-help">${escapeHTML(p.brand || '—')}</div></td>
       <td>${p.hasImage ? '' : '<span class="badge badge-warn">sem foto</span>'}</td>
       <td>${p.price != null ? 'R$ ' + Number(p.price).toFixed(2).replace('.', ',') : '<span class="a-help">Consulte</span>'}</td>
-      <td>${stockBadge(p)}</td>
-      <td>${p.active ? '<span class="badge badge-ok">Publicado</span>' : '<span class="badge badge-muted">Oculto</span>'}</td>
+      <td>${stockBadge(p)}${p.sales > 0 ? `<div class="a-help">${p.sales} venda${p.sales === 1 ? '' : 's'}</div>` : ''}</td>
+      <td>${!p.active ? '<span class="badge badge-muted">Despublicado</span>' : p.publiclyVisible ? '<span class="badge badge-ok">Publicado</span>' : '<span class="badge badge-warn">Oculto do catálogo</span>'}</td>
       <td>${p.featured ? '★' : ''}</td>
       <td><a class="btn btn-ghost btn-sm" href="/admin/produtos/${p.id}">Editar</a></td>
     </tr>`).join('');
@@ -240,6 +239,7 @@ function productFormPage(req, res, user, product, { brands }) {
         </p>
         <p class="a-help">Estoque de origem: ${p.stockSource === 'olisek_import' ? 'importado da OliSek' : p.stockSource === 'manual' ? 'digitado manualmente' : 'nenhum (nunca confirmado)'}.</p>
       ` : '<p class="a-help">Ainda sem vínculo com a OliSek — estoque só é considerado confiável depois de um vínculo confirmado ou de um número digitado manualmente (ver docs/OLISEK-INTEGRATION.md).</p>'}
+      <p class="a-help">Vendas acumuladas (OliSek): <b>${p.sales}</b> — só muda com uma importação real da OliSek, nunca é digitado à mão aqui (ver docs/OLISEK-INTEGRATION.md).</p>
       ${isAdmin ? `
       <div class="a-grid3" style="margin-top:10px">
         <div class="a-field"><label>ID OliSek</label><input type="number" id="f-olisek-id" value="${p.olisekId ?? ''}" placeholder="deixe em branco para desvincular"></div>
@@ -289,7 +289,10 @@ function productFormPage(req, res, user, product, { brands }) {
         <div class="a-field" style="max-width:140px"><label>Estoque (unidades)</label><input type="number" min="0" id="f-stock" value="${p.stock}"></div>
         <label style="margin-top:20px"><input type="checkbox" id="f-active" ${p.active ? 'checked' : ''} style="width:auto"> Publicado no site</label>
       </div>
-      <p class="a-help">O cliente nunca vê esse número — só o selo (Em estoque / Últimas unidades / Indisponível / Consulte disponibilidade). Selo atual: ${stockBadge(p)}</p>
+      <p class="a-help">O cliente nunca vê esse número — só o selo (Em estoque / Últimas unidades / Indisponível no momento). Selo atual: ${stockBadge(p)}</p>
+      <p class="a-help">${p.publiclyVisible
+        ? 'Este produto aparece no catálogo público agora.'
+        : `<b>Este produto está oculto do catálogo público</b> — estoque zerado e ${p.sales} venda${p.sales === 1 ? '' : 's'} registrada${p.sales === 1 ? '' : 's'} (é preciso estoque &gt; 0 ou 10+ vendas pra aparecer). Continua aqui no admin normalmente.`}</p>
       <button class="btn btn-ghost btn-sm" id="f-salvar-estoque" type="button">Salvar estoque e disponibilidade</button>
       <button class="btn btn-danger btn-sm" id="f-despublicar" type="button" style="margin-left:8px">Despublicar produto</button>
     </div>`;
