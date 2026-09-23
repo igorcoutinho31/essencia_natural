@@ -53,11 +53,23 @@ do que foi importado e quando):
   | SABAH | 803958 | AL WATANIAH SABAH AL WARD EDP 100ML | 558 | **provável** |
   | KHAMARAH QAWAH | 804660 | LATTAFA KHAMRAH QAHWA SELO ANTIGO EDP | 23 | **provável** |
   | MUSAMAM BLACK | 804549 | LATTAFA MUSAMAM BLACK INTENSE EDP | 1 | **provável** |
-  | Fakhar Black | 804018 | LATTAFA FAKHAR PRETO EDP M 100ML | 57 | **provável** |
-  | Fakhar Gold | 804020 | LATTAFA FAKHAR GOLD EDP U 100ML SELO NOVO | 0 | **provável** |
+  | Fakhar Black | 804018 | LATTAFA FAKHAR PRETO EDP M 100ML | 57 | **precisa revisão** |
+  | Fakhar Gold | 804020 | LATTAFA FAKHAR GOLD EDP U 100ML SELO NOVO | 0 | **precisa revisão** |
 
-  ⚠️ **Os 5 itens marcados "provável" precisam de confirmação humana antes
-  de confiar 100% no estoque:**
+  ⚠️ **Atualização 24/09/2026 (fechamento da V2):** o campo interno que guarda
+  essa confiança deixou de ser `olisek_match_confidence` (`'confirmado'` /
+  `'provavel'`) e virou `olisek_link_status`, com 4 valores:
+  `confirmed` / `probable` / `needs_review` / `unlinked`. Nessa migração,
+  **Fakhar Black** e **Fakhar Gold** foram reclassificados de "provável" para
+  **"precisa revisão"** (`needs_review`) — ver
+  `server/olisek-link-status-2026-09-24.js`. A diferença importa para o site
+  público: um vínculo `confirmed`/`probable` ainda deixa o estoque virar selo
+  normal (Em estoque/Últimas unidades/Indisponível); um `needs_review` não —
+  o produto mostra "Consulte disponibilidade" até alguém confirmar, porque a
+  correspondência desses dois é mais fraca que um "provável" comum:
+
+  ⚠️ **Os itens marcados "provável" ou "precisa revisão" precisam de
+  confirmação humana antes de confiar 100% no estoque:**
   - **SABAH**: nome do site mais curto que o da OliSek (já registrado desde
     a primeira importação).
   - **KHAMARAH QAWAH**: o relatório só tem "LATTAFA KHAMRAH QAHWA **SELO
@@ -66,18 +78,22 @@ do que foi importado e quando):
   - **MUSAMAM BLACK**: o relatório só tem "LATTAFA MUSAMAM BLACK **INTENSE**
     EDP" (existe também um "MUSAMAM WHITE" separado) — a palavra "Intense"
     a mais não deixa 100% certo que é o mesmo item do site.
-  - **Fakhar Black**: vinculado por tradução ("Preto" = "Black"), ao produto
-    "LATTAFA FAKHAR **PRETO** EDP M 100ML" — não é o mesmo texto, então vale
-    confirmar com a loja se é essa a peça certa.
-  - **Fakhar Gold**: o relatório tem DOIS registros parecidos — "SELO
-    ANTIGO" (ID 804583, estoque 0) e "SELO NOVO" (ID 804020, estoque 0) —
-    vinculamos ao "SELO NOVO" por ser a versão mais provável de estar em
-    produção hoje, mas a loja precisa confirmar qual dos dois é o produto
-    do site (ou se são dois produtos diferentes).
+  - **Fakhar Black** (`needs_review`): vinculado por tradução ("Preto" =
+    "Black"), ao produto "LATTAFA FAKHAR **PRETO** EDP M 100ML" — não é o
+    mesmo texto, então vale confirmar com a loja se é essa a peça certa. Por
+    ser uma correspondência mais fraca que um "provável" comum, o site
+    público mostra "Consulte disponibilidade" em vez do estoque até alguém
+    confirmar.
+  - **Fakhar Gold** (`needs_review`): o relatório tem DOIS registros
+    parecidos — "SELO ANTIGO" (ID 804583, estoque 0) e "SELO NOVO" (ID
+    804020, estoque 0) — vinculamos ao "SELO NOVO" por ser a versão mais
+    provável de estar em produção hoje, mas a loja precisa confirmar qual
+    dos dois é o produto do site (ou se são dois produtos diferentes). Mesma
+    razão do Fakhar Black: fica em "Consulte disponibilidade" até confirmar.
 
-  Depois de confirmado, é só trocar `olisek_match_confidence` para
-  `'confirmado'` (via `/admin`, quando a tela de confirmação existir, ou
-  direto no banco).
+  Depois de confirmado, é só trocar o `olisek_link_status` para
+  `'confirmed'` — pelo `/admin` (tela de produto → "Vínculo OliSek", campo
+  "Status do vínculo", só admin/gerente) ou direto no banco.
 
 - **7 produtos continuam sem vínculo** — não encontramos, no relatório
   enviado, nenhum item com nome parecido o bastante para linkar com
@@ -93,8 +109,11 @@ do que foi importado e quando):
   | SO CANDID | A OliSek tem 3 variações diferentes de "SO CANDID" (body splash, body cream e um EDP "pour homme") e não dá pra saber qual delas é a do site — a "Body Cream SO CANDID" já foi vinculada separadamente por ter nome inequívoco. |
   | Aurora | Já sinalizado em `docs/TODO-VERIFY.md` como possivelmente não sendo um produto avulso; a OliSek tem várias linhas "Aurora Scents ..." mas nenhuma chamada só "Aurora". |
 
-  Esses 7 continuam com estoque `0` (Indisponível) até a loja confirmar o
-  nome certo ou decidir remover o item do catálogo.
+  Esses 7 ficam com `olisek_link_status = 'unlinked'` e, por não terem
+  nenhum estoque confiável (nem OliSek, nem número digitado à mão), o site
+  público mostra "Consulte disponibilidade" — nunca um selo de estoque
+  inventado, e nunca somem do catálogo (ver regras 4 a 6 do fechamento da
+  V2) — até a loja confirmar o nome certo ou decidir remover o item.
 
 - `server/services/olisekService.js` já tem uma função `parseReport(texto)`
   que lê um relatório colado (exportado/copiado manualmente da OliSek, em

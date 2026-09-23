@@ -8,15 +8,38 @@ const db = require('../db');
 const { slugify, uniqueSlug } = require('../util');
 
 const STOCK_THRESHOLD = { ultimas: 10 }; // configurável: stock<=10 = "Últimas unidades"
+const PLACEHOLDER_IMAGE = '/assets/images/placeholder-produto.svg';
 
-function stockStatus(stock) {
-  if (stock <= 0) return { code: 'indisponivel', label: 'Indisponível' };
-  if (stock <= STOCK_THRESHOLD.ultimas) return { code: 'ultimas', label: 'Últimas unidades' };
+/** Um estoque só é "confiável" o bastante para virar selo público quando:
+ *  - veio de uma importação da OliSek com vínculo 'confirmed' ou 'probable'
+ *    (um vínculo 'needs_review' já teve o número importado, mas a
+ *    correspondência do produto em si é ambígua — não é seguro afirmar nada
+ *    publicamente até alguém confirmar, ver docs/OLISEK-INTEGRATION.md); ou
+ *  - foi digitado à mão por uma vendedora/admin no `/admin` (stock_source
+ *    'manual' — sempre um ato deliberado, nunca o valor padrão da coluna).
+ *  Um produto que nunca recebeu nenhum dos dois sinais (`stock_source`
+ *  'none') não tem estoque confiável, mesmo que a coluna `stock` valha 0 —
+ *  esse zero é só o padrão do banco, não uma afirmação de ninguém. */
+function isStockReliable(row) {
+  if (row.stock_source === 'olisek_import') return row.olisek_link_status === 'confirmed' || row.olisek_link_status === 'probable';
+  if (row.stock_source === 'manual') return true;
+  return false;
+}
+
+/** Os 4 estados públicos de disponibilidade (fechamento da V2, 24/09/2026):
+ *  em_estoque (>10), últimas unidades (1–10), indisponível no momento
+ *  (0 com estoque confiável) e "consulte disponibilidade" (sem estoque
+ *  confiável / sem vínculo OliSek) — nunca inventamos um dos três primeiros
+ *  quando não temos um número em que confiar. */
+function computeAvailability(row) {
+  if (!isStockReliable(row)) return { code: 'consulte', label: 'Consulte disponibilidade' };
+  if (row.stock <= 0) return { code: 'indisponivel', label: 'Indisponível no momento' };
+  if (row.stock <= STOCK_THRESHOLD.ultimas) return { code: 'ultimas', label: 'Últimas unidades' };
   return { code: 'em_estoque', label: 'Em estoque' };
 }
 
 function rowToPublic(row) {
-  const status = stockStatus(row.stock);
+  const status = computeAvailability(row);
   return {
     id: row.slug,
     slug: row.slug,
@@ -39,18 +62,20 @@ function rowToPublic(row) {
     stockLabel: status.label,
     active: !!row.active,
     featured: !!row.featured,
-    image: row.main_image || null,
+    image: row.main_image || PLACEHOLDER_IMAGE,
+    hasImage: !!row.main_image,
     images: [],
   };
 }
 
 function rowToAdmin(row) {
+  const status = computeAvailability(row);
   return {
     id: row.id,
     slug: row.slug,
     olisekId: row.olisek_id,
     olisekName: row.olisek_name,
-    olisekMatchConfidence: row.olisek_match_confidence,
+    olisekLinkStatus: row.olisek_link_status,
     name: row.name,
     brandId: row.brand_id,
     brand: row.brand_name || null,
@@ -64,9 +89,13 @@ function rowToAdmin(row) {
     comparePrice: row.compare_price,
     stock: row.stock,
     stockSource: row.stock_source,
-    stockLabel: stockStatus(row.stock).label,
+    stockReliable: isStockReliable(row),
+    stockStatus: status.code,
+    stockLabel: status.label,
     active: !!row.active,
     featured: !!row.featured,
+    hasImage: !!row.main_image,
+    image: row.main_image || PLACEHOLDER_IMAGE,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -100,7 +129,7 @@ function getPublicProducts({ q, brand, gender, category, availability, featured,
   if (category) rows = rows.filter((r) => r.category === category);
   if (featured === 'true') rows = rows.filter((r) => r.featured);
   if (availability) {
-    rows = rows.filter((r) => stockStatus(r.stock).code === availability);
+    rows = rows.filter((r) => computeAvailability(r).code === availability);
   }
 
   if (sort === 'price_asc') rows = rows.filter((r) => r.price != null).sort((a, b) => a.price - b.price)
@@ -142,13 +171,34 @@ function getBrandsPublic() {
 
 // ---------- admin ----------
 
-function getAdminProducts({ q } = {}) {
+/** Tela "produtos incompletos" (regra 8 do fechamento da V2): cada filtro é
+ *  um predicado sobre a linha crua do banco, para poder tanto filtrar a
+ *  lista quanto contar cada balde sem duas fontes de verdade diferentes. */
+const ADMIN_FILTERS = {
+  todos: () => true,
+  sem_preco: (r) => r.price == null,
+  sem_imagem: (r) => !r.main_image,
+  sem_vinculo: (r) => r.olisek_link_status === 'unlinked',
+  indisponiveis: (r) => computeAvailability(r).code === 'indisponivel',
+  em_estoque: (r) => { const c = computeAvailability(r).code; return c === 'em_estoque' || c === 'ultimas'; },
+  precisa_revisao: (r) => r.olisek_link_status === 'probable' || r.olisek_link_status === 'needs_review',
+};
+
+function getAdminFilterCounts() {
+  const rows = db.prepare(BASE_SELECT).all();
+  const counts = {};
+  for (const key of Object.keys(ADMIN_FILTERS)) counts[key] = rows.filter(ADMIN_FILTERS[key]).length;
+  return counts;
+}
+
+function getAdminProducts({ q, filter } = {}) {
   let rows = db.prepare(BASE_SELECT).all();
   if (q) {
     const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     const t = norm(q);
     rows = rows.filter((r) => norm(r.name).includes(t) || norm(r.brand_name).includes(t) || String(r.olisek_id || '').includes(t));
   }
+  if (filter && ADMIN_FILTERS[filter]) rows = rows.filter(ADMIN_FILTERS[filter]);
   return rows.map(rowToAdmin);
 }
 
@@ -167,15 +217,18 @@ function touch(id) {
   db.prepare("UPDATE products SET updated_at = datetime('now') WHERE id = ?").run(id);
 }
 
+const VALID_LINK_STATUS = ['confirmed', 'probable', 'needs_review', 'unlinked'];
+
 function createProduct(data) {
   const slug = uniqueSlug(data.name, (s) => !!db.prepare('SELECT 1 FROM products WHERE slug = ?').get(s));
+  const linkStatus = VALID_LINK_STATUS.includes(data.olisekLinkStatus) ? data.olisekLinkStatus : (data.olisekId ? 'needs_review' : 'unlinked');
   const info = db.prepare(`
     INSERT INTO products (slug, name, brand_id, category, volume, gender, family, description,
       notes_top, notes_heart, notes_base, price, compare_price, stock, active, featured,
-      olisek_id, olisek_name, olisek_match_confidence, stock_source)
+      olisek_id, olisek_name, olisek_link_status, stock_source)
     VALUES (@slug, @name, @brandId, @category, @volume, @gender, @family, @description,
       @notesTop, @notesHeart, @notesBase, @price, @comparePrice, @stock, @active, @featured,
-      @olisekId, @olisekName, @olisekMatchConfidence, @stockSource)
+      @olisekId, @olisekName, @olisekLinkStatus, @stockSource)
   `).run({
     slug,
     name: data.name,
@@ -195,8 +248,15 @@ function createProduct(data) {
     featured: data.featured ? 1 : 0,
     olisekId: data.olisekId ?? null,
     olisekName: data.olisekName ?? null,
-    olisekMatchConfidence: data.olisekMatchConfidence ?? null,
-    stockSource: data.olisekId ? 'olisek_import' : 'manual',
+    olisekLinkStatus: linkStatus,
+    // 'olisek_import' só quando o vínculo é o bastante para confiar no
+    // estoque; 'manual' quando alguém digitou um número na criação; 'none'
+    // quando o produto nasce sem nenhum sinal real de estoque (regra 1: o
+    // produto ainda assim entra no catálogo, só mostra "Consulte
+    // disponibilidade" até alguém confirmar).
+    stockSource: data.olisekId && (linkStatus === 'confirmed' || linkStatus === 'probable')
+      ? 'olisek_import'
+      : (data.stock != null ? 'manual' : 'none'),
   });
   return getAdminProductById(info.lastInsertRowid);
 }
@@ -209,7 +269,7 @@ function updateProductFull(id, data) {
     UPDATE products SET
       name=@name, brand_id=@brandId, category=@category, volume=@volume, gender=@gender,
       family=@family, description=@description, notes_top=@notesTop, notes_heart=@notesHeart,
-      notes_base=@notesBase, olisek_id=@olisekId, olisek_name=@olisekName,
+      notes_base=@notesBase,
       updated_at=datetime('now')
     WHERE id=@id
   `).run({
@@ -224,9 +284,28 @@ function updateProductFull(id, data) {
     notesTop: data.notes?.topo ?? current.notes_top,
     notesHeart: data.notes?.coracao ?? current.notes_heart,
     notesBase: data.notes?.fundo ?? current.notes_base,
-    olisekId: data.olisekId ?? current.olisek_id,
-    olisekName: data.olisekName ?? current.olisek_name,
   });
+  return getAdminProductById(id);
+}
+
+/** Vínculo OliSek — reservado a admin/gerente na rota, não aqui (regra 6 do
+ *  fechamento da V2). Sempre passa pelo admin escolhendo explicitamente o
+ *  `linkStatus`: nunca inferimos "confirmado" sozinhos. Trocar só o status
+ *  (sem mexer no id/nome/estoque) é o caminho normal para resolver um
+ *  'probable'/'needs_review' depois que alguém confirma manualmente. */
+function setOlisekLink(id, { olisekId, olisekName, linkStatus, stock }) {
+  const current = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
+  if (!current) return null;
+  if (!VALID_LINK_STATUS.includes(linkStatus)) throw Object.assign(new Error('invalid_link_status'), { status: 400 });
+  const finalOlisekId = linkStatus === 'unlinked' ? null : (olisekId ?? current.olisek_id);
+  const finalOlisekName = linkStatus === 'unlinked' ? null : (olisekName ?? current.olisek_name);
+  const finalStock = stock != null ? Math.max(0, parseInt(stock, 10) || 0) : current.stock;
+  const stockSource = linkStatus === 'confirmed' || linkStatus === 'probable' ? 'olisek_import'
+    : (linkStatus === 'unlinked' && current.stock_source === 'olisek_import' ? 'none' : current.stock_source);
+  db.prepare(`
+    UPDATE products SET olisek_id=?, olisek_name=?, olisek_link_status=?, stock=?, stock_source=?, updated_at=datetime('now')
+    WHERE id=?
+  `).run(finalOlisekId, finalOlisekName, linkStatus, finalStock, stockSource, id);
   return getAdminProductById(id);
 }
 
@@ -314,10 +393,13 @@ function listBrandsAdmin() {
 }
 
 module.exports = {
-  stockStatus,
+  stockStatus: computeAvailability,
+  isStockReliable,
+  PLACEHOLDER_IMAGE,
+  VALID_LINK_STATUS,
   getPublicProducts, getPublicProductBySlug, getRelated, getBrandsPublic,
-  getAdminProducts, getAdminProductById,
-  createProduct, updateProductFull, setPrice, setActive, setFeatured, setStockManual, despublish,
+  getAdminProducts, getAdminProductById, getAdminFilterCounts,
+  createProduct, updateProductFull, setOlisekLink, setPrice, setActive, setFeatured, setStockManual, despublish,
   addImage, removeImage, setMainImage, reorderImages,
   ensureBrand, listBrandsAdmin,
 };

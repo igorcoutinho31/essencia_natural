@@ -138,10 +138,13 @@ ler e aprovar:
 - **Atualizado 23/09/2026 (tarde):** o cliente enviou o relatório de
   movimentação da OliSek e 27 dos 34 produtos já foram vinculados (ver
   `docs/OLISEK-INTEGRATION.md`). Do que falta:
-  - 5 vínculos marcados **"provável"** (SABAH, KHAMARAH QAWAH, MUSAMAM
-    BLACK, Fakhar Black, Fakhar Gold) — pedir para a loja confirmar
-    olhando a OliSek diretamente (motivo de cada um em
-    `docs/OLISEK-INTEGRATION.md`).
+  - 3 vínculos marcados **"provável"** (SABAH, KHAMARAH QAWAH, MUSAMAM
+    BLACK) e 2 marcados **"precisa revisão"** (Fakhar Black, Fakhar Gold —
+    reclassificados em 24/09/2026, correspondência mais fraca que um
+    "provável" comum) — pedir para a loja confirmar olhando a OliSek
+    diretamente (motivo de cada um em `docs/OLISEK-INTEGRATION.md`). Até lá,
+    esses 5 mostram "Consulte disponibilidade" no site em vez de um selo de
+    estoque.
   - 7 produtos **sem nenhum vínculo** por falta de nome parecido no
     relatório: VICTORIOSO, MANDARINSKY, JAMRAH x BURKAN, MAAHIR BLACK x
     WHITE, "perfume FATIMA com sabonetes em formato de Rosas", SO CANDID

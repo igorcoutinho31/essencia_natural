@@ -61,13 +61,18 @@
       btn.setAttribute('aria-label', n ? 'Abrir sacola, ' + n + (n === 1 ? ' item' : ' itens') : 'Abrir sacola');
     }
 
-    /* um item é "indisponível" se o catálogo mais recente confirma isso —
-       enquanto o catálogo não carregou, não acusamos nada (a API pode
-       ainda não ter respondido), só depois que `cat[id]` existe. */
+    /* um item é "indisponível" (bloqueia a sacola) se o catálogo mais
+       recente confirma isso — ou porque o produto foi desativado, ou
+       porque o estoque está zerado confirmado ("indisponivel"), ou porque
+       não há estoque confiável pra afirmar que dá pra vender agora
+       ("consulte" — sem vínculo OliSek ou sem número confiável; nunca
+       inventamos disponibilidade, ver fechamento V2 regra 4). Enquanto o
+       catálogo não carregou, não acusamos nada (a API pode ainda não ter
+       respondido), só depois que `cat[id]` existe. */
     function indisponivel(id){
       var prod = cat[id];
       if (!prod) return false;
-      return prod.active === false || prod.stockStatus === 'indisponivel';
+      return prod.active === false || prod.stockStatus === 'indisponivel' || prod.stockStatus === 'consulte';
     }
 
     function mensagem(){
@@ -123,7 +128,7 @@
           info.appendChild(pPreco);
           if (it.q > 1) info.appendChild(el('p','bag-subtotal', 'Subtotal: ' + brl(preco * it.q)));
         }
-        if (indisp) info.appendChild(el('p','bag-aviso', 'Item ficou indisponível — remova para continuar'));
+        if (indisp) info.appendChild(el('p','bag-aviso', 'Não é possível confirmar este item pelo site agora — remova para continuar ou consulte no WhatsApp'));
 
         var linha = el('div','bag-linha');
         var q = el('div','bag-qtd');
@@ -183,7 +188,7 @@
 
     function add(p){
       if (!p || p.id == null) return;
-      if (p.active === false || p.stockStatus === 'indisponivel') return; // nunca adiciona um item indisponível
+      if (p.active === false || p.stockStatus === 'indisponivel' || p.stockStatus === 'consulte') return; // nunca adiciona um item sem estoque confiável
       var id = String(p.id);
       cat[id] = p;
       var it = st.itens[id];

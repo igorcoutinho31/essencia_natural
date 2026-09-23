@@ -33,7 +33,7 @@ async function login(req, res) {
     return sendJSON(res, 401, { error: 'invalid_credentials', message: 'Usuário ou senha incorretos.' });
   }
   const session = auth.createSession(user.id);
-  auth.setSessionCookie(res, session.id, { secure: req.socket.encrypted });
+  auth.setSessionCookie(res, session.id, { secure: auth.isSecureRequest(req) });
   sendJSON(res, 200, {
     user: { id: user.id, name: user.name, username: user.username, role: user.role, mustChangePassword: !!user.must_change_password },
   });
@@ -68,8 +68,8 @@ async function changePassword(req, res) {
 // ---------- produtos ----------
 
 function listProducts(req, res, query) {
-  const products = catalogService.getAdminProducts({ q: query.get('q') || undefined });
-  sendJSON(res, 200, { products, brands: catalogService.listBrandsAdmin() });
+  const products = catalogService.getAdminProducts({ q: query.get('q') || undefined, filter: query.get('filter') || undefined });
+  sendJSON(res, 200, { products, brands: catalogService.listBrandsAdmin(), counts: catalogService.getAdminFilterCounts() });
 }
 
 function getProduct(req, res, id) {
@@ -113,6 +113,7 @@ async function setPrice(req, res, id) {
 }
 
 async function setActive(req, res, id) {
+  if (!requireAdmin(req, res)) return; // publicar/ocultar produto é só admin/gerente (regra 7)
   const body = await readJsonBody(req);
   const product = catalogService.setActive(Number(id), !!body.active);
   if (!product) return sendJSON(res, 404, { error: 'not_found' });
@@ -127,11 +128,30 @@ async function setFeatured(req, res, id) {
 }
 
 async function setStock(req, res, id) {
+  if (!requireAdmin(req, res)) return; // estoque manual é só admin/gerente (regra 7) — vendedora não mexe em número de estoque
   const body = await readJsonBody(req);
   const stock = Math.max(0, parseInt(body.stock, 10) || 0);
   const product = catalogService.setStockManual(Number(id), stock);
   if (!product) return sendJSON(res, 404, { error: 'not_found' });
   sendJSON(res, 200, { product: stripHistoryUnlessAdmin(req, product) });
+}
+
+/** Vínculo OliSek (id, nome, status) — só admin/gerente (regra 7). */
+async function setOlisekLink(req, res, id) {
+  if (!requireAdmin(req, res)) return;
+  const body = await readJsonBody(req);
+  try {
+    const product = catalogService.setOlisekLink(Number(id), {
+      olisekId: body.olisekId === '' || body.olisekId == null ? null : Number(body.olisekId),
+      olisekName: body.olisekName ?? null,
+      linkStatus: body.linkStatus,
+      stock: body.stock,
+    });
+    if (!product) return sendJSON(res, 404, { error: 'not_found' });
+    sendJSON(res, 200, { product });
+  } catch (e) {
+    sendJSON(res, e.status || 400, { error: e.message || 'invalid_request' });
+  }
 }
 
 function despublish(req, res, id) {
@@ -220,16 +240,18 @@ async function applyOlisekLink(req, res) {
   const body = await readJsonBody(req);
   const productId = Number(body.productId);
   const { olisekId, olisekName, stock } = body;
-  db.prepare(
-    "UPDATE products SET olisek_id=?, olisek_name=?, olisek_match_confidence='confirmado', stock=?, stock_source='olisek_import', updated_at=datetime('now') WHERE id=?"
-  ).run(olisekId, olisekName, Math.max(0, parseInt(stock, 10) || 0), productId);
-  sendJSON(res, 200, { product: catalogService.getAdminProductById(productId) });
+  // Vínculo aplicado manualmente por um admin a partir de um relatório colado
+  // já é uma correspondência que uma pessoa olhou e confirmou — por isso
+  // 'confirmed' (nunca inferido sozinho pelo sistema, ver regra 6).
+  const product = catalogService.setOlisekLink(productId, { olisekId, olisekName, linkStatus: 'confirmed', stock });
+  if (!product) return sendJSON(res, 404, { error: 'not_found' });
+  sendJSON(res, 200, { product });
 }
 
 module.exports = {
   login, logout, me, changePassword,
   listProducts, getProduct, createProduct, updateProductFull,
-  setPrice, setActive, setFeatured, setStock, despublish,
+  setPrice, setActive, setFeatured, setStock, setOlisekLink, despublish,
   createBrand, listBrands,
   uploadImage, deleteImage, setMainImage, reorderImages,
   parseOlisekReport, applyOlisekLink,
