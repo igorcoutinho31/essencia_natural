@@ -8,6 +8,10 @@ Instruções para agentes (Claude Code ou outros) trabalhando neste repositório
    nunca publicar essas informações como definitivas.
 3. Ler `docs/SITE-ARCHITECTURE.md` antes de mexer em qualquer coisa
    relacionada ao hero.
+4. Desde a V2, o site tem backend (`server/`) e banco de dados
+   (`data/essencia.sqlite`). Antes de mexer em catálogo, preço, estoque,
+   admin ou OliSek, ler `README-V2.md` e o doc específico
+   (`docs/CATALOGO.md`, `docs/ADMIN.md` ou `docs/OLISEK-INTEGRATION.md`).
 
 ## Regras não-negociáveis
 - O hero animado de 240 frames foi aposentado e `assets/frames/` foi removida
@@ -25,6 +29,19 @@ Instruções para agentes (Claude Code ou outros) trabalhando neste repositório
   aprovação explícita antes da implementação.
 - Antes de comandos git destrutivos ou push, confirmar que não há trabalho
   manual concorrente do usuário no mesmo repositório.
+- Backend só com módulos nativos do Node (sem `npm install` — bloqueado
+  neste ambiente, ver README-V2.md). Não adicionar `require()` de pacote
+  nenhum sem antes confirmar que o ambiente de destino consegue instalar.
+- Preço nunca é inventado em lugar nenhum (banco, API, admin, schema.org).
+  Sem preço confirmado, o campo fica `null` e a interface mostra
+  "Consulte" — nunca um número calculado.
+- Estoque numérico exato nunca é mostrado ao cliente — só os três selos
+  (Em estoque / Últimas unidades / Indisponível), ver `docs/CATALOGO.md`.
+- Nenhum produto da OliSek é publicado no catálogo sem confirmação humana
+  (ver "Curadoria" em `docs/CATALOGO.md`) — nunca automatizar isso sem
+  esse passo.
+- Senha/token de admin nunca vai para o front-end nem para o repositório
+  (nem em comentário, nem em exemplo) — só existe como hash no banco.
 
 ## Fluxo de trabalho esperado
 1. Analisar/auditar o que já existe (código, assets, docs) antes de propor

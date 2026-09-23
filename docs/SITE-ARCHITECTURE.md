@@ -127,3 +127,30 @@ progresso de leitura, header que ganha corpo ao rolar, rota de envios com
 pontos em movimento, e "Aberto agora / Fechado" na loja (horário de
 Brasília, calculado pelos horários do site; não conhece feriados).
 
+## V2 — catálogo/admin de verdade (23/09/2026)
+
+A V2 vira o site de estático (tudo em `data/catalog.json`) para um
+site+backend real, mantendo a mesma identidade visual — **não foi um
+redesign**. Documentação específica: `README-V2.md` (visão geral e como
+rodar), `docs/CATALOGO.md` (arquitetura de dados e catálogo público),
+`docs/ADMIN.md` (o painel `/admin`), `docs/OLISEK-INTEGRATION.md` (o que é
+real hoje vs. o que é manual vs. o que fica pronto pra API).
+
+Resumo do que mudou:
+- `index.html` deixou de ter `<style>`/`<script>` inline: agora carrega
+  `assets/css/site.css` e `assets/js/{menu,sacola,vida,marcas,catalogo}.js`.
+- O catálogo (`#catalogo`) e a grade de marcas (`#marcas`) não vêm mais de
+  `data/catalog.json` — vêm de `/api/products` e `/api/brands`, servidos
+  por `server/app.js`, que lê um banco SQLite (`data/essencia.sqlite`).
+- Cada produto ganhou uma página própria em `/produto/:slug`
+  (`server/routes/productPage.js`), renderizada no servidor, com SEO/OG e
+  JSON-LD `Product` — sempre só com dados reais (sem preço/nota/GTIN
+  inventado).
+- Existe agora um painel `/admin` (`server/routes/adminPages.js` +
+  `adminApi.js`) com duas contas: vendedora (preço, estoque, fotos,
+  destaque) e admin/gerente (tudo isso + cadastro completo e despublicar).
+- `data/catalog.json` continua no repositório só como fonte histórica —
+  `server/seed.js` o lê uma única vez para popular o banco; depois disso o
+  banco é que manda.
+- `assets/frames/` continua removida; nada disso voltou na V2.
+

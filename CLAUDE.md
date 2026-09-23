@@ -12,9 +12,13 @@ uma landing page de página única. Site estático (HTML/CSS/JS puro, sem
 build step por enquanto).
 
 ## Estado atual
-- `index.html` na raiz é a versão inicial publicada (hero com garrafa CSS
-  estática, placeholders de WhatsApp/endereço) — **será substituída**, mas
-  só depois de aprovação explícita do cliente.
+- **V2 (23/09/2026): o site ganhou backend.** Deixou de ser só HTML/CSS/JS
+  estático — agora tem um servidor Node (`server/`), banco de dados
+  (`data/essencia.sqlite`) e um painel `/admin`. A identidade visual não
+  mudou. Ver `README-V2.md` antes de qualquer coisa relacionada a
+  catálogo, preço, estoque ou admin.
+- `index.html` na raiz é a home do site — carrega `assets/css/site.css` e
+  os scripts de `assets/js/` (não tem mais `<style>`/`<script>` inline).
 - `assets/frames/`: REMOVIDA na V1.1 (hero animado aposentado; a pasta de
   240 frames, 23 MB, não era referenciada). Não reintroduzir a animação.
 - `docs/`: toda a documentação viva do projeto (brand, equipe, produtos,
