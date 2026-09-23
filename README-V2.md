@@ -107,21 +107,24 @@ item existe por um motivo concreto explicado abaixo dele.
    este passo **antes** do primeiro deploy real, não depois.
 3. **Inicializar o banco.** Duas situações diferentes:
    - **Recomendado, se já existe um `data/essencia.sqlite` de trabalho**
-     (é o caso agora: já tem os 34 produtos, os 27 vínculos com a OliSek e
-     as fotos importadas) — copie esse arquivo (e a pasta `uploads/`) direto
-     para o volume persistente do passo 2, em vez de rodar os scripts de
-     novo. Rodar tudo do zero em produção reconstrói só uma base parcial
-     (ver abaixo).
+     (é o caso agora: já tem os 34 produtos, os 27 vínculos com a OliSek, as
+     fotos importadas e os 17 logos de marca) — copie esse arquivo (e a
+     pasta `uploads/`) direto para o volume persistente do passo 2, em vez
+     de rodar os scripts de novo. Rodar tudo do zero em produção reconstrói
+     só uma base parcial (ver abaixo).
    - **Do zero de verdade** (nenhum banco existe ainda) — rode, nesta
      ordem: `node server/seed.js` (marcas, os 34 produtos do
      `data/catalog.json`, conta administradora) → `node
      server/migrate-images.js` (fotos do catálogo antigo) → `node
      server/olisek-import-2026-09-23.js` (aplica os 27 vínculos reais com a
      OliSek) → `node server/olisek-link-status-2026-09-24.js` (reclassifica
-     Fakhar Black/Gold para "precisa revisão"). Todos são seguros de rodar
-     mais de uma vez — não duplicam nem sobrescrevem dado já existente —,
-     mas pular os dois últimos deixa a produção com só 5 vínculos OliSek em
-     vez de 27, bem menos completo que a base atual de desenvolvimento.
+     Fakhar Black/Gold para "precisa revisão") → `node
+     server/import-marcas-logos-2026-09-23.js` (vincula os 17 logos de marca
+     já recebidos do cliente, em `assets/brands/`). Todos são seguros de
+     rodar mais de uma vez — não duplicam nem sobrescrevem dado já
+     existente —, mas pular os últimos deixa a produção com menos vínculos
+     OliSek e/ou sem os logos de marca, bem menos completo que a base atual
+     de desenvolvimento.
 4. **Confirmar a criação da conta administradora**: o próprio `seed.js`
    imprime, uma única vez no terminal, o usuário (`admin`) e uma senha
    temporária gerada na hora. Anote antes de fechar o terminal/log do
@@ -229,10 +232,14 @@ virar uma suíte pesada:
   da OliSek aconteceu ainda — todo produto está com `sales=0`. Até isso
   existir, um produto zerado só volta a aparecer no catálogo com estoque
   novo, nunca só por vendas.
-- **Logos das marcas**: pasta `assets/brands/` já criada e o fallback pro
-  nome em texto (com ou sem logo quebrado) já funciona; falta a loja
-  enviar o arquivo `Marcas.zip` com os logos de verdade pra extrair,
-  padronizar os nomes e vincular a cada marca.
+- **Logos das marcas**: recebido e aplicado (23/09/2026) — 17 das 18
+  marcas confirmadas já têm logo em `assets/brands/`; só falta o logo da
+  Armaf (não veio no `Marcas.zip`). O fallback pro nome em texto (com ou
+  sem logo quebrado) continua funcionando pra ela.
+- **6 marcas fora da lista confirmada** vieram no mesmo `Marcas.zip`
+  (Amouage, Anfar, Ferassa, Maison Asrar, Volaré, Za'afaran) — não foram
+  publicadas: precisa confirmar com a loja se ela realmente trabalha com
+  elas antes de virar marca nova em `/#marcas` (ver `docs/TODO-VERIFY.md`).
 - Otimização automática de imagem no upload (ver limitação acima).
 - Testes automatizados formais (hoje a cobertura é manual, via Playwright,
   rodada durante o desenvolvimento — não há suíte de testes no repositório).

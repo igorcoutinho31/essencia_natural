@@ -68,12 +68,23 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 - Resolvido na V1.1: `assets/frames/` (240 frames) removida do repositório.
   Só existe no histórico do git.
 
-## Marcas (`#marcas`) — PENDENTE
-- A seção existe, mas só tem as duas marcas citadas no catálogo (QAWAFI e
-  Paris Corner), como texto — não há logo/foto delas. Lista completa de
-  marcas e logos/fotos: aguardando o cliente (pasta `assets/brands/`).
+## Marcas (`#marcas`)
+- **Atualizado 23/09/2026 (segundo fechamento da V2):** o cliente enviou
+  `Marcas.zip` com 22 logos. 17 das 18 marcas confirmadas
+  (`MARCAS_CONFIRMADAS` em `server/seed.js`) já têm logo aplicado em
+  `assets/brands/` (ver `server/import-marcas-logos-2026-09-23.js` e
+  `docs/CATALOGO.md`, seção "Grade de marcas"). Só **Armaf** continua sem
+  logo — o zip não trouxe um arquivo pra ela.
+- **PENDENTE — precisa de confirmação do cliente:** o `Marcas.zip` trouxe
+  6 logos de marcas que hoje não estão em `MARCAS_CONFIRMADAS` nem
+  aparecem em nenhum produto do catálogo atual: **Amouage, Anfar, Ferassa,
+  Maison Asrar, Volaré e Za'afaran**. Não foram cadastradas como marca
+  nova nem colocadas em `assets/brands/` — perguntar pro cliente se a loja
+  realmente trabalha com essas marcas antes de publicar qualquer uma
+  delas em `/#marcas` (regra: nunca publicar marca sem confirmação, nunca
+  inventar logo nem associação). Se confirmado, o cliente pode reenviar
+  só esses arquivos (o zip original não ficou guardado no repositório).
 - Não publicar marca sem confirmação. Não criar logo fictício.
-- Como adicionar: ver o comentário no `#marcas` do `index.html`.
 
 ## Domínio final / SEO — PENDENTE
 - Sem domínio definido: `canonical`, `og:url`, URLs absolutas de `og:image`

@@ -21,7 +21,8 @@ OliSek) sem tocar em mais nada.
 - `price_history` — toda vez que `catalogService.setPrice()` roda, uma
   linha nova é gravada aqui (preço antigo, novo, quem mudou, quando).
   Nunca é apagada, nem quando o produto é despublicado.
-- `brands` — nome + slug; hoje sem logo (a loja ainda vai enviar).
+- `brands` — nome + slug + `logo_path` (17 das 18 marcas confirmadas já
+  têm logo, ver seção "Grade de marcas" abaixo).
 - `users` / `sessions` — login do admin (ver `docs/ADMIN.md`).
 
 ### `olisekId` / `olisekName` — nunca renomeados
@@ -144,14 +145,25 @@ Vem de `GET /api/brands` (`assets/js/marcas.js`) — nenhuma marca é escrita
 nomes, mais QAWAFI e Paris Corner que já apareciam no catálogo antigo:
 ver a lista completa em `server/seed.js`, constante `MARCAS_CONFIRMADAS`).
 
-Logos ficam em `assets/brands/` (pasta criada no segundo fechamento da
-V2, nomes de arquivo padronizados pelo slug da marca) e são ligados a
-cada marca via `brands.logo_path`. Sem logo cadastrado — ou se o arquivo
-do logo quebrar/for removido depois — o cartão cai pro nome em texto
-(`cartaoTexto()` em `assets/js/marcas.js`, com um listener de `error` na
-`<img>` cobrindo o segundo caso), nunca um ícone de imagem quebrada.
-Nenhum logo é inventado: uma marca sem arquivo confirmado pela loja fica
-como texto até o logo real chegar.
+**Atualizado 23/09/2026:** o cliente enviou `Marcas.zip` (22 arquivos).
+`server/import-marcas-logos-2026-09-23.js` (mantido no repositório como
+registro do que foi importado) padronizou os nomes pelo slug da marca,
+salvou em `assets/brands/` e ligou 17 das 18 marcas confirmadas via
+`brands.logo_path`. Só **Armaf** ficou sem logo (não veio no zip) — mostra
+o nome em texto normalmente, igual a qualquer marca sem arquivo.
+
+Sem logo cadastrado — ou se o arquivo do logo quebrar/for removido depois
+— o cartão cai pro nome em texto (`cartaoTexto()` em `assets/js/marcas.js`,
+com um listener de `error` na `<img>` cobrindo o segundo caso), nunca um
+ícone de imagem quebrada. Nenhum logo é inventado: uma marca sem arquivo
+confirmado pela loja fica como texto até o logo real chegar.
+
+O zip também trouxe 6 arquivos de marcas que **não estão** em
+`MARCAS_CONFIRMADAS` nem ligadas a nenhum produto do catálogo hoje
+(Amouage, Anfar, Ferassa, Maison Asrar, Volaré, Za'afaran) — ficaram de
+fora de propósito, sem virar marca nova sozinhos (ver
+`docs/TODO-VERIFY.md`). Precisam de confirmação do cliente antes de
+aparecer em `/#marcas`.
 
 ## Curadoria: por que nem todo item da OliSek vira produto do site
 
