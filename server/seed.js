@@ -18,12 +18,17 @@ const { uniqueSlug } = require('./util');
 const ROOT = path.join(__dirname, '..');
 
 // As 17 marcas que a loja confirmou trabalhar (mensagem do cliente,
-// 23/09/2026). Nenhum logo foi enviado ainda — ficam sem imagem até a loja
-// mandar os arquivos (ver docs/CATALOGO.md).
+// 23/09/2026), mais 6 marcas confirmadas depois (mensagem do cliente,
+// 23/09/2026 à noite — aparecem nos relatórios de estoque da loja):
+// Amouage, Anfar, Ferassa, Maison Asrar, Volaré e Ard Al Zaafaran. Logos:
+// ver `server/import-marcas-logos-2026-09-23.js` e
+// `server/import-marcas-novas-2026-09-23.js` — este seed só garante que a
+// marca existe; quem liga o logo são os scripts de import.
 const MARCAS_CONFIRMADAS = [
   'Lattafa', 'Maison Alhambra', 'Armaf', 'Afnan', 'Orientica', 'Al Wataniah',
   'Al Haramain', 'Asdaaf', 'Aurora', 'Bharara', 'Zimaya', 'French Avenue',
   'Rave', 'Rasasi', 'Paris Corner', 'Rayhaan', 'Dkhoon Emirates', 'QAWAFI',
+  'Amouage', 'Anfar', 'Ferassa', 'Maison Asrar', 'Volaré', 'Ard Al Zaafaran',
 ];
 
 // Vínculo com a OliSek confirmado pelo cliente em 23/09/2026 (mensagem com
