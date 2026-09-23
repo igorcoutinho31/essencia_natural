@@ -746,8 +746,8 @@
   /* no celular a linha do © empilha à esquerda — o crédito acompanha */
   @media (max-width:560px){.foot-credito{text-align:left;margin-top:12px}}
   /* link interno das vendedoras (/admin/login): mesmo tom da linha, sem destaque */
-  .foot .foot-equipe{color:var(--ink-faint);font-size:.76rem;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease}
-  .foot .foot-equipe:hover{color:var(--ink-dim);text-decoration-color:currentColor}
+  .foot-base .foot-equipe{color:var(--ink-faint);font-size:.76rem;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease}
+  .foot-base .foot-equipe:hover{color:var(--ink-dim);text-decoration-color:currentColor}
 
 
   /* ---------- SACOLA (carrinho que finaliza no WhatsApp) ---------- */
