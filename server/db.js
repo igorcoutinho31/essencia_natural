@@ -46,6 +46,14 @@ CREATE TABLE IF NOT EXISTS brands (
   name TEXT NOT NULL UNIQUE,
   slug TEXT NOT NULL UNIQUE,
   logo_path TEXT,
+  -- 0 (padrão): marca sempre aparece em #marcas, mesmo sem produto ativo
+  -- vinculado ainda (é o caso das 18 marcas confirmadas desde o primeiro
+  -- fechamento da V2). 1: só aparece quando tiver pelo menos um produto
+  -- público/ativo — usado nas marcas confirmadas depois só por aparecerem
+  -- em relatório de estoque, sem produto do catálogo ainda vinculado a
+  -- elas (ver server/import-marcas-novas-2026-09-23.js e
+  -- catalogService.getBrandsPublic()).
+  requires_product INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -68,7 +76,8 @@ CREATE TABLE IF NOT EXISTS products (
   price REAL,
   compare_price REAL,
   stock INTEGER NOT NULL DEFAULT 0,
-  stock_source TEXT NOT NULL DEFAULT 'manual',   -- 'manual' | 'olisek_import'
+  stock_source TEXT NOT NULL DEFAULT 'none',     -- 'olisek_import' | 'manual' | 'none' (sem nenhum sinal real)
+  sales INTEGER NOT NULL DEFAULT 0,              -- vendas acumuladas (dado real da OliSek; nunca inventado — ver docs/OLISEK-INTEGRATION.md)
   active INTEGER NOT NULL DEFAULT 1,
   featured INTEGER NOT NULL DEFAULT 0,
   legacy_instagram_url TEXT,
@@ -107,5 +116,70 @@ CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand_id);
 CREATE INDEX IF NOT EXISTS idx_images_product ON product_images(product_id);
 CREATE INDEX IF NOT EXISTS idx_price_history_product ON price_history(product_id);
 `);
+
+// ---------- migrações incrementais (rodam uma vez, são seguras de repetir) ----------
+// Fechamento da V2 (24/09/2026): troca `olisek_match_confidence`
+// ('confirmado'/'provavel') pelo campo público `olisek_link_status`, com 4
+// valores ('confirmed'/'probable'/'needs_review'/'unlinked') — ver
+// docs/OLISEK-INTEGRATION.md. Feito com ALTER TABLE, nunca apagando dado:
+// quem já tinha vínculo confirmado/provável continua com o mesmo estoque.
+{
+  const productCols = db.prepare('PRAGMA table_info(products)').all().map((c) => c.name);
+  if (!productCols.includes('olisek_link_status')) {
+    db.exec("ALTER TABLE products ADD COLUMN olisek_link_status TEXT NOT NULL DEFAULT 'unlinked'");
+    if (productCols.includes('olisek_match_confidence')) {
+      db.exec(`
+        UPDATE products SET olisek_link_status = CASE
+          WHEN olisek_match_confidence = 'confirmado' THEN 'confirmed'
+          WHEN olisek_match_confidence = 'provavel' THEN 'probable'
+          WHEN olisek_id IS NOT NULL THEN 'confirmed'
+          ELSE 'unlinked'
+        END
+      `);
+    } else {
+      db.exec("UPDATE products SET olisek_link_status = CASE WHEN olisek_id IS NOT NULL THEN 'confirmed' ELSE 'unlinked' END");
+    }
+  }
+  if (productCols.includes('olisek_match_confidence')) {
+    db.exec('ALTER TABLE products DROP COLUMN olisek_match_confidence');
+  }
+}
+
+// `stock_source` ganha um terceiro valor, 'none': estoque 0 que nunca foi
+// afirmado por ninguém (nem OliSek, nem uma vendedora digitando à mão) —
+// diferente de 'manual' (alguém realmente digitou aquele número). Migração
+// única (marcada em `settings`) para não reclassificar, no futuro, um zero
+// que uma vendedora tenha digitado de propósito.
+{
+  const done = db.prepare("SELECT 1 FROM settings WHERE key = 'migration_stock_source_none'").get();
+  if (!done) {
+    db.exec("UPDATE products SET stock_source = 'none' WHERE olisek_id IS NULL AND stock_source = 'manual' AND stock = 0");
+    db.prepare("INSERT INTO settings (key, value) VALUES ('migration_stock_source_none', datetime('now'))").run();
+  }
+}
+
+// Fechamento V2 (24/09/2026, segunda rodada): coluna `sales` (vendas
+// acumuladas) — usada pela regra de visibilidade do catálogo público
+// (mostrar produto com estoque=0 só se já vendeu 10 ou mais, nunca some do
+// banco/admin). Sempre 0 por padrão: só é preenchida por uma importação
+// real da OliSek (nunca digitada à mão nem estimada) — ver
+// docs/OLISEK-INTEGRATION.md.
+{
+  const productCols2 = db.prepare('PRAGMA table_info(products)').all().map((c) => c.name);
+  if (!productCols2.includes('sales')) {
+    db.exec('ALTER TABLE products ADD COLUMN sales INTEGER NOT NULL DEFAULT 0');
+  }
+}
+
+// Segundo fechamento V2, rodada 2 (23/09/2026, à noite): coluna
+// `brands.requires_product` — ver o comentário no CREATE TABLE de `brands`
+// acima. Default 0 pra toda marca já existente (nenhuma das 18 marcas
+// confirmadas no primeiro fechamento muda de comportamento).
+{
+  const brandCols = db.prepare('PRAGMA table_info(brands)').all().map((c) => c.name);
+  if (!brandCols.includes('requires_product')) {
+    db.exec('ALTER TABLE brands ADD COLUMN requires_product INTEGER NOT NULL DEFAULT 0');
+  }
+}
 
 module.exports = db;

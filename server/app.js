@@ -91,6 +91,9 @@ async function handle(req, res) {
   const method = req.method;
 
   try {
+    // ---- healthcheck (para orquestrador de deploy — Railway/Render/etc.) ----
+    if (pathname === '/health' && method === 'GET') return sendJSON(res, 200, { ok: true, uptime: process.uptime() });
+
     // ---- API pública (sem sessão) ----
     if (pathname === '/api/products' && method === 'GET') return publicApi.listProducts(req, res, url.searchParams);
     let m = pathname.match(/^\/api\/products\/slug\/([^/]+)$/);
@@ -127,6 +130,8 @@ async function handle(req, res) {
       if (m && method === 'PUT') return await adminApi.setFeatured(req, res, m[1]);
       m = pathname.match(/^\/api\/admin\/products\/(\d+)\/stock$/);
       if (m && method === 'PUT') return await adminApi.setStock(req, res, m[1]);
+      m = pathname.match(/^\/api\/admin\/products\/(\d+)\/olisek$/);
+      if (m && method === 'PUT') return await adminApi.setOlisekLink(req, res, m[1]);
       m = pathname.match(/^\/api\/admin\/products\/(\d+)\/images$/);
       if (m && method === 'POST') return await adminApi.uploadImage(req, res, m[1]);
       m = pathname.match(/^\/api\/admin\/products\/(\d+)\/images\/reorder$/);
@@ -151,7 +156,7 @@ async function handle(req, res) {
         res.writeHead(302, { Location: '/admin/trocar-senha' }); return res.end();
       }
       if (pathname === '/admin/trocar-senha' && method === 'GET') return adminPages.changePasswordPage(req, res, req.user);
-      if (pathname === '/admin/produtos' && method === 'GET') return adminPages.productsListPage(req, res, req.user, { q: url.searchParams.get('q') || '' });
+      if (pathname === '/admin/produtos' && method === 'GET') return adminPages.productsListPage(req, res, req.user, { q: url.searchParams.get('q') || '', filter: url.searchParams.get('filtro') || '' });
       if (pathname === '/admin/produtos/novo' && method === 'GET') {
         if (req.user.role !== 'admin') { res.writeHead(302, { Location: '/admin/produtos' }); return res.end(); }
         const catalogService = require('./services/catalogService');
@@ -188,5 +193,25 @@ server.listen(PORT, () => {
   console.log(`Essência Natural (V2) rodando em http://localhost:${PORT}`);
   console.log('Admin: /admin/login — usuário e senha temporária foram gerados por server/seed.js.');
 });
+
+// ---------- desligamento gracioso ----------
+// Em qualquer plataforma de deploy (Railway, Render, Docker, etc.) o processo
+// recebe SIGTERM antes de ser morto na troca de versão. Sem isso, requisições
+// em andamento (ex.: um upload de imagem gravando no disco) podem ser
+// cortadas no meio. Paramos de aceitar conexões novas e esperamos as atuais
+// terminarem, com um teto de segurança para não travar o deploy para sempre.
+function gracefulShutdown(signal) {
+  console.log(`\n${signal} recebido — encerrando servidor com calma...`);
+  server.close(() => {
+    console.log('Servidor encerrado. Até a próxima.');
+    process.exit(0);
+  });
+  setTimeout(() => {
+    console.warn('Encerramento forçado após 10s (havia conexão presa em aberto).');
+    process.exit(1);
+  }, 10000).unref();
+}
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 module.exports = server;

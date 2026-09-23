@@ -10,20 +10,32 @@ const { sendHTML, escapeHTML } = require('../util');
 
 const WHATSAPP = '5511949614608';
 const SITE_NAME = 'Essência Natural';
+const PLACEHOLDER_IMAGE = catalogService.PLACEHOLDER_IMAGE;
+// Nunca deixa imagem quebrada: se o arquivo real falhar ao carregar (path
+// errado, arquivo apagado do disco), troca pro placeholder oficial. Página
+// é renderizada no servidor, então o fallback vai inline no atributo
+// `onerror` — sem precisar de mais um <script>. `this.onerror=null` evita
+// loop infinito se o próprio placeholder também falhar.
+const IMG_FALLBACK_ATTR = `onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}'"`;
 
 function waLink(texto) {
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
 }
 
 function stockBadgeClass(code) {
-  return code === 'em_estoque' ? 'pd-selo--em_estoque' : code === 'ultimas' ? 'pd-selo--ultimas' : 'pd-selo--indisponivel';
+  if (code === 'em_estoque') return 'pd-selo--em_estoque';
+  if (code === 'ultimas') return 'pd-selo--ultimas';
+  return 'pd-selo--indisponivel';
 }
 
 function schemaAvailability(code) {
   if (code === 'em_estoque') return 'https://schema.org/InStock';
   if (code === 'ultimas') return 'https://schema.org/LimitedAvailability';
-  return 'https://schema.org/OutOfStock';
+  if (code === 'indisponivel') return 'https://schema.org/OutOfStock';
+  return null; // defensivo — hoje todo código chega em um dos 3 acima
 }
+
+function podeComprar(product) { return product.stockStatus === 'em_estoque' || product.stockStatus === 'ultimas'; }
 
 function notesList(notes) {
   const pares = [['Topo', notes.topo], ['Coração', notes.coracao], ['Fundo', notes.fundo]].filter((p) => p[1]);
@@ -43,9 +55,11 @@ function descricaoUtil(product) {
 }
 
 function relatedCard(p) {
+  // `p.image` sempre vem preenchido (placeholder oficial quando não há foto
+  // real) — não existe mais o caso "relacionado sem nenhuma imagem".
   return `
     <a class="prod-related" href="/produto/${p.slug}">
-      ${p.image ? `<img src="${p.image}" alt="" loading="lazy" width="220" height="290">` : '<div class="prod-related-vazio"></div>'}
+      <img src="${escapeHTML(p.image)}" alt="" loading="lazy" width="220" height="290" ${IMG_FALLBACK_ATTR}>
       ${p.brand ? `<span class="prod-related-marca">${escapeHTML(p.brand)}</span>` : ''}
       <span class="prod-related-nome">${escapeHTML(p.name)}</span>
     </a>`;
@@ -70,17 +84,19 @@ function render(req, res, product, related) {
   schema.offers = {
     '@type': 'Offer',
     priceCurrency: 'BRL',
-    availability: schemaAvailability(product.stockStatus),
     url: `/produto/${product.slug}`,
   };
+  const availabilitySchema = schemaAvailability(product.stockStatus);
+  if (availabilitySchema) schema.offers.availability = availabilitySchema;
   if (product.price != null) schema.offers.price = Number(product.price).toFixed(2);
   // Sem price: omitimos "price" (Google tolera Offer sem preço quando "Consulte" é o caso real
   // do negócio) — nunca inventamos um valor só para preencher o schema.
 
-  const images = product.images && product.images.length ? product.images : (product.image ? [product.image] : []);
-  const galeria = images.length
-    ? `<div class="pd-galeria">${images.map((src, i) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(product.name)}" ${i === 0 ? '' : 'loading="lazy"'} width="480" height="620">`).join('')}</div>`
-    : '<div class="pd-galeria pd-galeria--vazia"></div>';
+  // `product.image` sempre vem preenchido (placeholder oficial quando não há
+  // foto real, ver catalogService.PLACEHOLDER_IMAGE) — a galeria nunca fica
+  // vazia, então não existe mais o caso "sem nenhuma imagem" aqui.
+  const images = product.images && product.images.length ? product.images : [product.image];
+  const galeria = `<div class="pd-galeria">${images.map((src, i) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(product.name)}" ${i === 0 ? '' : 'loading="lazy"'} width="480" height="620" ${IMG_FALLBACK_ATTR}>`).join('')}</div>`;
 
   const body = `
 <header class="site-header">
@@ -121,10 +137,14 @@ function render(req, res, product, related) {
         ${notesList(product.notes)}
         <p class="pd-desc">${escapeHTML(descBase)}</p>
         <div class="pd-acoes">
-          <button type="button" class="btn btn-primary pd-add" id="pd-add" ${product.stockStatus === 'indisponivel' ? 'disabled' : ''}>
-            ${product.stockStatus === 'indisponivel' ? 'Indisponível no momento' : 'Adicionar à sacola'}
+          <button type="button" class="btn btn-primary pd-add" id="pd-add" ${podeComprar(product) ? '' : 'disabled'}>
+            ${podeComprar(product) ? 'Adicionar à sacola' : 'Indisponível no momento'}
           </button>
-          <a class="btn btn-ghost" href="${waLink('Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o perfume ' + product.name + '.')}" target="_blank" rel="noopener">Consultar no WhatsApp</a>
+          <a class="btn btn-ghost" href="${waLink(
+            product.price == null
+              ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + product.name + '.'
+              : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + product.name + '.'
+          )}" target="_blank" rel="noopener">Consultar no WhatsApp</a>
         </div>
       </div>
     </div>

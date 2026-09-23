@@ -18,12 +18,17 @@ const { uniqueSlug } = require('./util');
 const ROOT = path.join(__dirname, '..');
 
 // As 17 marcas que a loja confirmou trabalhar (mensagem do cliente,
-// 23/09/2026). Nenhum logo foi enviado ainda — ficam sem imagem até a loja
-// mandar os arquivos (ver docs/CATALOGO.md).
+// 23/09/2026), mais 6 marcas confirmadas depois (mensagem do cliente,
+// 23/09/2026 à noite — aparecem nos relatórios de estoque da loja):
+// Amouage, Anfar, Ferassa, Maison Asrar, Volaré e Ard Al Zaafaran. Logos:
+// ver `server/import-marcas-logos-2026-09-23.js` e
+// `server/import-marcas-novas-2026-09-23.js` — este seed só garante que a
+// marca existe; quem liga o logo são os scripts de import.
 const MARCAS_CONFIRMADAS = [
   'Lattafa', 'Maison Alhambra', 'Armaf', 'Afnan', 'Orientica', 'Al Wataniah',
   'Al Haramain', 'Asdaaf', 'Aurora', 'Bharara', 'Zimaya', 'French Avenue',
   'Rave', 'Rasasi', 'Paris Corner', 'Rayhaan', 'Dkhoon Emirates', 'QAWAFI',
+  'Amouage', 'Anfar', 'Ferassa', 'Maison Asrar', 'Volaré', 'Ard Al Zaafaran',
 ];
 
 // Vínculo com a OliSek confirmado pelo cliente em 23/09/2026 (mensagem com
@@ -31,12 +36,16 @@ const MARCAS_CONFIRMADAS = [
 // já existente — 4 são uma correspondência direta e óbvia; "SABAH" está
 // marcado como "provavel" porque o nome do site é mais curto que o nome
 // completo da OliSek (ver docs/OLISEK-INTEGRATION.md antes de confiar 100%).
+// `confidence` já usa os valores novos de `olisek_link_status`
+// ('confirmed'/'probable'/'needs_review'/'unlinked' — ver
+// docs/OLISEK-INTEGRATION.md); os outros 29 produtos do catalog.json ficam
+// 'unlinked' até a importação completa (server/olisek-import-2026-09-23.js).
 const OLISEK_SEED = [
-  { match: (n) => n === 'ATHEERI', olisekId: 804491, olisekName: 'LATTAFA ATHEERI EDP F 100ML', brand: 'Lattafa', stock: 28, confidence: 'confirmado' },
-  { match: (n) => n === 'KHAMARAH', olisekId: 804502, olisekName: 'LATTAFA KHAMARA EDP U 100ML', brand: 'Lattafa', stock: 4, confidence: 'confirmado' },
-  { match: (n) => n === 'Marshmallow Blush', olisekId: 804547, olisekName: 'PARIS CORNER MARSHMALLOW BLUSH ED100ML', brand: 'Paris Corner', stock: 50, confidence: 'confirmado' },
-  { match: (n) => n === 'club de nuit Intense Man', olisekId: 804007, olisekName: 'ARMAF CLUB DE NUIT INTENSE EDP M 105ML', brand: 'Armaf', stock: 122, confidence: 'confirmado' },
-  { match: (n) => n === 'SABAH', olisekId: 803958, olisekName: 'AL WATANIAH SABAH AL WARD EDP 100ML', brand: 'Al Wataniah', stock: 558, confidence: 'provavel' },
+  { match: (n) => n === 'ATHEERI', olisekId: 804491, olisekName: 'LATTAFA ATHEERI EDP F 100ML', brand: 'Lattafa', stock: 28, confidence: 'confirmed' },
+  { match: (n) => n === 'KHAMARAH', olisekId: 804502, olisekName: 'LATTAFA KHAMARA EDP U 100ML', brand: 'Lattafa', stock: 4, confidence: 'confirmed' },
+  { match: (n) => n === 'Marshmallow Blush', olisekId: 804547, olisekName: 'PARIS CORNER MARSHMALLOW BLUSH ED100ML', brand: 'Paris Corner', stock: 50, confidence: 'confirmed' },
+  { match: (n) => n === 'club de nuit Intense Man', olisekId: 804007, olisekName: 'ARMAF CLUB DE NUIT INTENSE EDP M 105ML', brand: 'Armaf', stock: 122, confidence: 'confirmed' },
+  { match: (n) => n === 'SABAH', olisekId: 803958, olisekName: 'AL WATANIAH SABAH AL WARD EDP 100ML', brand: 'Al Wataniah', stock: 558, confidence: 'probable' },
 ];
 
 function run() {
@@ -61,10 +70,10 @@ function run() {
     const insert = db.prepare(`
       INSERT INTO products (slug, name, brand_id, category, description, notes_top, notes_heart, notes_base,
         price, compare_price, stock, active, featured, legacy_instagram_url,
-        olisek_id, olisek_name, olisek_match_confidence, stock_source)
+        olisek_id, olisek_name, olisek_link_status, stock_source)
       VALUES (@slug, @name, @brandId, @category, @description, @notesTop, @notesHeart, @notesBase,
         NULL, NULL, @stock, 1, 0, @legacyUrl,
-        @olisekId, @olisekName, @olisekMatchConfidence, @stockSource)
+        @olisekId, @olisekName, @olisekLinkStatus, @stockSource)
     `);
     const usedSlugs = new Set();
     let vinculados = 0;
@@ -87,8 +96,11 @@ function run() {
         legacyUrl: p.instagram_post_url || null,
         olisekId: olisek ? olisek.olisekId : null,
         olisekName: olisek ? olisek.olisekName : null,
-        olisekMatchConfidence: olisek ? olisek.confidence : null,
-        stockSource: olisek ? 'olisek_import' : 'manual',
+        olisekLinkStatus: olisek ? olisek.confidence : 'unlinked',
+        // Sem vínculo, o estoque 0 é só o padrão da coluna, não uma
+        // afirmação de ninguém — 'none', não 'manual' (ver isStockReliable
+        // em catalogService.js e a migração em server/db.js).
+        stockSource: olisek ? 'olisek_import' : 'none',
       });
       // fotos do catálogo antigo: copiadas para uploads/products/<slug>/ pelo migrate-images.js
     }
