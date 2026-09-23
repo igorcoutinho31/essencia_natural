@@ -14,7 +14,9 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { DatabaseSync } = require('node:sqlite');
 
-const DB_PATH = path.join(__dirname, '..', 'data', 'essencia.sqlite');
+// Onde fica o arquivo: data/essencia.sqlite localmente, ou dentro do volume
+// da hospedagem quando STORAGE_DIR está definida (ver server/paths.js).
+const { DB_PATH } = require('./paths');
 fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 
 const db = new DatabaseSync(DB_PATH);

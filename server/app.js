@@ -21,7 +21,7 @@ const productPage = require('./routes/productPage');
 const adminApi = require('./routes/adminApi');
 const adminPages = require('./routes/adminPages');
 
-const ROOT = path.join(__dirname, '..');
+const { ROOT, UPLOADS_DIR } = require('./paths');
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 
 // ---------- arquivos estáticos ----------
@@ -29,7 +29,7 @@ const PORT = parseInt(process.env.PORT, 10) || 3000;
 // disco, sem cópia nem build step algum.
 const STATIC_ROOTS = [
   { prefix: '/assets/', dir: path.join(ROOT, 'assets') },
-  { prefix: '/uploads/', dir: path.join(ROOT, 'uploads') },
+  { prefix: '/uploads/', dir: UPLOADS_DIR }, // pasta local ou volume da hospedagem (server/paths.js)
 ];
 const STATIC_FILES = {
   '/': path.join(ROOT, 'index.html'),

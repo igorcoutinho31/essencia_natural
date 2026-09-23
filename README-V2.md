@@ -66,73 +66,102 @@ uma nova senha temporária (imprime uma vez só no terminal — anote na hora).
 ## Onde hospedar (produção)
 
 Isto **precisa** de um servidor que fica ligado o tempo todo (não é mais
-um site estático de GitHub Pages/Netlify). Recomendação, considerando que
-a loja ainda não tem hospedagem escolhida: **Railway** ou **Render** —
-ambos têm plano gratuito/baixo custo, sobem um repositório Git direto (sem
-configuração de servidor manual), e dão um domínio `https://` de graça
-(`algumacoisa.up.railway.app` / `algumacoisa.onrender.com`) até a loja
-decidir um domínio próprio. Os dois suportam Node 22 nativamente.
-Passos, em qualquer um dos dois: conectar o repositório GitHub, apontar o
-comando de start para `node server/app.js`, definir a variável de
-ambiente `PORT` (os dois já injetam isso sozinhos) e pronto — não precisa
-de banco externo porque o SQLite é um arquivo (mas atenção: em alguns
-planos gratuitos o disco não é persistente entre deploys — nesse caso,
-rodar `node server/seed.js` de novo depois do primeiro deploy, ou usar o
-disco persistente pago do provedor).
+um site estático de GitHub Pages/Netlify) **e** de um disco que não se
+apaga entre um deploy e outro (o banco e as fotos enviadas pelo `/admin`
+moram nele). Escolha feita em 23/09/2026: **Railway**, plano Hobby
+(US$ 5/mês com US$ 5 de uso incluídos, 5 GB de volume) — publica sozinho a
+cada `git push` no `main`, sem terminal. Não tem região no Brasil (a mais
+próxima é US East, Virgínia); para um catálogo com checkout pelo WhatsApp a
+diferença de latência é pequena. Se um dia a velocidade no Brasil virar
+prioridade, a alternativa é o Fly.io (tem região em São Paulo), com a
+mesma variável `STORAGE_DIR` descrita abaixo.
 
-O servidor responde `GET /health` com `{ ok: true }` (uso do próprio
-provedor pra saber se o processo está de pé) e trata `SIGTERM`/`SIGINT` com
-um desligamento gracioso — para de aceitar conexão nova e espera até 10s
-as que já estavam em andamento terminarem antes de encerrar, em vez de
-cortar no meio um upload de imagem no exato momento da troca de versão.
+O que no código deixa isso funcionar:
+- `package.json` — diz à hospedagem que é Node **22.x** (o banco usa
+  `node:sqlite`, que só existe a partir do 22.13) e que o comando de
+  start é `npm start` (`node server/start.js`). Nenhuma dependência de npm.
+- `STORAGE_DIR` (`server/paths.js`) — quando definida, o banco vai para
+  `$STORAGE_DIR/essencia.sqlite` e as fotos para `$STORAGE_DIR/uploads/`,
+  ou seja, os dois dentro do **único** volume que o Railway permite por
+  serviço. Sem ela (localmente), continua `data/` e `uploads/` do projeto.
+- `server/start.js` — na primeira vez num volume vazio monta a base
+  inteira sozinho (marcas, os 34 produtos, fotos, vínculos OliSek, logos e
+  a conta `admin`, rodando os mesmos scripts da seção "Do zero" abaixo) e
+  imprime a senha temporária do admin **uma vez** no log do deploy. Nos
+  deploys seguintes não roda nada disso de novo — o que a equipe editar no
+  `/admin` nunca é sobrescrito. Testado em 23/09/2026: a base montada assim
+  sai idêntica (produtos, marcas, fotos, vínculos) à base de
+  desenvolvimento.
+
+O servidor responde `GET /health` com `{ ok: true }` e trata
+`SIGTERM`/`SIGINT` com desligamento gracioso (espera até 10s as requisições
+em andamento terminarem, pra não cortar um upload no meio da troca de
+versão).
+
+## Publicar no Railway (passo a passo)
+
+1. Entre em <https://railway.com> com a conta do GitHub → **New Project** →
+   **Deploy from GitHub repo** → escolha `igorcoutinho31/essencia_natural`
+   (autorize o acesso do Railway ao repositório se ele pedir). O primeiro
+   deploy começa sozinho — pode deixar; ele vai ser refeito no passo 4.
+2. **Volume (disco permanente):** no quadro do projeto, clique com o botão
+   direito no fundo (ou `Ctrl+K`) → **Volume** → escolha o serviço do site
+   → em **Mount path** coloque `/data`.
+3. **Variáveis:** abra o serviço → aba **Variables** → adicione:
+   - `STORAGE_DIR` = `/data` (o mesmo Mount path do passo 2)
+   - `TRUST_PROXY` = `1` (o Railway serve HTTPS na frente do Node; isso faz
+     o cookie de login do `/admin` ganhar o atributo `Secure`)
+   `PORT` não precisa — o Railway injeta sozinho.
+4. O Railway refaz o deploy ao salvar as variáveis. Abra **Deployments** →
+   o deploy mais recente → **Deploy Logs** e procure:
+   `[start] Guardando banco e fotos em /data` e, logo abaixo,
+   `Senha temporária (anote agora — não é mostrada de novo): ...`.
+   **Anote essa senha** (vale a do deploy que mostra `/data`; se o primeiro
+   deploy do passo 1 também imprimiu uma senha, ignore — aquela base era
+   descartável e sumiu).
+5. **Endereço público:** serviço → **Settings** → **Networking** →
+   **Generate Domain**. O site fica em algo como
+   `essencia-natural-production.up.railway.app`.
+6. (Recomendado) **Settings** → **Healthcheck Path** = `/health`.
+7. Abra `https://<endereço>/admin/login`, entre com `admin` + a senha do
+   passo 4 e troque a senha (o sistema obriga).
+8. Domínio próprio, quando houver: **Settings** → **Networking** →
+   **Custom Domain** → o Railway mostra o registro CNAME para cadastrar no
+   site onde o domínio foi comprado (ex.: Registro.br).
+
+Daí em diante: todo `git push` no `main` publica sozinho, sem perder nada
+do volume. Perdeu a senha do admin? No serviço, use o terminal/shell do
+Railway (ou `railway run` pela CLI, se preferir) e rode
+`npm run reset-admin-password`.
 
 ## Checklist para colocar no ar
 
-Fechamento da V2 (24/09/2026) — siga esta lista, nesta ordem, na primeira
-vez que o site for publicado de verdade (domínio real, não um teste). Cada
-item existe por um motivo concreto explicado abaixo dele.
+Fechamento da V2 (24/09/2026), atualizado para o Railway em 23/09/2026 —
+siga na primeira vez que o site for publicado de verdade.
 
-1. **Copiar `.env.example` para `.env`** (local) ou cadastrar as mesmas
-   variáveis no painel do provedor (Railway/Render — produção nunca usa um
-   arquivo `.env` no servidor, só variáveis de ambiente de verdade). Hoje
-   isso é só `PORT` (o provedor injeta sozinho) e `TRUST_PROXY=1` (ver
-   passo 7). `OLISEK_API_URL`/`OLISEK_API_KEY` ficam em branco até a OliSek
-   liberar acesso — ver `docs/OLISEK-INTEGRATION.md`.
-2. **Configurar um volume persistente** para `data/` (o arquivo
-   `essencia.sqlite`) e para `uploads/` (fotos enviadas pelo `/admin` depois
-   do primeiro deploy — ver o comentário em `.gitignore`). Sem isso, um
-   redeploy comum na maioria dos provedores apaga o disco e o site volta ao
-   zero (produtos, preços, fotos novas e a conta do admin somem). No
-   Railway isso é um "Volume" anexado ao serviço; no Render, um "Disk". Faça
-   este passo **antes** do primeiro deploy real, não depois.
-3. **Inicializar o banco.** Duas situações diferentes:
-   - **Recomendado, se já existe um `data/essencia.sqlite` de trabalho**
-     (é o caso agora: já tem os 34 produtos, os 27 vínculos com a OliSek, as
-     fotos importadas e as 24 marcas com logo) — copie esse arquivo (e a
-     pasta `uploads/`) direto para o volume persistente do passo 2, em vez
-     de rodar os scripts de novo. Rodar tudo do zero em produção reconstrói
-     só uma base parcial (ver abaixo).
-   - **Do zero de verdade** (nenhum banco existe ainda) — rode, nesta
-     ordem: `node server/seed.js` (as 24 marcas confirmadas, os 34 produtos
-     do `data/catalog.json`, conta administradora) → `node
-     server/migrate-images.js` (fotos do catálogo antigo) → `node
-     server/olisek-import-2026-09-23.js` (aplica os 27 vínculos reais com a
-     OliSek) → `node server/olisek-link-status-2026-09-24.js` (reclassifica
-     Fakhar Black/Gold para "precisa revisão") → `node
-     server/import-marcas-logos-2026-09-23.js` (vincula os 17 logos de marca
-     do primeiro `Marcas.zip`) → `node
-     server/import-marcas-novas-2026-09-23.js` (vincula o logo da Armaf e
-     cadastra + vincula o logo das 6 marcas confirmadas depois, já marcadas
-     `requires_product=1` — ver `docs/CATALOGO.md`). Todos são seguros de
-     rodar mais de uma vez — não duplicam nem sobrescrevem dado já
-     existente —, mas pular os últimos deixa a produção com menos vínculos
-     OliSek e/ou sem os logos de marca, bem menos completo que a base atual
-     de desenvolvimento.
-4. **Confirmar a criação da conta administradora**: o próprio `seed.js`
-   imprime, uma única vez no terminal, o usuário (`admin`) e uma senha
-   temporária gerada na hora. Anote antes de fechar o terminal/log do
-   deploy — ela não é mostrada de novo (se perder, `node
-   server/reset-admin-password.js` gera outra).
+1. **Variáveis de ambiente** no painel do Railway (produção nunca usa um
+   arquivo `.env`): `STORAGE_DIR` e `TRUST_PROXY=1` (ver "Publicar no
+   Railway", passo 3). `OLISEK_API_URL`/`OLISEK_API_KEY` ficam em branco
+   até a OliSek liberar acesso — ver `docs/OLISEK-INTEGRATION.md`. Todas as
+   variáveis estão explicadas em `.env.example`.
+2. **Volume persistente** montado no mesmo caminho de `STORAGE_DIR` (passo
+   2). Sem ele, todo deploy novo apaga produtos, preços, fotos novas e a
+   conta do admin. Faça antes de divulgar o link.
+3. **Inicializar o banco.** No Railway é automático (`server/start.js`, ver
+   acima). Fora dele, ou pra recriar uma base local do zero, rode nesta
+   ordem: `node server/seed.js` (as 24 marcas confirmadas, os 34 produtos
+   do `data/catalog.json`, conta administradora) → `node
+   server/migrate-images.js` (fotos do catálogo antigo) → `node
+   server/olisek-import-2026-09-23.js` (os 27 vínculos reais com a
+   OliSek) → `node server/olisek-link-status-2026-09-24.js` (Fakhar
+   Black/Gold para "precisa revisão") → `node
+   server/import-marcas-logos-2026-09-23.js` (17 logos do primeiro
+   `Marcas.zip`) → `node server/import-marcas-novas-2026-09-23.js` (logo da
+   Armaf + as 6 marcas confirmadas depois, com `requires_product=1` — ver
+   `docs/CATALOGO.md`). Todos são seguros de rodar mais de uma vez.
+4. **Senha temporária do admin**: aparece uma única vez no log do deploy
+   (Railway) ou no terminal (local). Se perder, `npm run
+   reset-admin-password` gera outra.
 5. **Trocar a senha temporária no primeiro login** em `/admin/login` — o
    sistema já obriga isso automaticamente (`must_change_password`), mas
    confirme que o fluxo realmente pede a troca antes de liberar o painel
@@ -154,13 +183,16 @@ item existe por um motivo concreto explicado abaixo dele.
    `sitemap.xml`/`robots.txt` da raiz do projeto.
 9. **Testar um upload de foto de produto de ponta a ponta** em produção
    (não só local): abrir `/admin`, editar um produto, subir uma imagem JPG
-   ou WEBP e confirmar que ela aparece no catálogo público. Isso valida que
-   o volume persistente do passo 2 está mesmo montado em `uploads/` — se o
-   volume estiver mal configurado, o upload "funciona" mas some no próximo
-   deploy.
+   ou WEBP e confirmar que ela aparece no catálogo público. Depois faça
+   um redeploy (Deployments → Redeploy) e confira que a foto continua lá —
+   isso valida que o volume está montado no mesmo caminho de `STORAGE_DIR`.
+   Se não estiver, o upload "funciona" mas some no próximo deploy.
 10. **Testar um backup do banco**: com o site no ar, baixar uma cópia de
-    `data/essencia.sqlite` (pelo próprio provedor ou por um script simples)
-    e confirmar que abre num SQLite local. Combine com a loja uma rotina
+    `$STORAGE_DIR/essencia.sqlite` (no Railway, `/data/essencia.sqlite`,
+    pelo shell do serviço) e confirmar que abre num SQLite local. O Railway
+    também tem backup de volume (serviço → aba **Backups**: manual ou
+    agendado diário/semanal/mensal) — confira se está liberado no plano
+    contratado e deixe um agendamento semanal ligado. Combine com a loja uma rotina
     (mesmo que manual, semanal) até existir algo automático — hoje não há
     backup automático configurado.
 11. **Testar o fluxo do WhatsApp de ponta a ponta em produção**: abrir o
