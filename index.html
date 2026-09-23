@@ -58,7 +58,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap">
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/site.css?v=20260923-2">
 
 
 <header class="site-header">
@@ -474,36 +474,22 @@
   </div>
 </dialog>
 
-<!-- Passo entre a sacola e o WhatsApp: escolher com quem prefere falar.
-     Todo pedido continua indo para o mesmo WhatsApp da loja — a escolha
-     só entra como uma linha a mais na mensagem. Os cards deste modal são
-     montados por JS a partir da própria seção #equipe acima (mesmos
-     nomes e fotos, nunca duplicados aqui) — ver assets/js/atendimento.js.
-     Pra trocar/adicionar/remover alguém aqui, basta editar a seção
-     #equipe (ver instrução lá) — este modal acompanha sozinho. -->
-<dialog class="atendimento" id="atendimento" aria-labelledby="at-titulo">
-  <div class="bag-topo">
-    <h2 id="at-titulo">Escolher atendimento</h2>
-    <button class="bag-fechar" id="at-fechar" type="button" aria-label="Fechar">&times;</button>
-  </div>
-  <div class="at-corpo">
-    <p class="at-sub">Com quem você prefere falar? O pedido vai sempre para o mesmo WhatsApp da loja — é só pra gente já saber sua preferência.</p>
-    <ul class="at-grid" id="at-grid" role="list"></ul>
-    <button class="btn btn-ghost at-sem" id="at-sem" type="button">Sem preferência</button>
-  </div>
-</dialog>
+<!-- Passo entre a sacola e o WhatsApp ("Escolher atendimento"): o
+     <dialog> é montado por assets/js/atendimento.js, que também lê a
+     equipe desta página (#equipe) — assim o mesmo modal funciona na
+     página de produto, sem repetir marcação nem lista de equipe. -->
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden>
   <span id="toast-t"></span>
   <button type="button" id="toast-ver">Ver sacola</button>
 </div>
 
-<script src="assets/js/menu.js"></script>
-<script src="assets/js/atendimento.js"></script>
-<script src="assets/js/sacola.js"></script>
-<script src="assets/js/vida.js"></script>
-<script src="assets/js/marcas.js"></script>
-<script src="assets/js/catalogo.js"></script>
+<script src="assets/js/menu.js?v=20260923-2"></script>
+<script src="assets/js/atendimento.js?v=20260923-2"></script>
+<script src="assets/js/sacola.js?v=20260923-2"></script>
+<script src="assets/js/vida.js?v=20260923-2"></script>
+<script src="assets/js/marcas.js?v=20260923-2"></script>
+<script src="assets/js/catalogo.js?v=20260923-2"></script>
 
 
 </body>

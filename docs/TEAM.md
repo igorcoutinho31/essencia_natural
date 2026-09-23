@@ -60,6 +60,10 @@ cliente — não deduzir de novo a partir das imagens.
 O modal "Escolher atendimento" da sacola (`assets/js/atendimento.js`) lê os
 nomes e fotos direto dos `<li class="pessoa">` da seção `#equipe` em
 `index.html` — não existe uma segunda lista de equipe em lugar nenhum.
+Nas páginas sem `#equipe` (ex.: `/produto/:slug`) o script busca a home e
+lê a mesma lista de lá; o próprio script também monta o `<dialog>`, então
+qualquer página que carregue a sacola ganha a etapa de atendimento só
+incluindo `atendimento.js` antes de `sacola.js`.
 Ou seja: trocar uma foto, remover ou adicionar alguém é
 editar só a seção `#equipe` (como já descrito acima); o passo de
 atendimento no WhatsApp acompanha sozinho, sem precisar mexer em mais
