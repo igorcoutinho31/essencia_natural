@@ -9,5 +9,15 @@ data/essencia.sqlite-journal
 # Segredos locais (nunca existe .env commitado neste projeto)
 .env
 .env.*
+!.env.example
 
 node_modules/
+
+# Fotos enviadas pelo /admin a partir de agora (fechamento V2, regra 12) —
+# o conjunto atual de fotos do catálogo (uploads/products/*/principal.*)
+# já está commitado de propósito, como parte do material inicial do site;
+# a partir daqui, uploads/ precisa de armazenamento persistente em produção
+# (ver README-V2.md, "Checklist para colocar no ar") e não deve mais crescer
+# dentro do repositório git a cada foto nova que uma vendedora envia.
+uploads/products/*/*
+!uploads/products/*/principal.*

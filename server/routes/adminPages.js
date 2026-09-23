@@ -110,16 +110,47 @@ function changePasswordPage(req, res, user) {
 }
 
 function stockBadge(p) {
-  const cls = p.stockLabel === 'Em estoque' ? 'badge-ok' : p.stockLabel === 'Últimas unidades' ? 'badge-warn' : 'badge-danger';
+  // 'consulte' (sem estoque confiável) não é a mesma coisa que "indisponível"
+  // (zerado confirmado) — usa um tom neutro, não o vermelho de "acabou".
+  const cls = p.stockStatus === 'em_estoque' ? 'badge-ok'
+    : p.stockStatus === 'ultimas' ? 'badge-warn'
+    : p.stockStatus === 'consulte' ? 'badge-muted'
+    : 'badge-danger';
   return `<span class="badge ${cls}">${escapeHTML(p.stockLabel)}</span>`;
 }
 
-function productsListPage(req, res, user, { q }) {
-  const products = catalogService.getAdminProducts({ q });
+const OLISEK_LINK_LABELS = {
+  confirmed: { text: 'vínculo confirmado', cls: 'badge-ok' },
+  probable: { text: 'correspondência provável — confirmar', cls: 'badge-warn' },
+  needs_review: { text: 'precisa revisão', cls: 'badge-warn' },
+  unlinked: { text: 'sem vínculo', cls: 'badge-muted' },
+};
+function olisekBadge(p) {
+  const info = OLISEK_LINK_LABELS[p.olisekLinkStatus] || OLISEK_LINK_LABELS.unlinked;
+  return `<span class="badge ${info.cls}" title="${p.olisekId ? 'ID OliSek ' + p.olisekId : 'sem ID OliSek'}">${p.olisekId ? 'OliSek' : 'Sem vínculo'}</span>`;
+}
+
+// Ordem e rótulos das abas de filtro do fechamento V2 (regra 8) — a chave
+// bate exatamente com as chaves de ADMIN_FILTERS em catalogService.js.
+const FILTER_TABS = [
+  ['todos', 'Todos'],
+  ['sem_preco', 'Sem preço'],
+  ['sem_imagem', 'Sem imagem'],
+  ['sem_vinculo', 'Sem vínculo OliSek'],
+  ['indisponiveis', 'Indisponíveis'],
+  ['em_estoque', 'Em estoque'],
+  ['precisa_revisao', 'Precisa revisão'],
+];
+
+function productsListPage(req, res, user, { q, filter }) {
+  const filtroAtivo = FILTER_TABS.some(([key]) => key === filter) ? filter : 'todos';
+  const products = catalogService.getAdminProducts({ q, filter: filtroAtivo === 'todos' ? undefined : filtroAtivo });
+  const counts = catalogService.getAdminFilterCounts();
   const rows = products.map((p) => `
     <tr>
-      <td>${p.olisekId ? `<span class="badge ${p.olisekMatchConfidence === 'provavel' ? 'badge-warn' : 'badge-ok'}" title="ID OliSek ${p.olisekId}">OliSek</span>` : '<span class="badge badge-muted">Aguardando vínculo</span>'}</td>
+      <td>${olisekBadge(p)}</td>
       <td>${escapeHTML(p.name)}<div class="a-help">${escapeHTML(p.brand || '—')}</div></td>
+      <td>${p.hasImage ? '' : '<span class="badge badge-warn">sem foto</span>'}</td>
       <td>${p.price != null ? 'R$ ' + Number(p.price).toFixed(2).replace('.', ',') : '<span class="a-help">Consulte</span>'}</td>
       <td>${stockBadge(p)}</td>
       <td>${p.active ? '<span class="badge badge-ok">Publicado</span>' : '<span class="badge badge-muted">Oculto</span>'}</td>
@@ -127,23 +158,34 @@ function productsListPage(req, res, user, { q }) {
       <td><a class="btn btn-ghost btn-sm" href="/admin/produtos/${p.id}">Editar</a></td>
     </tr>`).join('');
 
+  const tabsHTML = FILTER_TABS.map(([key, label]) => {
+    var qs = new URLSearchParams();
+    if (q) qs.set('q', q);
+    if (key !== 'todos') qs.set('filtro', key);
+    var href = '/admin/produtos' + (qs.toString() ? '?' + qs.toString() : '');
+    var ativo = key === filtroAtivo;
+    return `<a class="a-tab${ativo ? ' a-tab--ativo' : ''}" href="${href}">${escapeHTML(label)} (${counts[key] ?? 0})</a>`;
+  }).join('');
+
   const body = `
   <div class="a-wrap">
     <div class="a-row" style="justify-content:space-between; margin-bottom:16px">
       <div>
         <h1>Produtos</h1>
-        <p class="a-sub">${products.length} produto${products.length === 1 ? '' : 's'} no catálogo.</p>
+        <p class="a-sub">${products.length} produto${products.length === 1 ? '' : 's'} ${filtroAtivo === 'todos' ? 'no catálogo' : 'neste filtro'}.</p>
       </div>
       ${user.role === 'admin' ? '<a class="btn btn-gold" href="/admin/produtos/novo">+ Novo produto</a>' : ''}
     </div>
+    <div class="a-tabs">${tabsHTML}</div>
     <div class="a-card">
       <form method="get" class="a-row" style="margin-bottom:14px">
+        ${filtroAtivo !== 'todos' ? `<input type="hidden" name="filtro" value="${escapeHTML(filtroAtivo)}">` : ''}
         <input class="a-search" type="search" name="q" placeholder="Buscar por nome, marca ou ID OliSek" value="${escapeHTML(q || '')}">
         <button class="btn btn-ghost btn-sm" type="submit">Buscar</button>
       </form>
       <table>
-        <thead><tr><th>Vínculo</th><th>Produto</th><th>Preço</th><th>Estoque</th><th>Site</th><th>Destaque</th><th></th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="7" class="a-help">Nenhum produto encontrado.</td></tr>'}</tbody>
+        <thead><tr><th>Vínculo</th><th>Produto</th><th>Foto</th><th>Preço</th><th>Estoque</th><th>Site</th><th>Destaque</th><th></th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="8" class="a-help">Nenhum produto encontrado.</td></tr>'}</tbody>
       </table>
     </div>
   </div>`;
@@ -155,7 +197,7 @@ function productFormPage(req, res, user, product, { brands }) {
   const isAdmin = user.role === 'admin';
   const p = product || { name: '', brandId: null, category: '', volume: '', gender: '', family: '', description: '',
     notes: { topo: '', coracao: '', fundo: '' }, price: null, comparePrice: null, stock: 0, active: 1, featured: 0,
-    olisekId: null, olisekName: null, olisekMatchConfidence: null, images: [], priceHistory: [] };
+    olisekId: null, olisekName: null, olisekLinkStatus: 'unlinked', images: [], priceHistory: [] };
 
   const brandOptions = brands.map((b) => `<option value="${b.id}" ${b.id === p.brandId ? 'selected' : ''}>${escapeHTML(b.name)}</option>`).join('');
 
@@ -187,26 +229,48 @@ function productFormPage(req, res, user, product, { brands }) {
     ${isAdmin ? '<button class="btn btn-ghost" id="f-salvar-cadastro" type="button">Salvar dados do produto</button>' : '<p class="a-help">Só a Administração pode editar o cadastro completo. Você pode alterar preço, fotos, destaque e disponibilidade abaixo.</p>'}
   `;
 
-  const olisekBox = `
+  const olisekLinkInfo = OLISEK_LINK_LABELS[p.olisekLinkStatus] || OLISEK_LINK_LABELS.unlinked;
+  const olisekBox = isNew ? '' : `
     <div class="a-card">
       <h2>Vínculo OliSek</h2>
+      <div id="a-msg-olisek"></div>
       ${p.olisekId ? `
         <p>ID <b>${p.olisekId}</b> — ${escapeHTML(p.olisekName || '')}
-          ${p.olisekMatchConfidence === 'provavel' ? '<span class="badge badge-warn">correspondência provável — confirmar</span>' : '<span class="badge badge-ok">confirmado</span>'}
+          <span class="badge ${olisekLinkInfo.cls}">${olisekLinkInfo.text}</span>
         </p>
-        <p class="a-help">Estoque de origem: ${p.stockSource === 'olisek_import' ? 'importado da OliSek' : 'ajustado manualmente'}.</p>
-      ` : '<p class="a-help">Ainda sem vínculo com a OliSek — estoque é controlado manualmente até a lista completa ser importada (ver docs/OLISEK-INTEGRATION.md).</p>'}
+        <p class="a-help">Estoque de origem: ${p.stockSource === 'olisek_import' ? 'importado da OliSek' : p.stockSource === 'manual' ? 'digitado manualmente' : 'nenhum (nunca confirmado)'}.</p>
+      ` : '<p class="a-help">Ainda sem vínculo com a OliSek — estoque só é considerado confiável depois de um vínculo confirmado ou de um número digitado manualmente (ver docs/OLISEK-INTEGRATION.md).</p>'}
+      ${isAdmin ? `
+      <div class="a-grid3" style="margin-top:10px">
+        <div class="a-field"><label>ID OliSek</label><input type="number" id="f-olisek-id" value="${p.olisekId ?? ''}" placeholder="deixe em branco para desvincular"></div>
+        <div class="a-field"><label>Nome na OliSek</label><input type="text" id="f-olisek-name" value="${escapeHTML(p.olisekName || '')}"></div>
+        <div class="a-field"><label>Status do vínculo</label>
+          <select id="f-olisek-status">
+            <option value="unlinked" ${p.olisekLinkStatus === 'unlinked' ? 'selected' : ''}>Sem vínculo</option>
+            <option value="probable" ${p.olisekLinkStatus === 'probable' ? 'selected' : ''}>Correspondência provável</option>
+            <option value="needs_review" ${p.olisekLinkStatus === 'needs_review' ? 'selected' : ''}>Precisa revisão</option>
+            <option value="confirmed" ${p.olisekLinkStatus === 'confirmed' ? 'selected' : ''}>Confirmado</option>
+          </select>
+        </div>
+      </div>
+      <p class="a-help">Mudar o status pra "Confirmado" ou "Correspondência provável" passa a confiar no estoque vindo da OliSek — só faça isso depois de ter olhado os dois sistemas lado a lado.</p>
+      <button class="btn btn-ghost btn-sm" id="f-salvar-olisek" type="button">Salvar vínculo OliSek</button>
+      ` : ''}
     </div>`;
 
+  // Preço, promoção e destaque: os únicos campos de estoque/cadastro que a
+  // vendedora também pode mexer (fechamento V2, regra 7) — por isso ficam
+  // juntos aqui, sem `disabled` por papel.
   const precoBox = isNew ? '' : `
     <div class="a-card">
-      <h2>Preço</h2>
+      <h2>Preço e destaque</h2>
       <div id="a-msg-preco"></div>
-      <div class="a-grid2">
+      <div class="a-grid3">
         <div class="a-field"><label>Preço (R$)</label><input type="number" step="0.01" min="0" id="f-price" value="${p.price ?? ''}" placeholder="deixe em branco = &quot;Consulte&quot;"></div>
         <div class="a-field"><label>Preço &quot;de&quot; (promoção, opcional)</label><input type="number" step="0.01" min="0" id="f-compare-price" value="${p.comparePrice ?? ''}"></div>
+        <div class="a-field"><label>&nbsp;</label><label style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--a-ink)"><input type="checkbox" id="f-featured" ${p.featured ? 'checked' : ''} style="width:auto"> Produto em destaque</label></div>
       </div>
-      <button class="btn btn-gold btn-sm" id="f-salvar-preco" type="button">Salvar preço</button>
+      <button class="btn btn-gold btn-sm" id="f-salvar-preco" type="button">Salvar preço e destaque</button>
       ${isAdmin && p.priceHistory && p.priceHistory.length ? `
         <h2 style="margin-top:18px">Histórico de preço</h2>
         <div class="a-hist"><table>
@@ -215,17 +279,19 @@ function productFormPage(req, res, user, product, { brands }) {
         </table></div>` : ''}
     </div>`;
 
-  const estoqueBox = isNew ? '' : `
+  // Estoque manual e publicar/ocultar: só admin/gerente (regra 7) — a
+  // vendedora nem vê esses campos, pra não achar que pode mexer neles.
+  const estoqueBox = isNew || !isAdmin ? '' : `
     <div class="a-card">
       <h2>Estoque e disponibilidade</h2>
+      <div id="a-msg-estoque"></div>
       <div class="a-row">
         <div class="a-field" style="max-width:140px"><label>Estoque (unidades)</label><input type="number" min="0" id="f-stock" value="${p.stock}"></div>
-        <label style="margin-top:20px"><input type="checkbox" id="f-active" ${p.active ? 'checked' : ''}> Publicado no site</label>
-        <label style="margin-top:20px"><input type="checkbox" id="f-featured" ${p.featured ? 'checked' : ''}> Produto em destaque</label>
+        <label style="margin-top:20px"><input type="checkbox" id="f-active" ${p.active ? 'checked' : ''} style="width:auto"> Publicado no site</label>
       </div>
-      <p class="a-help">O cliente nunca vê esse número — só o selo (Em estoque / Últimas unidades / Indisponível).</p>
+      <p class="a-help">O cliente nunca vê esse número — só o selo (Em estoque / Últimas unidades / Indisponível / Consulte disponibilidade). Selo atual: ${stockBadge(p)}</p>
       <button class="btn btn-ghost btn-sm" id="f-salvar-estoque" type="button">Salvar estoque e disponibilidade</button>
-      ${isAdmin ? `<button class="btn btn-danger btn-sm" id="f-despublicar" type="button" style="margin-left:8px">Despublicar produto</button>` : ''}
+      <button class="btn btn-danger btn-sm" id="f-despublicar" type="button" style="margin-left:8px">Despublicar produto</button>
     </div>`;
 
   const imagesBox = isNew ? '' : `
@@ -292,19 +358,32 @@ function productFormPage(req, res, user, product, { brands }) {
     var salvarPreco = document.getElementById('f-salvar-preco');
     if (salvarPreco) salvarPreco.addEventListener('click', function(){
       var data = { price: document.getElementById('f-price').value, comparePrice: document.getElementById('f-compare-price').value };
-      post('/api/admin/products/' + PRODUCT_ID + '/price', 'PUT', data)
-        .then(function(){ msg(document.getElementById('a-msg-preco'), 'Preço atualizado.', true); setTimeout(function(){location.reload();}, 900); })
-        .catch(function(e){ msg(document.getElementById('a-msg-preco'), e.message || 'Erro.', false); });
+      var featured = document.getElementById('f-featured').checked;
+      Promise.all([
+        post('/api/admin/products/' + PRODUCT_ID + '/price', 'PUT', data),
+        post('/api/admin/products/' + PRODUCT_ID + '/featured', 'PUT', { featured: featured }),
+      ]).then(function(){ msg(document.getElementById('a-msg-preco'), 'Preço e destaque atualizados.', true); setTimeout(function(){location.reload();}, 900); })
+        .catch(function(e){ msg(document.getElementById('a-msg-preco'), (e && e.message) || 'Erro.', false); });
     });
     var salvarEstoque = document.getElementById('f-salvar-estoque');
     if (salvarEstoque) salvarEstoque.addEventListener('click', function(){
-      var stock = document.getElementById('f-stock').value, active = document.getElementById('f-active').checked, featured = document.getElementById('f-featured').checked;
+      var stock = document.getElementById('f-stock').value, active = document.getElementById('f-active').checked;
       Promise.all([
         post('/api/admin/products/' + PRODUCT_ID + '/stock', 'PUT', { stock: stock }),
         post('/api/admin/products/' + PRODUCT_ID + '/active', 'PUT', { active: active }),
-        post('/api/admin/products/' + PRODUCT_ID + '/featured', 'PUT', { featured: featured }),
-      ]).then(function(){ msg(document.getElementById('a-msg-topo'), 'Estoque e disponibilidade atualizados.', true); })
-        .catch(function(e){ msg(document.getElementById('a-msg-topo'), (e && e.message) || 'Erro.', false); });
+      ]).then(function(){ msg(document.getElementById('a-msg-estoque'), 'Estoque e disponibilidade atualizados.', true); setTimeout(function(){location.reload();}, 900); })
+        .catch(function(e){ msg(document.getElementById('a-msg-estoque'), (e && e.message) || 'Erro.', false); });
+    });
+    var salvarOlisek = document.getElementById('f-salvar-olisek');
+    if (salvarOlisek) salvarOlisek.addEventListener('click', function(){
+      var data = {
+        olisekId: document.getElementById('f-olisek-id').value,
+        olisekName: document.getElementById('f-olisek-name').value,
+        linkStatus: document.getElementById('f-olisek-status').value,
+      };
+      post('/api/admin/products/' + PRODUCT_ID + '/olisek', 'PUT', data)
+        .then(function(){ msg(document.getElementById('a-msg-olisek'), 'Vínculo OliSek atualizado.', true); setTimeout(function(){location.reload();}, 900); })
+        .catch(function(e){ msg(document.getElementById('a-msg-olisek'), (e && e.message) || (e && e.error) || 'Erro.', false); });
     });
     var despub = document.getElementById('f-despublicar');
     if (despub) despub.addEventListener('click', function(){

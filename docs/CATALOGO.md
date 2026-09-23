@@ -11,9 +11,12 @@ OliSek) sem tocar em mais nada.
 
 ### Tabelas (ver `server/db.js` para o schema completo)
 - `products` — nome, marca, categoria, notas, preço, `compare_price`
-  (preço "de", para promoção), estoque, `active` (publicado ou não),
-  `featured` (destaque), e os três campos de vínculo com a OliSek:
-  `olisek_id`, `olisek_name`, `olisek_match_confidence`.
+  (preço "de", para promoção), estoque, `stock_source` (`'olisek_import'` /
+  `'manual'` / `'none'` — de onde veio o número, ver seção "Estoque"
+  abaixo), `active` (publicado ou não), `featured` (destaque), e os três
+  campos de vínculo com a OliSek: `olisek_id`, `olisek_name`,
+  `olisek_link_status` (`'confirmed'` / `'probable'` / `'needs_review'` /
+  `'unlinked'` — ver `docs/OLISEK-INTEGRATION.md`).
 - `product_images` — um produto tem N fotos; uma é `is_main`.
 - `price_history` — toda vez que `catalogService.setPrice()` roda, uma
   linha nova é gravada aqui (preço antigo, novo, quem mudou, quando).
@@ -41,27 +44,52 @@ vínculo está certo, sem depender de decorar qual produto é qual.
   e para o schema.org `Product` (`offers` só ganha o campo `price` quando
   ele existe de verdade).
 
-## Estoque: nunca o número exato pro cliente
+## Estoque: nunca o número exato pro cliente, nunca um número inventado
 
-`catalogService.stockStatus(stock)` traduz o número em um dos três
-selos, e é isso — nunca o número — que qualquer tela pública mostra:
+**Atualizado no fechamento da V2 (24/09/2026):** `catalogService.stockStatus`
+(hoje `computeAvailability(row)`, olhando a linha inteira do produto, não só
+o número de estoque) traduz isso em um dos **quatro** selos que qualquer
+tela pública mostra — nunca o número exato, e nunca um selo de estoque
+inventado quando não há um número em que confiar:
 
-| Estoque         | Selo               |
-|-----------------|---------------------|
-| 0                | Indisponível         |
-| 1 a 10           | Últimas unidades      |
-| 11 ou mais       | Em estoque            |
+| Situação                                              | Selo                     |
+|--------------------------------------------------------|--------------------------|
+| Sem estoque confiável (sem vínculo OliSek, ou vínculo `needs_review`/`unlinked`, e ninguém digitou um número à mão) | **Consulte disponibilidade** |
+| Estoque confiável e igual a 0                           | Indisponível no momento  |
+| Estoque confiável, 1 a 10                               | Últimas unidades         |
+| Estoque confiável, 11 ou mais                           | Em estoque               |
+
+Um estoque só é "confiável" (`isStockReliable(row)`) quando veio de um
+vínculo OliSek `confirmed`/`probable` (`stock_source='olisek_import'`) ou
+foi digitado à mão em `/admin` (`stock_source='manual'`) — o valor padrão
+`0` da coluna (`stock_source='none'`) nunca é, por si só, uma afirmação de
+que o produto acabou. Isso é o que garante a regra "produto zerado nunca
+some do catálogo, só vira 'Indisponível no momento' quando alguém de fato
+confirmou o zero" (ver `docs/OLISEK-INTEGRATION.md` e
+`server/olisek-link-status-2026-09-24.js` pra um exemplo real de dois
+produtos que passaram a mostrar "Consulte" depois de uma reclassificação).
 
 O limite "10" é o único número mágico do sistema e está isolado em uma
 constante (`STOCK_THRESHOLD.ultimas`, topo de `catalogService.js`) —
 mudar o limite é editar um número, não reescrever lógica.
+
+## Foto ausente: sempre um placeholder oficial, nunca uma imagem quebrada
+
+Quando um produto não tem nenhuma foto em `product_images`, a API pública e
+a página de produto devolvem `image: PLACEHOLDER_IMAGE`
+(`/assets/images/placeholder-produto.svg` — um SVG desenhado à mão, na
+identidade visual do site, sem nenhum byte de foto real embutido nele e
+sem base64) em vez de um campo vazio. O front-end nunca precisa checar "e
+se não tiver foto?" — sempre há uma imagem pra mostrar. `hasImage: false`
+no JSON da API indica que é o placeholder, caso algum consumidor precise
+distinguir os dois casos.
 
 ## API pública (`server/routes/publicApi.js`)
 
 - `GET /api/products` — lista os produtos publicados (`active=1`).
   Filtros por querystring: `q` (busca por nome/marca), `brand` (slug da
   marca), `genero`, `categoria`, `disponibilidade`
-  (`em_estoque`/`ultimas`/`indisponivel`), `destaque=true`. O front-end
+  (`em_estoque`/`ultimas`/`indisponivel`/`consulte`), `destaque=true`. O front-end
   hoje busca a lista inteira uma vez e filtra no navegador (mais rápido
   pra quem tá navegando); os filtros de querystring existem para quem
   quiser consumir a API diretamente.
@@ -75,9 +103,12 @@ mudar o limite é editar um número, não reescrever lógica.
 Renderizada no servidor (não é a mesma SPA do catálogo). Cada produto tem
 URL própria, com `<title>`, `og:description`, `og:image` e um JSON-LD
 `Product` — só preenchidos com o que existe de verdade (ver seção acima).
-Mostra galeria, notas (topo/coração/fundo, quando existem), selo de
-estoque, preço ou "Consulte", botão de adicionar à sacola (desabilitado
-se `indisponivel`) e produtos relacionados.
+Mostra galeria (sempre com pelo menos uma imagem — o placeholder oficial
+quando não há foto real), notas (topo/coração/fundo, quando existem), selo
+de disponibilidade (um dos 4 estados), preço ou "Consulte", botão de
+adicionar à sacola (desabilitado quando o estado é `indisponivel` ou
+`consulte` — só compra direta quando o estoque é confiável) e produtos
+relacionados.
 
 ## Grade de marcas (`/#marcas`)
 

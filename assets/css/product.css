@@ -9,9 +9,11 @@
 .pd-layout{display:grid;grid-template-columns:minmax(0,460px) 1fr;gap:48px;align-items:start}
 @media (max-width:860px){.pd-layout{grid-template-columns:1fr;gap:28px}}
 
+/* Não existe mais ".pd-galeria--vazia": desde o placeholder oficial de
+   imagem (fechamento V2, regra 2), a galeria sempre tem pelo menos uma
+   imagem pra mostrar — nunca fica vazia. */
 .pd-galeria{display:flex;flex-direction:column;gap:10px}
 .pd-galeria img{width:100%;aspect-ratio:4/5.2;object-fit:cover;border-radius:14px;background:var(--bg-3);border:1px solid var(--line)}
-.pd-galeria--vazia{aspect-ratio:4/5.2;border-radius:14px;background:var(--bg-3);border:1px solid var(--line)}
 
 .pd-info{display:flex;flex-direction:column;gap:14px;padding-top:4px}
 .pd-marca{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0}
@@ -20,6 +22,7 @@
 .pd-selo--em_estoque{background:rgba(96,200,120,.14);color:#8fd6a4}
 .pd-selo--ultimas{background:rgba(201,164,76,.16);color:var(--gold-2)}
 .pd-selo--indisponivel{background:rgba(200,115,90,.16);color:#e0a789}
+.pd-selo--consulte{background:rgba(255,255,255,.08);color:var(--ink-dim)}
 .pd-preco{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold-2);margin:2px 0 0;font-variant-numeric:tabular-nums}
 .pd-preco--consulte{color:var(--ink-dim);font-family:inherit;font-size:1rem}
 .pd-preco-de{color:var(--ink-faint);text-decoration:line-through;font-size:1rem;margin-right:10px;font-weight:400}

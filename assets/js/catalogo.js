@@ -39,28 +39,39 @@
       return e;
     }
     function norm(t){ return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
-    function linkWhatsApp(nome){
-      var msg = 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o perfume ' + nome + '.';
+    /* Sem preço: mensagem exata pedida (fechamento V2, regra 3) — pergunta
+       pelo VALOR, porque é isso que falta. Com preço: mensagem genérica de
+       interesse, que serve tanto pra quem quer comprar quanto pra quem só
+       quer confirmar disponibilidade. */
+    function linkWhatsApp(p){
+      var nome = p && p.name || '';
+      var msg = p && !p.price
+        ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do perfume ' + nome + '.'
+        : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o perfume ' + nome + '.';
       return 'https://wa.me/' + wa + '?text=' + encodeURIComponent(msg);
     }
     function botaoWhatsApp(p){
       var a = el('a','prod-wa');
-      a.href = linkWhatsApp(p.name); a.target = '_blank'; a.rel = 'noopener';
+      a.href = linkWhatsApp(p); a.target = '_blank'; a.rel = 'noopener';
       a.setAttribute('aria-label','Consultar ' + p.name + ' no WhatsApp');
       a.innerHTML = WA_SVG;
       a.appendChild(document.createTextNode('Consultar no WhatsApp'));
       return a;
     }
+    /* Só deixa adicionar à sacola quando o estoque é um número em que a
+       gente confia (em_estoque/ultimas). "Indisponível" (zerado confirmado)
+       e "consulte" (sem vínculo/sem estoque confiável) nunca viram botão de
+       compra direta — ver regras 4 e 5 do fechamento da V2: nunca inventar
+       disponibilidade, e produto zerado nunca some, só bloqueia o carrinho. */
+    function podeComprar(p){ return p.stockStatus === 'em_estoque' || p.stockStatus === 'ultimas'; }
     function botaoAdd(p){
       var b = el('button','prod-add');
       b.type = 'button';
-      var indisp = p.stockStatus === 'indisponivel';
-      if (indisp) { b.disabled = true; b.setAttribute('aria-label', p.name + ' está indisponível'); }
-      else b.setAttribute('aria-label','Adicionar ' + p.name + ' à sacola');
+      b.setAttribute('aria-label','Adicionar ' + p.name + ' à sacola');
       b.innerHTML = ICON_MAIS;
       b.addEventListener('click', function(ev){
         ev.stopPropagation();
-        if (!window.ENSacola || indisp) return;
+        if (!window.ENSacola) return;
         window.ENSacola.add(p);
         b.classList.add('ok'); b.innerHTML = ICON_OK;
         setTimeout(function(){ b.classList.remove('ok'); b.innerHTML = ICON_MAIS; }, 1300);
@@ -115,7 +126,7 @@
         if (filtro !== 'todos' && p.category !== filtro) return false;
         if (fMarca && p.brandSlug !== fMarca) return false;
         if (fGenero && p.gender !== fGenero) return false;
-        if (soEstoque && p.stockStatus === 'indisponivel') return false;
+        if (soEstoque && !podeComprar(p)) return false;
         if (!t) return true;
         return norm(p.name).indexOf(t) > -1 || norm(p.brand).indexOf(t) > -1;
       });
@@ -146,7 +157,7 @@
       if (p.featured) media.appendChild(el('span','prod-destaque','Destaque'));
       var selo = el('span','prod-selo prod-selo--' + p.stockStatus, p.stockLabel);
       media.appendChild(selo);
-      if (p.stockStatus !== 'indisponivel') media.appendChild(botaoAdd(p));
+      if (podeComprar(p)) media.appendChild(botaoAdd(p));
       art.appendChild(media);
 
       var body = el('div','prod-body');
@@ -201,7 +212,7 @@
         body.appendChild(dl);
       }
       var cta = el('div','pd-cta');
-      if (p.stockStatus !== 'indisponivel') {
+      if (podeComprar(p)) {
         var addBtn = el('button','btn btn-primary pd-add','Adicionar à sacola');
         addBtn.type = 'button';
         addBtn.addEventListener('click', function(){ if (window.ENSacola) window.ENSacola.add(p); pd.close(); });

@@ -18,40 +18,55 @@ navegador manda ele sozinho em cada requisição pro mesmo domínio.
 
 ## As duas contas
 
+**Atualizado no fechamento da V2 (24/09/2026):** a vendedora ficou restrita
+exatamente aos 4 campos da regra 7 do fechamento — preço, promoção, fotos e
+destaque. Publicar/ocultar e ajustar estoque manual, que antes eram dela
+também, passaram a ser só de admin/gerente (o zero de estoque de um produto
+recém-cadastrado não é uma afirmação de ninguém, e decidir isso é uma
+responsabilidade da administração, não da venda do dia a dia).
+
 | Pode fazer...                                    | Vendedora | Admin/Gerente |
 |---------------------------------------------------|:---------:|:--------------:|
-| Ver e buscar produtos                              | ✅         | ✅              |
+| Ver e buscar produtos, usar as abas de filtro (Sem preço, Sem imagem, etc.) | ✅ | ✅ |
 | Editar preço e preço "de" (promoção)                | ✅         | ✅              |
-| Publicar/ocultar um produto no site (`active`)      | ✅         | ✅              |
 | Marcar/desmarcar como destaque                      | ✅         | ✅              |
 | Trocar as fotos (subir, reordenar, definir principal, excluir) | ✅ | ✅        |
-| Ajustar o estoque manualmente                       | ✅         | ✅              |
+| Publicar/ocultar um produto no site (`active`)      | ❌         | ✅              |
+| Ajustar o estoque manualmente                       | ❌         | ✅              |
 | Editar nome, marca, categoria, notas, descrição      | ❌         | ✅              |
+| Editar o vínculo OliSek (ID, nome, status)           | ❌         | ✅              |
 | Criar produto novo                                  | ❌         | ✅              |
 | Despublicar em definitivo / apagar                  | ❌         | ✅ (soft-delete — histórico fica) |
 | Ver o histórico completo de alterações de preço      | ❌         | ✅              |
 | Importar relatório da OliSek / confirmar vínculo     | ❌         | ✅              |
 | Cadastrar marca nova                                 | ❌         | ✅              |
 
-Essa divisão está em `server/routes/adminApi.js` (função `isAdmin`,
-usada em cada rota que precisa ser exclusiva de admin) — nunca no
-front-end: mesmo que alguém edite o HTML da página no navegador, a
-tentativa de salvar é recusada pelo servidor com `403`.
+Essa divisão está em `server/routes/adminApi.js` (função `isAdmin`/
+`requireAdmin`, usada em cada rota que precisa ser exclusiva de admin) —
+nunca só no front-end: mesmo que alguém edite o HTML da página no
+navegador pra fazer os campos aparecerem, a tentativa de salvar é
+recusada pelo servidor com `403` (a vendedora nem vê os campos de
+estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
 
 ## Telas
 
 - `/admin/login` — usuário e senha.
 - `/admin/trocar-senha` — obrigatória no primeiro acesso; disponível a
   qualquer momento depois disso.
-- `/admin/produtos` — lista com busca (nome, marca ou ID da OliSek),
-  mostrando de cada produto: se tem vínculo confirmado com a OliSek (e se
-  esse vínculo é "confirmado" ou só "provável" — ver
-  `docs/OLISEK-INTEGRATION.md`), preço, selo de estoque, se está
+- `/admin/produtos` — lista com busca (nome, marca ou ID da OliSek) e uma
+  barra de abas com contador (`Todos`, `Sem preço (28)`, `Sem imagem`,
+  `Sem vínculo OliSek`, `Indisponíveis`, `Em estoque`, `Precisa revisão` —
+  regra 8 do fechamento V2), mostrando de cada produto: o vínculo com a
+  OliSek (`confirmado` / `provável` / `precisa revisão` / `sem vínculo` —
+  ver `docs/OLISEK-INTEGRATION.md`), se tem foto, preço, selo de
+  disponibilidade (agora com 4 estados — ver `docs/CATALOGO.md`), se está
   publicado e se é destaque.
 - `/admin/produtos/novo` — só admin/gerente.
 - `/admin/produtos/:id` — a tela de edição de um produto: cadastro
-  completo (só admin), vínculo OliSek (somente leitura), preço + histórico,
-  estoque/disponibilidade/destaque, e fotos.
+  completo (só admin), vínculo OliSek (leitura pra todo mundo; formulário
+  editável de ID/nome/status só pra admin, via `PUT
+  /api/admin/products/:id/olisek`), preço + destaque + histórico (histórico
+  só admin), estoque/publicar-ou-ocultar (só admin), e fotos.
 
 ## Preço: como o histórico funciona
 
