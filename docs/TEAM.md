@@ -27,7 +27,7 @@ já otimizados para web (WebP, 900x1200 — proporção 3:4, ~65–105 KB cada):
 | Arquivo | Pessoa | Uniforme |
 |---|---|---|
 | `bassam.webp`  | Bassam  | camisa social preta com logo dourado |
-| `nicole.webp`  | Nicole  | polo preta com logo dourado |
+| `nicole-v2.webp` | Nicole  | polo preta com logo dourado |
 | `larissa-v2.webp` | Larissa | polo preta com logo dourado (versão definitiva, sem a corrente com cruz) |
 | `livia.webp`   | Livia   | polo preta com logo dourado |
 
@@ -36,8 +36,8 @@ Os originais em PNG ficam só na máquina do cliente, fora do repositório.
 **Troca de foto = nome de arquivo novo.** O servidor manda o navegador
 guardar imagens por 24h (`Cache-Control: max-age=86400`), então quem já
 visitou o site continua vendo a foto antiga se o arquivo novo tiver o
-mesmo nome. Por isso a foto definitiva da Larissa se chama
-`larissa-v2.webp` — ao trocar a foto de alguém, use um nome novo
+mesmo nome. Por isso as fotos definitivas da Larissa e da Nicole se chamam
+`larissa-v2.webp` e `nicole-v2.webp` — ao trocar a foto de alguém, use um nome novo
 (ex.: `nome-v2.webp`, `nome-v3.webp`) e atualize o `src` em `#equipe`.
 
 A associação nome→foto veio do próprio nome do arquivo enviado pelo
