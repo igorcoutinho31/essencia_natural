@@ -135,11 +135,28 @@ ler e aprovar:
   `statusLoja` de `assets/js/vida.js`.
 
 ## V2 — pendências específicas do catálogo/admin (23/09/2026)
-- Confirmar se o vínculo "SABAH" → OliSek 803958 está mesmo certo (está
-  marcado como "provável", não "confirmado" — ver
-  `docs/OLISEK-INTEGRATION.md`).
-- Lista completa de vínculos OliSek para os outros ~29 produtos — o
-  cliente disse que vai enviar.
+- **Atualizado 23/09/2026 (tarde):** o cliente enviou o relatório de
+  movimentação da OliSek e 27 dos 34 produtos já foram vinculados (ver
+  `docs/OLISEK-INTEGRATION.md`). Do que falta:
+  - 5 vínculos marcados **"provável"** (SABAH, KHAMARAH QAWAH, MUSAMAM
+    BLACK, Fakhar Black, Fakhar Gold) — pedir para a loja confirmar
+    olhando a OliSek diretamente (motivo de cada um em
+    `docs/OLISEK-INTEGRATION.md`).
+  - 7 produtos **sem nenhum vínculo** por falta de nome parecido no
+    relatório: VICTORIOSO, MANDARINSKY, JAMRAH x BURKAN, MAAHIR BLACK x
+    WHITE, "perfume FATIMA com sabonetes em formato de Rosas", SO CANDID
+    e Aurora. Precisa perguntar pro cliente o nome exato desses itens na
+    OliSek (ou confirmar se ainda são vendidos).
+- PREÇO — continua pendente. Nenhum dos dois arquivos que a loja mandou
+  (relatório de movimentação e lista mestre de estoque) tem coluna de
+  preço — só ID, nome, categoria e quantidade. Sem isso, o site continua
+  mostrando "Consulte" para os 34 produtos.
+- Lista de clientes (`clientes_2026-09-23_00-13-19.xls`, exportada da
+  OliSek, 199 pessoas com nome/telefone) foi recebida, mas **não foi
+  usada** — o site/admin de hoje não tem nenhuma tela de clientes ou CRM
+  (isso seria uma funcionalidade nova, fora do escopo já aprovado da V2).
+  Perguntar pro cliente o que ele quer fazer com esse arquivo antes de
+  criar qualquer coisa com dado de cliente (nome/telefone é dado pessoal).
 - Logos das marcas: nenhum foi enviado ainda (ver `docs/CATALOGO.md`,
   seção "Grade de marcas").
 - Otimização automática de imagem no upload do admin: não existe hoje

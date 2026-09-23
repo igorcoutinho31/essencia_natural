@@ -17,37 +17,98 @@ isso acontecer, a integração é **manual**: a loja exporta/copia os dados
 de dentro do sistema OliSek e alguém confirma o vínculo no nosso `/admin`.
 
 ### O que funciona hoje (sem depender de nenhuma API)
-- 5 produtos do catálogo já têm o `olisek_id` e o nome de origem da OliSek
-  gravados no banco, com o estoque que a loja informou em 23/09/2026:
 
-  | Produto no site | ID OliSek | Nome na OliSek                        | Estoque | Confiança |
-  |------------------|-----------|-----------------------------------------|---------|-----------|
-  | ATHEERI           | 804491    | LATTAFA ATHEERI EDP F 100ML              | 28      | confirmado |
-  | KHAMARAH          | 804502    | LATTAFA KHAMARA EDP U 100ML              | 4       | confirmado |
-  | Marshmallow Blush | 804547    | PARIS CORNER MARSHMALLOW BLUSH ED100ML   | 50      | confirmado |
-  | club de nuit Intense Man | 804007 | ARMAF CLUB DE NUIT INTENSE EDP M 105ML | 122   | confirmado |
-  | SABAH             | 803958    | AL WATANIAH SABAH AL WARD EDP 100ML      | 558     | **provável** |
+**Atualização 23/09/2026 (tarde):** o cliente enviou o relatório de
+movimentação da OliSek (`Essencia Natural.pdf`, exportado em
+`https://olisek.com.br`, 22/09/2026 23:58) com ID, nome e estoque atual de
+todos os itens já cadastrados na loja. A partir dele, **27 dos 34 produtos
+do catálogo** agora têm `olisek_id` gravado no banco (script de importação:
+`server/olisek-import-2026-09-23.js`, mantido no repositório como registro
+do que foi importado e quando):
 
-  ⚠️ **SABAH está marcado como "provável", não "confirmado".** O nome do
-  produto no site ("SABAH") é mais curto que o nome completo da OliSek
-  ("AL WATANIAH SABAH AL WARD EDP 100ML") — a correspondência foi feita
-  por nome parecido, não por conferência humana direta linha a linha. Vale
-  a pena o time da loja confirmar isso olhando os dois sistemas lado a
-  lado antes de confiar 100% no estoque desse item específico. Depois de
-  confirmado, é só trocar `olisek_match_confidence` para `'confirmado'`
-  (via `/admin`, quando a tela de confirmação existir, ou direto no banco).
+  | Produto no site | ID OliSek | Nome na OliSek | Estoque | Confiança |
+  |------------------|-----------|-----------------|---------|-----------|
+  | ATHEERI | 804491 | LATTAFA ATHEERI EDP F 100ML | 28 | confirmado |
+  | KHAMARAH | 804502 | LATTAFA KHAMARA EDP U 100ML | 4 | confirmado |
+  | Marshmallow Blush | 804547 | PARIS CORNER MARSHMALLOW BLUSH ED100ML | 50 | confirmado |
+  | club de nuit Intense Man | 804007 | ARMAF CLUB DE NUIT INTENSE EDP M 105ML | 122 | confirmado |
+  | Elysian Fields Kiss, QAWAFI | 805746 | QAWAFI ELYSIAN FIELDS KISS | 78 | confirmado |
+  | Elysian Fields Silk, QAWAFI | 805745 | QAWAFI ELYSIAN FIELDS SILK 100ML | 18 | confirmado |
+  | The Show Magnifique (Paris Corner) | 805684 | THE SHOW MAGNIFIQUE | 0 | confirmado |
+  | Eqaab | 804290 | AL WATANIAH EQAAB EDP H 100ML | 1 | confirmado |
+  | HIS CONFESSION | 804121 | LATTAFA HIS CONFESSION EDP M 100ML | 0 | confirmado |
+  | AZM | 805708 | PARIS CORNER AZM 100ML | 12 | confirmado |
+  | club de nuit WOMAN | 804055 | ARMAF CLUB DE NUIT WOMAN EDP 105ML | 45 | confirmado |
+  | club de nuit UNTOLD | 804432 | ARMAF CLUB DE NUIT UNTOLD EDP 105ML | 6 | confirmado |
+  | club de nuit MALEKA | 804264 | ARMAF CLUB DE NUIT MALEKA EDP F 105ML | 45 | confirmado |
+  | club de nuit BLING | 804543 | ARMAF CLUB DE NUIT BLING EDP 75ML | 35 | confirmado |
+  | club de nuit iconic | 804134 | ARMAF CLUB DE NUIT ICONIC EDP M 105ML | 12 | confirmado |
+  | Body Cream SO CANDID | 805689 | MAISON BODY CREAM SO CANDID | 52 | confirmado |
+  | Body Cream DELILAH | 805687 | BODY CREAM DELILAH | 97 | confirmado |
+  | Body Cream SALVO | 805691 | MAISON BODY CREAM SALVO | 10 | confirmado |
+  | JASOOR | 805662 | LATTAFA JASOOR 100ML | 17 | confirmado |
+  | SALVO | 804078 | MAISON AL HAMBRA SALVO INTENSE M 100ML | 46 | confirmado |
+  | Fakhar Platin | 804263 | LATTAFA FAKHAR PLATIN EDP M 100ML | 30 | confirmado |
+  | Fakhar Rose, o mais querido pelas mulheres | 804019 | LATTAFA FAKHAR ROSE EDP 100ML | 119 | confirmado |
+  | SABAH | 803958 | AL WATANIAH SABAH AL WARD EDP 100ML | 558 | **provável** |
+  | KHAMARAH QAWAH | 804660 | LATTAFA KHAMRAH QAHWA SELO ANTIGO EDP | 23 | **provável** |
+  | MUSAMAM BLACK | 804549 | LATTAFA MUSAMAM BLACK INTENSE EDP | 1 | **provável** |
+  | Fakhar Black | 804018 | LATTAFA FAKHAR PRETO EDP M 100ML | 57 | **provável** |
+  | Fakhar Gold | 804020 | LATTAFA FAKHAR GOLD EDP U 100ML SELO NOVO | 0 | **provável** |
 
-- Os outros ~29 produtos do catálogo continuam **sem vínculo** —
-  aparecem em `/admin/produtos` com o selo cinza "Aguardando vínculo" e
-  estoque `0` (o que os mostra como "Indisponível" no site público — uma
-  escolha deliberada: melhor mostrar indisponível do que inventar que tem
-  estoque). Assim que a loja mandar a lista completa de IDs/nomes/estoque
-  da OliSek, esses produtos são vinculados um a um.
+  ⚠️ **Os 5 itens marcados "provável" precisam de confirmação humana antes
+  de confiar 100% no estoque:**
+  - **SABAH**: nome do site mais curto que o da OliSek (já registrado desde
+    a primeira importação).
+  - **KHAMARAH QAWAH**: o relatório só tem "LATTAFA KHAMRAH QAHWA **SELO
+    ANTIGO** EDP" — não achamos uma versão sem "selo antigo"; pode ser o
+    mesmo perfume ou uma embalagem antiga descontinuada.
+  - **MUSAMAM BLACK**: o relatório só tem "LATTAFA MUSAMAM BLACK **INTENSE**
+    EDP" (existe também um "MUSAMAM WHITE" separado) — a palavra "Intense"
+    a mais não deixa 100% certo que é o mesmo item do site.
+  - **Fakhar Black**: vinculado por tradução ("Preto" = "Black"), ao produto
+    "LATTAFA FAKHAR **PRETO** EDP M 100ML" — não é o mesmo texto, então vale
+    confirmar com a loja se é essa a peça certa.
+  - **Fakhar Gold**: o relatório tem DOIS registros parecidos — "SELO
+    ANTIGO" (ID 804583, estoque 0) e "SELO NOVO" (ID 804020, estoque 0) —
+    vinculamos ao "SELO NOVO" por ser a versão mais provável de estar em
+    produção hoje, mas a loja precisa confirmar qual dos dois é o produto
+    do site (ou se são dois produtos diferentes).
+
+  Depois de confirmado, é só trocar `olisek_match_confidence` para
+  `'confirmado'` (via `/admin`, quando a tela de confirmação existir, ou
+  direto no banco).
+
+- **7 produtos continuam sem vínculo** — não encontramos, no relatório
+  enviado, nenhum item com nome parecido o bastante para linkar com
+  segurança:
+
+  | Produto no site | Por quê ficou de fora |
+  |---|---|
+  | VICTORIOSO | A OliSek só tem variações com sufixo ("...FEARLESS", "...HEROIC", "...LEGACY", "...MYTH") — não dá pra saber qual delas é a do site. |
+  | MANDARINSKY | Nenhum item com nome parecido no relatório. |
+  | JAMRAH x BURKAN | Nenhum item com esse nome composto; existe um "FERASSA BURKAN" isolado, mas não é claramente o mesmo produto. |
+  | MAAHIR BLACK x WHITE | A OliSek só tem "MAAHIR GOLD" e "MAAHIR HONOR" — nenhum "BLACK x WHITE". |
+  | perfume FATIMA com sabonetes em formato de Rosas | Existe um "ZIMAYA FATIMA PINK" na OliSek, mas é claramente outro produto (não é o kit com sabonetes). |
+  | SO CANDID | A OliSek tem 3 variações diferentes de "SO CANDID" (body splash, body cream e um EDP "pour homme") e não dá pra saber qual delas é a do site — a "Body Cream SO CANDID" já foi vinculada separadamente por ter nome inequívoco. |
+  | Aurora | Já sinalizado em `docs/TODO-VERIFY.md` como possivelmente não sendo um produto avulso; a OliSek tem várias linhas "Aurora Scents ..." mas nenhuma chamada só "Aurora". |
+
+  Esses 7 continuam com estoque `0` (Indisponível) até a loja confirmar o
+  nome certo ou decidir remover o item do catálogo.
 
 - `server/services/olisekService.js` já tem uma função `parseReport(texto)`
   que lê um relatório colado (exportado/copiado manualmente da OliSek, em
   CSV simples) e devolve as linhas interpretadas — pronta pra alimentar
   uma tela de importação em lote no admin.
+
+- Também recebemos, junto com o relatório de movimentação, um segundo
+  arquivo da OliSek (`Estoque Essencia Natural.pdf`, 50 páginas): é a lista
+  **mestre** de produtos cadastrados na plataforma (a maioria com
+  quantidade 0), incluindo categorias que não têm nada a ver com a loja de
+  perfumes (ex.: `SWAP`, `LACRADO`, `XIAOMI` — celulares). Não tem ID nem
+  preço, só nome/categoria/quantidade. Não foi usado para vincular nada:
+  serve só como referência de nomes, caso um vínculo "provável" precise ser
+  conferido manualmente depois.
 
 ### O que ainda não existe (fica pronto para quando a API existir)
 - Nenhuma chamada de rede para a OliSek acontece hoje — nem do navegador,
