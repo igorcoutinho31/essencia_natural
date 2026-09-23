@@ -407,7 +407,6 @@
   .prod-selo--em_estoque{background:rgba(96,200,120,.14);color:#8fd6a4}
   .prod-selo--ultimas{background:rgba(201,164,76,.16);color:var(--gold-2)}
   .prod-selo--indisponivel{background:rgba(200,115,90,.16);color:#e0a789}
-  .prod-selo--consulte{background:rgba(255,255,255,.08);color:var(--ink-dim)}
   .prod-destaque{
     position:absolute;top:10px;left:10px;z-index:1;background:var(--gold);color:#100b04;
     font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
@@ -419,7 +418,6 @@
   .pd-selo--em_estoque{background:rgba(96,200,120,.14);color:#8fd6a4}
   .pd-selo--ultimas{background:rgba(201,164,76,.16);color:var(--gold-2)}
   .pd-selo--indisponivel{background:rgba(200,115,90,.16);color:#e0a789}
-  .pd-selo--consulte{background:rgba(255,255,255,.08);color:var(--ink-dim)}
   .pd-link{color:var(--gold-2);text-decoration:underline;text-underline-offset:3px;font-size:.85rem}
   .prod-indisponivel{opacity:.6}
   .prod-media{position:relative}

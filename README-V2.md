@@ -170,39 +170,69 @@ item existe por um motivo concreto explicado abaixo dele.
 
 ## Teste final antes de publicar (desktop + mobile)
 
-Roteiro mínimo rodado no fechamento da V2 (24/09/2026), pensado pra cobrir
-os quatro estados novos de disponibilidade sem virar uma suíte pesada:
+Roteiro mínimo do **segundo fechamento da V2** (23/09/2026), que trocou o
+antigo modelo de 4 estados/"Consulte disponibilidade" pela regra atual —
+estoque com 3 selos simples + visibilidade separada por `stock`/`sales`
+(ver `docs/CATALOGO.md`). Pensado pra cobrir exatamente essa mudança sem
+virar uma suíte pesada:
 
-1. Home carrega, catálogo lista os 34 produtos, filtro "Só em estoque"
-   esconde corretamente quem está "Indisponível" e "Consulte
-   disponibilidade" (não só quem está zerado).
-2. Um produto de cada estado (em estoque, últimas unidades, indisponível,
-   consulte) abre a página `/produto/:slug` com o selo certo, o botão
-   "Adicionar à sacola" habilitado só quando faz sentido, e o texto do botão
-   do WhatsApp certo (pergunta o valor quando não há preço).
-3. Um produto sem foto mostra o placeholder oficial (nunca uma imagem
-   quebrada); um produto sem marca mostra o nome da marca em texto, nunca
-   um espaço vazio.
-4. Sacola: adicionar um produto em estoque, tentar adicionar um
-   indisponível/consulte (não deve entrar), finalizar pelo WhatsApp e
-   conferir a mensagem gerada.
-5. `/admin/login` com a vendedora: só vê preço, promoção, fotos e destaque;
-   não vê estoque, publicar/ocultar nem o formulário de vínculo OliSek.
-6. `/admin/login` com a administração: vê e edita tudo, incluindo as abas de
-   filtro com contador ("Sem preço (34)", etc.) em `/admin/produtos`, e
-   consegue salvar um vínculo OliSek.
-7. Repetir os passos 1–4 numa viewport de celular (largura ~375px) —
-   catálogo, modal de produto e sacola continuam usáveis sem scroll
-   horizontal.
+1. Home carrega, catálogo lista os produtos publicamente visíveis
+   (`stock > 0 || sales >= 10` — hoje só os com estoque, já que não existe
+   dado real de vendas ainda) e nenhum produto oculto do catálogo aparece
+   na busca nem na navegação por marca/categoria.
+2. Produto **com estoque**: abre `/produto/:slug` com o selo certo ("Em
+   estoque" ou "Últimas unidades"), botão "Adicionar à sacola" habilitado,
+   botão do WhatsApp com a mensagem "...gostaria de consultar o valor do
+   produto [NOME]" quando não há preço, ou a mensagem padrão quando há.
+3. Produto **zerado com 10+ vendas** (hoje não existe nenhum de verdade —
+   simular só numa cópia de teste do banco, nunca em produção): continua
+   aparecendo no catálogo e na página própria, selo "Indisponível no
+   momento", botão de comprar desabilitado, botão de WhatsApp funcionando
+   normalmente pra consulta.
+4. Produto **oculto** (zerado, menos de 10 vendas): não aparece na
+   listagem pública nem na busca; `/produto/:slug` dele devolve 404;
+   continua existindo em `/admin`, aba "Ocultos do catálogo".
+5. Produto **sem preço**: mostra "Consulte" (nunca "R$ 0,00" nem um valor
+   calculado) e o botão de WhatsApp pede o valor, com "produto" no texto
+   da mensagem (não mais "perfume").
+6. Um produto sem foto mostra o placeholder oficial (nunca uma imagem
+   quebrada, inclusive quando o arquivo referenciado no banco não existe
+   mais em disco — testar renomeando/apagando um arquivo de upload e
+   confirmando que a página cai pro placeholder sozinha); um produto sem
+   marca ou sem logo de marca mostra o nome em texto, nunca um espaço
+   vazio nem um ícone de imagem quebrada.
+7. Sacola: adicionar um produto disponível, tentar adicionar um
+   indisponível (não deve entrar), finalizar pelo WhatsApp e conferir a
+   mensagem gerada.
+8. `/admin`: os 9 filtros da lista de produtos (Todos, Em estoque,
+   Vendidos, Indisponíveis, Ocultos do catálogo, Sem preço, Sem imagem,
+   Sem vínculo OliSek, Precisa revisão) mostram contagens condizentes
+   entre si e com "Todos"; a vendedora só vê/edita preço, promoção, fotos
+   e destaque; a administração vê e edita tudo, incluindo estoque manual e
+   o formulário de vínculo OliSek, e consegue salvar um upload de imagem
+   novo.
+9. Login/logout do admin funcionando (sessão expira, cookie unset no
+   logout).
+10. Repetir os passos 1–7 numa viewport de celular (largura ~375px) —
+    catálogo, modal de produto e sacola continuam usáveis sem scroll
+    horizontal.
 
 ## O que falta / próximos passos conhecidos
 
 - Preços reais de cada produto (todos os produtos hoje mostram "Consulte"
   — nenhum preço foi inventado).
-- A lista completa de vínculos com a OliSek para os ~29 produtos que ainda
-  estão como "aguardando vínculo" (ver `docs/OLISEK-INTEGRATION.md`).
-- Logos das marcas (a grade de `/#marcas` mostra só o nome até a loja
-  enviar os arquivos).
+- A lista completa de vínculos com a OliSek para os produtos que ainda
+  estão como "aguardando vínculo", "provável" ou "precisa revisão" (ver
+  `docs/OLISEK-INTEGRATION.md`).
+- **Dado real de vendas acumuladas (`sales`)**: a coluna existe e a regra
+  de visibilidade já olha pra ela, mas nenhuma importação real de vendas
+  da OliSek aconteceu ainda — todo produto está com `sales=0`. Até isso
+  existir, um produto zerado só volta a aparecer no catálogo com estoque
+  novo, nunca só por vendas.
+- **Logos das marcas**: pasta `assets/brands/` já criada e o fallback pro
+  nome em texto (com ou sem logo quebrado) já funciona; falta a loja
+  enviar o arquivo `Marcas.zip` com os logos de verdade pra extrair,
+  padronizar os nomes e vincular a cada marca.
 - Otimização automática de imagem no upload (ver limitação acima).
 - Testes automatizados formais (hoje a cobertura é manual, via Playwright,
   rodada durante o desenvolvimento — não há suíte de testes no repositório).

@@ -146,6 +146,7 @@ async function setOlisekLink(req, res, id) {
       olisekName: body.olisekName ?? null,
       linkStatus: body.linkStatus,
       stock: body.stock,
+      sales: body.sales,
     });
     if (!product) return sendJSON(res, 404, { error: 'not_found' });
     sendJSON(res, 200, { product });

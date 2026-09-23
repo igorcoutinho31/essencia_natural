@@ -63,16 +63,14 @@
 
     /* um item é "indisponível" (bloqueia a sacola) se o catálogo mais
        recente confirma isso — ou porque o produto foi desativado, ou
-       porque o estoque está zerado confirmado ("indisponivel"), ou porque
-       não há estoque confiável pra afirmar que dá pra vender agora
-       ("consulte" — sem vínculo OliSek ou sem número confiável; nunca
-       inventamos disponibilidade, ver fechamento V2 regra 4). Enquanto o
-       catálogo não carregou, não acusamos nada (a API pode ainda não ter
+       porque o estoque está zerado (só chega ao catálogo público zerado
+       quando já vendeu 10+ vezes, ver fechamento V2). Enquanto o catálogo
+       não carregou, não acusamos nada (a API pode ainda não ter
        respondido), só depois que `cat[id]` existe. */
     function indisponivel(id){
       var prod = cat[id];
       if (!prod) return false;
-      return prod.active === false || prod.stockStatus === 'indisponivel' || prod.stockStatus === 'consulte';
+      return prod.active === false || prod.stockStatus === 'indisponivel';
     }
 
     function mensagem(){
@@ -188,7 +186,7 @@
 
     function add(p){
       if (!p || p.id == null) return;
-      if (p.active === false || p.stockStatus === 'indisponivel' || p.stockStatus === 'consulte') return; // nunca adiciona um item sem estoque confiável
+      if (p.active === false || p.stockStatus === 'indisponivel') return; // nunca adiciona um item indisponível
       var id = String(p.id);
       cat[id] = p;
       var it = st.itens[id];

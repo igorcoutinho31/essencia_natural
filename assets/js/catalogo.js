@@ -24,6 +24,7 @@
 
     var LOTE = 12;
     var WA_PADRAO = '5511949614608';
+    var PLACEHOLDER = '/assets/images/placeholder-produto.svg';
     var WA_SVG = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.65 4.56 1.78 6.45L4 29l7.72-1.72a11.94 11.94 0 0 0 4.3.8h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.64 3 16.02 3Zm0 21.86h-.01a9.9 9.9 0 0 1-5.05-1.39l-.36-.21-4.58 1.02 1.04-4.47-.24-.37a9.86 9.86 0 0 1-1.5-5.42c0-5.46 4.44-9.9 9.9-9.9 5.45 0 9.88 4.44 9.88 9.9 0 5.46-4.43 9.84-9.08 9.84Zm5.42-7.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.36-1.46-.87-.78-1.46-1.74-1.63-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.47 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.22 5.1 4.5.71.3 1.27.49 1.7.63.72.23 1.36.2 1.88.12.57-.08 1.76-.72 2-1.42.24-.7.24-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>';
     var ICON_MAIS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
     var ICON_OK   = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -39,15 +40,16 @@
       return e;
     }
     function norm(t){ return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
-    /* Sem preço: mensagem exata pedida (fechamento V2, regra 3) — pergunta
-       pelo VALOR, porque é isso que falta. Com preço: mensagem genérica de
+    /* Sem preço: mensagem exata pedida (fechamento V2) — pergunta pelo
+       VALOR, porque é isso que falta. Com preço: mensagem genérica de
        interesse, que serve tanto pra quem quer comprar quanto pra quem só
-       quer confirmar disponibilidade. */
+       quer confirmar disponibilidade. "produto", não "perfume": o catálogo
+       tem itens que não são perfume (ex.: body cream). */
     function linkWhatsApp(p){
       var nome = p && p.name || '';
       var msg = p && !p.price
-        ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do perfume ' + nome + '.'
-        : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o perfume ' + nome + '.';
+        ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + nome + '.'
+        : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + nome + '.';
       return 'https://wa.me/' + wa + '?text=' + encodeURIComponent(msg);
     }
     function botaoWhatsApp(p){
@@ -148,10 +150,18 @@
 
       var media = el('div','prod-media');
       var img = new Image();
-      img.src = p.image || ''; img.alt = p.name; img.loading = 'lazy'; img.decoding = 'async';
+      img.alt = p.name; img.loading = 'lazy'; img.decoding = 'async';
       img.width = 700; img.height = 933;
       var ok = function(){ img.classList.add('ok'); };
-      img.addEventListener('load', ok); img.addEventListener('error', ok);
+      // Nunca deixa imagem quebrada: se o arquivo real falhar (apagado do
+      // disco, path errado etc.), troca pro placeholder oficial em vez de
+      // mostrar o ícone de imagem quebrada do navegador.
+      img.addEventListener('error', function(){
+        if (img.src.indexOf(PLACEHOLDER) === -1) { img.src = PLACEHOLDER; return; }
+        ok();
+      });
+      img.addEventListener('load', ok);
+      img.src = p.image || PLACEHOLDER;
       if (img.complete) ok();
       media.appendChild(img);
       if (p.featured) media.appendChild(el('span','prod-destaque','Destaque'));
@@ -192,7 +202,11 @@
       if (!pd || typeof pd.showModal !== 'function') return;
       pdGrid.textContent = '';
       var media = el('div','pd-media');
-      var img = new Image(); img.src = p.image || ''; img.alt = p.name; img.decoding = 'async';
+      var img = new Image(); img.alt = p.name; img.decoding = 'async';
+      img.addEventListener('error', function(){
+        if (img.src.indexOf(PLACEHOLDER) === -1) img.src = PLACEHOLDER;
+      });
+      img.src = p.image || PLACEHOLDER;
       media.appendChild(img);
       pdGrid.appendChild(media);
 
