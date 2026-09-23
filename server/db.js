@@ -46,6 +46,14 @@ CREATE TABLE IF NOT EXISTS brands (
   name TEXT NOT NULL UNIQUE,
   slug TEXT NOT NULL UNIQUE,
   logo_path TEXT,
+  -- 0 (padrão): marca sempre aparece em #marcas, mesmo sem produto ativo
+  -- vinculado ainda (é o caso das 18 marcas confirmadas desde o primeiro
+  -- fechamento da V2). 1: só aparece quando tiver pelo menos um produto
+  -- público/ativo — usado nas marcas confirmadas depois só por aparecerem
+  -- em relatório de estoque, sem produto do catálogo ainda vinculado a
+  -- elas (ver server/import-marcas-novas-2026-09-23.js e
+  -- catalogService.getBrandsPublic()).
+  requires_product INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -160,6 +168,17 @@ CREATE INDEX IF NOT EXISTS idx_price_history_product ON price_history(product_id
   const productCols2 = db.prepare('PRAGMA table_info(products)').all().map((c) => c.name);
   if (!productCols2.includes('sales')) {
     db.exec('ALTER TABLE products ADD COLUMN sales INTEGER NOT NULL DEFAULT 0');
+  }
+}
+
+// Segundo fechamento V2, rodada 2 (23/09/2026, à noite): coluna
+// `brands.requires_product` — ver o comentário no CREATE TABLE de `brands`
+// acima. Default 0 pra toda marca já existente (nenhuma das 18 marcas
+// confirmadas no primeiro fechamento muda de comportamento).
+{
+  const brandCols = db.prepare('PRAGMA table_info(brands)').all().map((c) => c.name);
+  if (!brandCols.includes('requires_product')) {
+    db.exec('ALTER TABLE brands ADD COLUMN requires_product INTEGER NOT NULL DEFAULT 0');
   }
 }
 

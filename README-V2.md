@@ -108,19 +108,22 @@ item existe por um motivo concreto explicado abaixo dele.
 3. **Inicializar o banco.** Duas situações diferentes:
    - **Recomendado, se já existe um `data/essencia.sqlite` de trabalho**
      (é o caso agora: já tem os 34 produtos, os 27 vínculos com a OliSek, as
-     fotos importadas e os 17 logos de marca) — copie esse arquivo (e a
+     fotos importadas e as 24 marcas com logo) — copie esse arquivo (e a
      pasta `uploads/`) direto para o volume persistente do passo 2, em vez
      de rodar os scripts de novo. Rodar tudo do zero em produção reconstrói
      só uma base parcial (ver abaixo).
    - **Do zero de verdade** (nenhum banco existe ainda) — rode, nesta
-     ordem: `node server/seed.js` (marcas, os 34 produtos do
-     `data/catalog.json`, conta administradora) → `node
+     ordem: `node server/seed.js` (as 24 marcas confirmadas, os 34 produtos
+     do `data/catalog.json`, conta administradora) → `node
      server/migrate-images.js` (fotos do catálogo antigo) → `node
      server/olisek-import-2026-09-23.js` (aplica os 27 vínculos reais com a
      OliSek) → `node server/olisek-link-status-2026-09-24.js` (reclassifica
      Fakhar Black/Gold para "precisa revisão") → `node
      server/import-marcas-logos-2026-09-23.js` (vincula os 17 logos de marca
-     já recebidos do cliente, em `assets/brands/`). Todos são seguros de
+     do primeiro `Marcas.zip`) → `node
+     server/import-marcas-novas-2026-09-23.js` (vincula o logo da Armaf e
+     cadastra + vincula o logo das 6 marcas confirmadas depois, já marcadas
+     `requires_product=1` — ver `docs/CATALOGO.md`). Todos são seguros de
      rodar mais de uma vez — não duplicam nem sobrescrevem dado já
      existente —, mas pular os últimos deixa a produção com menos vínculos
      OliSek e/ou sem os logos de marca, bem menos completo que a base atual
@@ -232,14 +235,17 @@ virar uma suíte pesada:
   da OliSek aconteceu ainda — todo produto está com `sales=0`. Até isso
   existir, um produto zerado só volta a aparecer no catálogo com estoque
   novo, nunca só por vendas.
-- **Logos das marcas**: recebido e aplicado (23/09/2026) — 17 das 18
-  marcas confirmadas já têm logo em `assets/brands/`; só falta o logo da
-  Armaf (não veio no `Marcas.zip`). O fallback pro nome em texto (com ou
-  sem logo quebrado) continua funcionando pra ela.
-- **6 marcas fora da lista confirmada** vieram no mesmo `Marcas.zip`
-  (Amouage, Anfar, Ferassa, Maison Asrar, Volaré, Za'afaran) — não foram
-  publicadas: precisa confirmar com a loja se ela realmente trabalha com
-  elas antes de virar marca nova em `/#marcas` (ver `docs/TODO-VERIFY.md`).
+- **Logos das marcas**: concluído (23/09/2026) — as 24 marcas cadastradas
+  (as 18 originais + 6 novas confirmadas depois) têm logo em
+  `assets/brands/`, incluindo a Armaf, que veio num segundo envio. O
+  fallback pro nome em texto (sem logo, ou se o arquivo quebrar depois)
+  continua funcionando normalmente.
+- **6 marcas novas cadastradas sem produto vinculado ainda** (Amouage,
+  Anfar, Ferassa, Maison Asrar, Volaré, Ard Al Zaafaran) — confirmadas
+  pelo cliente, com logo, mas ficam de fora de `/#marcas` até algum
+  produto do catálogo ser realmente dessa marca (`brands.requires_product`
+  — ver `docs/CATALOGO.md`). Nenhum produto foi criado só por causa
+  delas.
 - Otimização automática de imagem no upload (ver limitação acima).
 - Testes automatizados formais (hoje a cobertura é manual, via Playwright,
   rodada durante o desenvolvimento — não há suíte de testes no repositório).

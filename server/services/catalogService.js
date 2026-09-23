@@ -173,12 +173,30 @@ function getRelated(slug, limit = 4) {
   return pick.filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true))).map(rowToPublic);
 }
 
+/** Marcas visíveis em `/#marcas`. Regra (segundo fechamento V2, rodada 2,
+ *  23/09/2026): por padrão toda marca confirmada aparece, mesmo sem
+ *  produto ativo vinculado ainda — é o caso das 18 marcas do primeiro
+ *  fechamento (a loja confirmou trabalhar com elas independente do que já
+ *  está no catálogo de 34 itens). Uma marca com `requires_product = 1`
+ *  (hoje: as 6 confirmadas depois só por aparecerem em relatório de
+ *  estoque, sem produto do site vinculado — ver
+ *  server/import-marcas-novas-2026-09-23.js) só entra na lista pública
+ *  quando tiver pelo menos um produto ativo E publicamente visível
+ *  (isPubliclyVisible — nunca conta um produto que está `active` mas
+ *  oculto do catálogo por estoque zerado com poucas vendas). */
 function getBrandsPublic() {
-  return db.prepare(`
-    SELECT b.id, b.name, b.slug, b.logo_path AS logoPath,
+  const rows = db.prepare(`
+    SELECT b.id, b.name, b.slug, b.logo_path AS logoPath, b.requires_product AS requiresProduct,
       (SELECT COUNT(*) FROM products p WHERE p.brand_id = b.id AND p.active = 1) AS productCount
     FROM brands b ORDER BY b.name ASC
   `).all();
+  return rows
+    .filter((b) => {
+      if (!b.requiresProduct) return true;
+      const visiveis = db.prepare('SELECT * FROM products WHERE brand_id = ? AND active = 1').all(b.id);
+      return visiveis.some(isPubliclyVisible);
+    })
+    .map((b) => ({ id: b.id, name: b.name, slug: b.slug, logoPath: b.logoPath, productCount: b.productCount }));
 }
 
 // ---------- admin ----------

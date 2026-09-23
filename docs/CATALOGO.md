@@ -140,17 +140,21 @@ produtos relacionados.
 ## Grade de marcas (`/#marcas`)
 
 Vem de `GET /api/brands` (`assets/js/marcas.js`) — nenhuma marca é escrita
-à mão no `index.html`. As marcas que aparecem são exatamente as que
-`server/seed.js` cadastrou porque a loja confirmou trabalhar com elas (17
-nomes, mais QAWAFI e Paris Corner que já apareciam no catálogo antigo:
-ver a lista completa em `server/seed.js`, constante `MARCAS_CONFIRMADAS`).
+à mão no `index.html`. As marcas cadastradas em `brands` são todas as que
+`server/seed.js` criou porque a loja confirmou trabalhar com elas
+(constante `MARCAS_CONFIRMADAS`), mais as marcas dos dois scripts de
+import de logo (ver abaixo) — mas nem toda marca cadastrada aparece
+necessariamente na grade pública; ver a regra de visibilidade logo a
+seguir.
 
-**Atualizado 23/09/2026:** o cliente enviou `Marcas.zip` (22 arquivos).
-`server/import-marcas-logos-2026-09-23.js` (mantido no repositório como
-registro do que foi importado) padronizou os nomes pelo slug da marca,
-salvou em `assets/brands/` e ligou 17 das 18 marcas confirmadas via
-`brands.logo_path`. Só **Armaf** ficou sem logo (não veio no zip) — mostra
-o nome em texto normalmente, igual a qualquer marca sem arquivo.
+**Logos — atualizado 23/09/2026:** o cliente enviou `Marcas.zip` (22
+arquivos) e depois o logo da Armaf em separado.
+`server/import-marcas-logos-2026-09-23.js` e
+`server/import-marcas-novas-2026-09-23.js` (mantidos no repositório como
+registro do que foi importado) padronizaram os nomes pelo slug da marca,
+salvaram em `assets/brands/` e ligaram o logo de cada marca via
+`brands.logo_path`. Hoje as 24 marcas cadastradas têm logo — nenhuma
+ficou sem.
 
 Sem logo cadastrado — ou se o arquivo do logo quebrar/for removido depois
 — o cartão cai pro nome em texto (`cartaoTexto()` em `assets/js/marcas.js`,
@@ -158,12 +162,21 @@ com um listener de `error` na `<img>` cobrindo o segundo caso), nunca um
 ícone de imagem quebrada. Nenhum logo é inventado: uma marca sem arquivo
 confirmado pela loja fica como texto até o logo real chegar.
 
-O zip também trouxe 6 arquivos de marcas que **não estão** em
-`MARCAS_CONFIRMADAS` nem ligadas a nenhum produto do catálogo hoje
-(Amouage, Anfar, Ferassa, Maison Asrar, Volaré, Za'afaran) — ficaram de
-fora de propósito, sem virar marca nova sozinhos (ver
-`docs/TODO-VERIFY.md`). Precisam de confirmação do cliente antes de
-aparecer em `/#marcas`.
+**Regra de visibilidade — `brands.requires_product`:** as 18 marcas
+confirmadas no primeiro fechamento da V2 sempre aparecem em `/#marcas`,
+mesmo sem nenhum produto do catálogo de 34 itens vinculado a elas ainda
+— é assim desde a V1 e o cliente confirmou manter esse comportamento. Já
+as marcas confirmadas depois só porque apareciam num relatório de
+estoque da loja, sem nenhum produto do site ligado a elas — hoje: Amouage,
+Anfar, Ferassa, Maison Asrar, Volaré e Ard Al Zaafaran — nascem com
+`requires_product = 1` e só entram na grade pública quando tiverem pelo
+menos um produto **ativo e publicamente visível** (`isPubliclyVisible`,
+ver seção "Estoque" acima) vinculado. Até lá, elas existem normalmente em
+`brands` (com logo já ligado) mas `getBrandsPublic()`
+(`server/services/catalogService.js`) as filtra do resultado — não
+aparecem em `GET /api/brands` nem em `/#marcas`. Nenhum produto foi
+criado só pra fazer essas marcas aparecerem — regra explícita do
+cliente.
 
 ## Curadoria: por que nem todo item da OliSek vira produto do site
 
