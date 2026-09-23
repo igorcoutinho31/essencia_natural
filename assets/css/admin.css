@@ -1,0 +1,90 @@
+/* Admin (/admin) — estilo "back office": fundo claro, foco em tabela e
+   formulário, não é uma vitrine. Usa os mesmos tons da marca (dourado
+   sobre escuro) só nos acentos, para não parecer um sistema genérico. */
+:root{
+  --a-bg:#f7f4ec;
+  --a-card:#fff;
+  --a-ink:#1a1408;
+  --a-ink-dim:#6b6048;
+  --a-line:#e4ddc8;
+  --a-gold:#a9812f;
+  --a-gold-dim:#c9a44c;
+  --a-dark:#171209;
+  --a-ok:#2f7d4f;
+  --a-warn:#b3711b;
+  --a-danger:#a83232;
+  --a-font: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--a-bg); color:var(--a-ink);
+  font-family:var(--a-font); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--a-gold)}
+.a-top{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  background:var(--a-dark); color:#f4ecd8; padding:14px 24px;
+}
+.a-top a{color:#f4ecd8; text-decoration:none}
+.a-top .a-brand{font-family:'Cinzel',serif; letter-spacing:.04em; font-weight:600}
+.a-top .a-user{font-size:13px; color:#cbbf9d; display:flex; align-items:center; gap:12px}
+.a-wrap{max-width:1180px; margin:0 auto; padding:24px}
+.a-card{
+  background:var(--a-card); border:1px solid var(--a-line); border-radius:10px;
+  padding:20px 22px; margin-bottom:18px;
+}
+h1{font-family:'Cinzel',serif; font-size:22px; margin:0 0 6px}
+h2{font-family:'Cinzel',serif; font-size:17px; margin:0 0 12px}
+.a-sub{color:var(--a-ink-dim); font-size:13px; margin:0 0 18px}
+.a-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+label{display:block; font-size:12.5px; color:var(--a-ink-dim); margin:0 0 4px}
+input[type=text],input[type=password],input[type=number],input[type=search],select,textarea{
+  width:100%; padding:9px 11px; border:1px solid var(--a-line); border-radius:6px;
+  background:#fff; color:var(--a-ink); font:inherit;
+}
+textarea{resize:vertical; min-height:70px}
+.a-field{margin-bottom:14px}
+.a-grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.a-grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px}
+@media (max-width:680px){.a-grid2,.a-grid3{grid-template-columns:1fr}}
+.btn{
+  display:inline-flex; align-items:center; gap:6px; padding:9px 16px; border-radius:6px;
+  border:1px solid transparent; font:inherit; font-size:14px; cursor:pointer; text-decoration:none;
+}
+.btn-gold{background:var(--a-gold); color:#fff}
+.btn-gold:hover{background:var(--a-dark)}
+.btn-ghost{background:#fff; border-color:var(--a-line); color:var(--a-ink)}
+.btn-ghost:hover{border-color:var(--a-gold)}
+.btn-danger{background:#fff; border-color:var(--a-danger); color:var(--a-danger)}
+.btn-sm{padding:5px 10px; font-size:12.5px}
+table{width:100%; border-collapse:collapse; font-size:13.5px}
+th,td{text-align:left; padding:9px 8px; border-bottom:1px solid var(--a-line); vertical-align:middle}
+th{color:var(--a-ink-dim); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em}
+tr:hover td{background:#fbf9f2}
+.a-thumb{width:42px; height:56px; object-fit:cover; border-radius:4px; background:#eee; display:block}
+.badge{display:inline-block; padding:2px 8px; border-radius:99px; font-size:11.5px; font-weight:600}
+.badge-ok{background:#e4f3e9; color:var(--a-ok)}
+.badge-warn{background:#f7ead2; color:var(--a-warn)}
+.badge-danger{background:#f6e2e2; color:var(--a-danger)}
+.badge-muted{background:#eee; color:#777}
+.a-msg{padding:10px 14px; border-radius:6px; margin-bottom:16px; font-size:13.5px}
+.a-msg-ok{background:#e4f3e9; color:var(--a-ok)}
+.a-msg-err{background:#f6e2e2; color:var(--a-danger)}
+.a-login-wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px}
+.a-login-card{width:100%; max-width:360px}
+.a-hist{max-height:220px; overflow:auto; border:1px solid var(--a-line); border-radius:6px}
+.a-hist table{font-size:12.5px}
+.a-imgs{display:flex; gap:10px; flex-wrap:wrap; margin:10px 0}
+.a-img{position:relative; width:88px}
+.a-img img{width:88px; height:112px; object-fit:cover; border-radius:6px; border:2px solid transparent}
+.a-img.main img{border-color:var(--a-gold)}
+.a-img .a-img-actions{display:flex; gap:4px; margin-top:4px; justify-content:center}
+.a-img .a-img-actions button{border:none; background:none; cursor:pointer; font-size:15px; padding:2px}
+.a-drop{
+  border:2px dashed var(--a-line); border-radius:8px; padding:22px; text-align:center;
+  color:var(--a-ink-dim); cursor:pointer; font-size:13.5px;
+}
+.a-drop.drag{border-color:var(--a-gold); color:var(--a-gold)}
+.a-help{font-size:12px; color:var(--a-ink-dim); margin-top:4px}
+.a-search{max-width:280px}
