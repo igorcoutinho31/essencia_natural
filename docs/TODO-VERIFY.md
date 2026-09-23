@@ -119,15 +119,32 @@ ler e aprovar:
   existem; falta o que depende do domínio.
 
 ## Sacola / vendas online — PENDENTE
-- Preços: o cliente vai enviar a lista. Formato no JSON: `"price": 199.9`
-  (número, reais). Atacado (`wholesale_price`) segue sob consulta enquanto
-  não houver política definida. Confirmar com o cliente se o preço pode ser
-  público.
+- Preços: o cliente vai enviar a lista. **Atualizado na V2**: preço não é
+  mais um campo do JSON — é editado em `/admin/produtos/:id`, por produto,
+  e fica guardado em `data/essencia.sqlite` (com histórico completo de
+  quem mudou e quando, ver `docs/ADMIN.md`). Atacado (preço "de"/promoção)
+  segue sob consulta enquanto não houver política definida. Confirmar com
+  o cliente se o preço pode ser público.
 - Frete/prazo/transportadora e pedido mínimo do atacado: não definidos. O
   site só coleta o CEP e a equipe responde no WhatsApp.
-- Pagamento online, estoque em tempo real e nota fiscal: exigem plataforma
-  de loja virtual ou back-end (e API da Olisek, ainda sem acesso).
+- Pagamento online e nota fiscal: exigem uma plataforma de pagamento à
+  parte — fora do escopo da V2 (que resolveu estoque/preço/admin, mas o
+  checkout continua sendo por WhatsApp, de propósito).
 - "Aberto agora" segue os horários fixos do site; não sabe de feriados ou
   fechamentos extraordinários. Se isso incomodar, remover o bloco
-  `statusLoja` do script.
+  `statusLoja` de `assets/js/vida.js`.
+
+## V2 — pendências específicas do catálogo/admin (23/09/2026)
+- Confirmar se o vínculo "SABAH" → OliSek 803958 está mesmo certo (está
+  marcado como "provável", não "confirmado" — ver
+  `docs/OLISEK-INTEGRATION.md`).
+- Lista completa de vínculos OliSek para os outros ~29 produtos — o
+  cliente disse que vai enviar.
+- Logos das marcas: nenhum foi enviado ainda (ver `docs/CATALOGO.md`,
+  seção "Grade de marcas").
+- Otimização automática de imagem no upload do admin: não existe hoje
+  (ver a limitação documentada em `docs/CATALOGO.md`).
+- Senha temporária do admin: gerada por `server/seed.js`/
+  `server/reset-admin-password.js` e entregue fora do repositório (nunca
+  commitada). Trocar assim que possível.
 
