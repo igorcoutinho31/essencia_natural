@@ -73,8 +73,13 @@
       return prod.active === false || prod.stockStatus === 'indisponivel';
     }
 
-    function mensagem(){
+    /* `atendimento`: nome escolhido no modal (assets/js/atendimento.js) ou
+       "Sem preferência" — opcional, só entra na mensagem quando existe,
+       pra essa função continuar funcionando sozinha se o modal não abrir
+       por algum motivo (ver comentário no click de #sac-enviar). */
+    function mensagem(atendimento){
       var linhas = ['Olá! Vim pelo site da Essência Natural e gostaria de fazer este pedido:', ''];
+      if (atendimento) { linhas.push('Atendimento escolhido: ' + atendimento); linhas.push(''); }
       var soma = 0, todos = true;
       Object.keys(st.itens).forEach(function(id){
         var it = st.itens[id];
@@ -163,7 +168,9 @@
       var ok = ids.length > 0 && cepOk() && !temIndisponivel;
       cep.setAttribute('aria-invalid', String(!cepOk()));
       enviar.setAttribute('aria-disabled', String(!ok));
-      enviar.href = ok ? 'https://wa.me/' + WA + '?text=' + encodeURIComponent(mensagem()) : '#';
+      // O link do WhatsApp só é montado depois de escolher o atendimento
+      // (ver o click de #sac-enviar, abaixo) — aqui fica só um placeholder.
+      enviar.href = '#';
       if (bloqueio) bloqueio.hidden = !temIndisponivel;
     }
 
@@ -209,7 +216,20 @@
     dlg.addEventListener('click', function(ev){ if (ev.target === dlg) fechar(); });
     limpar.addEventListener('click', function(){ st.itens = {}; salvar(); atualizarBadge(); render(); });
     enviar.addEventListener('click', function(ev){
-      if (enviar.getAttribute('aria-disabled') === 'true') { ev.preventDefault(); if (!cepOk()) cep.focus(); }
+      ev.preventDefault();
+      if (enviar.getAttribute('aria-disabled') === 'true') { if (!cepOk()) cep.focus(); return; }
+      // Etapa "Escolher atendimento" antes do WhatsApp (ver
+      // assets/js/atendimento.js) — o pedido em si (produtos, valores,
+      // entrega etc.) não muda em nada, só ganha a linha do atendimento.
+      if (window.ENAtendimento && typeof window.ENAtendimento.abrir === 'function') {
+        window.ENAtendimento.abrir(function(nomeEscolhido){
+          window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(mensagem(nomeEscolhido)), '_blank', 'noopener');
+        });
+      } else {
+        // nunca trava uma venda real: se o modal de atendimento não
+        // carregar por algum motivo, vai direto pro WhatsApp como antes.
+        window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(mensagem()), '_blank', 'noopener');
+      }
     });
     [].forEach.call(form.querySelectorAll('input[name=sac-entrega]'), function(r){
       r.addEventListener('change', function(){ st.entrega = r.value; salvar(); render(); if (r.value === 'casa') cep.focus(); });

@@ -41,3 +41,12 @@ deduzir de novo a partir das imagens.
 - Fotos reais da equipe vão em `assets/team/`.
 - Nenhum nome, cargo ou história deve ser inventado — usar apenas o que for
   confirmado pelo cliente.
+
+## Também usada no checkout (25/09/2026)
+O modal "Escolher atendimento" da sacola (`assets/js/atendimento.js`) lê os
+nomes e fotos direto dos `<li class="pessoa">` da seção `#equipe` em
+`index.html` — não existe uma segunda lista de equipe em lugar nenhum.
+Ou seja: trocar uma foto, remover a Tamires ou adicionar alguém novo é
+editar só a seção `#equipe` (como já descrito acima); o passo de
+atendimento no WhatsApp acompanha sozinho, sem precisar mexer em mais
+nada. Ver `docs/CATALOGO.md` para o resto do fluxo da sacola.

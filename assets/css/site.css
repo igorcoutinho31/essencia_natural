@@ -837,6 +837,40 @@
   .bag-subtotal{color:var(--ink-dim);font-size:.74rem}
   .bag-bloqueio{font-size:.76rem;color:#d99a56;text-align:center;margin:0}
 
+  /* ---- modal "Escolher atendimento" (entre a sacola e o WhatsApp) ----
+     Mesmo padrão do modal .pd: <dialog> nativo, centralizado pelo próprio
+     navegador. Os cards reaproveitam a proporção/estilo do grid da
+     seção #equipe, só em tamanho menor para caber num modal. */
+  .atendimento{
+    width:min(680px,92vw);max-height:88svh;padding:0;overflow:hidden;
+    background:var(--bg-2);color:var(--ink);
+    border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 40px 110px -35px #000;
+    flex-direction:column;
+  }
+  .atendimento[open]{display:flex;animation:bag-in .28s cubic-bezier(.2,.8,.2,1)}
+  .atendimento::backdrop{background:rgba(6,4,2,.78);animation:fade-in .3s ease}
+  .at-corpo{padding:6px 22px 22px;overflow-y:auto}
+  .at-sub{color:var(--ink-dim);font-size:.88rem;line-height:1.6;margin:2px 0 18px;max-width:56ch}
+  .at-grid{
+    list-style:none;margin:0 0 18px;padding:0;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;
+  }
+  .at-pessoa{
+    display:flex;flex-direction:column;gap:9px;
+    border:1px solid var(--line);border-radius:12px;padding:10px;
+    background:var(--bg-3);
+    transition:border-color .25s ease,transform .25s ease;
+  }
+  .at-pessoa img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 20%;border-radius:8px;display:block;background:var(--bg-2)}
+  .at-nome{font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.03em;color:var(--ink);text-align:center;margin:0}
+  .at-escolher{width:100%;padding:9px 10px;font-size:.72rem;letter-spacing:.05em}
+  @media (hover:hover){ .at-pessoa:hover{border-color:var(--gold-dim);transform:translateY(-3px)} }
+  .at-sem{width:100%}
+  @media (max-width:560px){
+    .at-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  }
+
   [hidden]{display:none!important}
   .toast{
     position:fixed;left:50%;top:calc(var(--header-h) + 14px);z-index:70;
