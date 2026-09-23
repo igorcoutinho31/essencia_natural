@@ -11,3 +11,5 @@ data/essencia.sqlite-journal
 .env.*
 
 node_modules/
+
+Claude outputs/
