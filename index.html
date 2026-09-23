@@ -253,33 +253,36 @@
     <div class="equipe-head">
       <p class="eyebrow">Nossa equipe</p>
       <h2>Quem faz a Essência acontecer.</h2>
+      <p class="equipe-sub">É a mesma equipe que te recebe na loja e responde o seu pedido no WhatsApp — na hora de finalizar pela sacola, você escolhe com quem prefere falar.</p>
     </div>
 
     <!-- Só o nome é publicado: cargo, sobrenome, função e história ainda
          não foram confirmados pelo cliente (ver docs/TODO-VERIFY.md).
          PARA ADICIONAR ALGUÉM: duplique um <li> abaixo, troque o src e o
-         nome. O grid é auto-fit — não precisa mexer no CSS.
+         nome (foto em assets/team/, retrato 3:4 — 900x1200 em WebP). O
+         grid é auto-fit — não precisa mexer no CSS. A etapa "Escolher
+         atendimento" da sacola lê esta mesma lista, na mesma ordem.
          <li class="pessoa">
            <img src="assets/team/NOME.webp" alt="NOME, da equipe da Essência Natural"
-                width="900" height="1125" loading="lazy" decoding="async">
+                width="900" height="1200" loading="lazy" decoding="async">
            <p class="pessoa-nome">NOME</p>
          </li> -->
     <ul class="equipe-grid" role="list">
       <li class="pessoa">
-        <img src="assets/team/nicole.webp" alt="Nicole, da equipe da Essência Natural" width="900" height="1125" loading="lazy" decoding="async">
+        <img src="assets/team/bassam.webp" alt="Bassam, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
+        <p class="pessoa-nome">Bassam</p>
+      </li>
+      <li class="pessoa">
+        <img src="assets/team/nicole.webp" alt="Nicole, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
         <p class="pessoa-nome">Nicole</p>
       </li>
       <li class="pessoa">
-        <img src="assets/team/bassan.webp" alt="Bassan, da equipe da Essência Natural" width="900" height="1125" loading="lazy" decoding="async">
-        <p class="pessoa-nome">Bassan</p>
-      </li>
-      <li class="pessoa">
-        <img src="assets/team/tamires.webp" alt="Tamires, da equipe da Essência Natural" width="900" height="1125" loading="lazy" decoding="async">
-        <p class="pessoa-nome">Tamires</p>
-      </li>
-      <li class="pessoa">
-        <img src="assets/team/larissa.webp" alt="Larissa, da equipe da Essência Natural" width="900" height="1125" loading="lazy" decoding="async">
+        <img src="assets/team/larissa.webp" alt="Larissa, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
         <p class="pessoa-nome">Larissa</p>
+      </li>
+      <li class="pessoa">
+        <img src="assets/team/livia.webp" alt="Livia, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
+        <p class="pessoa-nome">Livia</p>
       </li>
     </ul>
   </div>
@@ -422,6 +425,9 @@
     <div class="foot-base">
       <span>&copy; 2026 Essência Natural — Perfumaria.</span>
       <span>Perfumes árabes e importados — São Paulo, SP</span>
+      <!-- Acesso das vendedoras ao painel. Discreto de propósito: mesmo tom
+           apagado do resto desta linha, sem ícone nem destaque. -->
+      <a class="foot-equipe" href="/admin/login" rel="nofollow">Área da equipe</a>
     </div>
   </div>
 </section>

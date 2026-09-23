@@ -80,6 +80,11 @@ O que no código deixa isso funcionar:
 - `package.json` — diz à hospedagem que é Node **22.x** (o banco usa
   `node:sqlite`, que só existe a partir do 22.13) e que o comando de
   start é `npm start` (`node server/start.js`). Nenhuma dependência de npm.
+- `railway.json` — fixa no próprio repositório o comando de start
+  (`node server/start.js`), o healthcheck (`/health`) e o reinício
+  automático se o processo cair. Configuração em código **tem prioridade
+  sobre o painel** do Railway, então um "Custom Start Command" digitado
+  errado no painel (já aconteceu: `node srver/app.js`) deixa de valer.
 - `STORAGE_DIR` (`server/paths.js`) — quando definida, o banco vai para
   `$STORAGE_DIR/essencia.sqlite` e as fotos para `$STORAGE_DIR/uploads/`,
   ou seja, os dois dentro do **único** volume que o Railway permite por
@@ -122,7 +127,8 @@ versão).
 5. **Endereço público:** serviço → **Settings** → **Networking** →
    **Generate Domain**. O site fica em algo como
    `essencia-natural-production.up.railway.app`.
-6. (Recomendado) **Settings** → **Healthcheck Path** = `/health`.
+6. Healthcheck e comando de start já vêm do `railway.json` — não precisa
+   preencher nada disso no painel (se tiver algo lá, o arquivo ganha).
 7. Abra `https://<endereço>/admin/login`, entre com `admin` + a senha do
    passo 4 e troque a senha (o sistema obriga).
 8. Domínio próprio, quando houver: **Settings** → **Networking** →

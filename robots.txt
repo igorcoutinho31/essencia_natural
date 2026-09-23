@@ -4,3 +4,6 @@
 #   Sitemap: https://DOMINIO/sitemap.xml
 User-agent: *
 Allow: /
+# painel interno da equipe — fora dos buscadores
+Disallow: /admin
+Disallow: /api/admin

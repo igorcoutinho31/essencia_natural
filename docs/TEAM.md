@@ -3,31 +3,37 @@
 A equipe da loja é real e deve aparecer no site — a seção NÃO deve ser
 reduzida a uma única pessoa.
 
-## Integrantes confirmados
-- Nicole
-- Bassan
-- Tamires
-- Larissa (confirmada pelo cliente em 19/09/2026, junto com as fotos)
-- Outros integrantes ainda a identificar corretamente (nomes, cargos,
-  histórico) — não inventar informação até confirmação.
+## Integrantes confirmados (formação final, 23/09/2026)
+Ordem de exibição no site (seção "Nossa equipe" e etapa "Escolher
+atendimento" da sacola):
 
-Nenhum cargo, sobrenome, função ou história foi confirmado para nenhum
-dos quatro. No site, só o nome é publicado.
+1. Bassam
+2. Nicole
+3. Larissa
+4. Livia
+
+A Tamires saiu da equipe e foi removida do site (foto e nome) nesta data.
+A grafia **Bassam** (com "m") foi definida pelo cliente no fechamento
+final — substitui o "Bassan" usado até então.
+
+Nenhum cargo, sobrenome, função ou história foi confirmado para ninguém.
+No site, só o primeiro nome é publicado.
 
 ## Fotos oficiais
-Quatro retratos profissionais na loja (fundo com o logo EN, uniforme
-preto) foram fornecidos pelo cliente em 19/09/2026 e estão em
-`assets/team/`, já otimizados para web (WebP, 900x1125, ~85 KB cada):
+Retratos enviados pelo cliente em 23/09/2026 (mesmo cenário da loja com o
+logo EN ao fundo, mesma luz e enquadramento), guardados em `assets/team/`
+já otimizados para web (WebP, 900x1200 — proporção 3:4, ~65–105 KB cada):
 
-| Arquivo | Pessoa | Como identificar |
+| Arquivo | Pessoa | Uniforme |
 |---|---|---|
-| `nicole.webp`  | Nicole  | cabelo ruivo/acobreado, camisa preta de botões |
-| `bassan.webp`  | Bassan  | homem de barba, braços cruzados |
-| `tamires.webp` | Tamires | cabelo escuro longo e ondulado, camiseta |
-| `larissa.webp` | Larissa | cabelo loiro liso, colar de pérolas |
+| `bassam.webp`  | Bassam  | camisa social preta com logo dourado |
+| `nicole.webp`  | Nicole  | polo preta com logo dourado |
+| `larissa.webp` | Larissa | polo preta com logo dourado (versão nova, sem a corrente com cruz) |
+| `livia.webp`   | Livia   | polo preta com logo dourado |
 
-A associação nome→foto foi confirmada explicitamente pelo cliente — não
-deduzir de novo a partir das imagens.
+Os originais em PNG (`*nova.png`) ficam só na máquina do cliente, fora do
+repositório. A associação nome→foto veio do próprio nome do arquivo
+enviado pelo cliente — não deduzir de novo a partir das imagens.
 
 ## Material de referência
 - Existe vídeo em que a Nicole apresenta a equipe de forma
@@ -42,11 +48,11 @@ deduzir de novo a partir das imagens.
 - Nenhum nome, cargo ou história deve ser inventado — usar apenas o que for
   confirmado pelo cliente.
 
-## Também usada no checkout (25/09/2026)
+## Também usada no checkout (23/09/2026)
 O modal "Escolher atendimento" da sacola (`assets/js/atendimento.js`) lê os
 nomes e fotos direto dos `<li class="pessoa">` da seção `#equipe` em
 `index.html` — não existe uma segunda lista de equipe em lugar nenhum.
-Ou seja: trocar uma foto, remover a Tamires ou adicionar alguém novo é
+Ou seja: trocar uma foto, remover ou adicionar alguém é
 editar só a seção `#equipe` (como já descrito acima); o passo de
 atendimento no WhatsApp acompanha sozinho, sem precisar mexer em mais
 nada. Ver `docs/CATALOGO.md` para o resto do fluxo da sacola.

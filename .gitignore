@@ -25,3 +25,8 @@ Claude outputs/
 # dentro do repositório git a cada foto nova que uma vendedora envia.
 uploads/products/*/*
 !uploads/products/*/principal.*
+
+# Bundles do git e originais em PNG das fotos da equipe (ficam só na
+# máquina de quem enviou; o site usa as versões .webp otimizadas).
+*.bundle
+assets/team/*nova.png
