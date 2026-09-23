@@ -44,13 +44,25 @@ function serveFile(req, res, absPath) {
     if (err || !stat.isFile()) return notFound(res);
     const ext = path.extname(absPath).toLowerCase();
     const mime = MIME_BY_EXT[ext] || 'application/octet-stream';
-    res.writeHead(200, {
+    // HTML, JS e CSS: sempre revalidados — mudam a cada deploy e, se o
+    // navegador ficar com um sacola.js velho junto com um index.html novo,
+    // o site quebra (foi assim que a etapa "Escolher atendimento" sumiu pra
+    // quem já tinha visitado antes). Com Last-Modified, a revalidação custa
+    // um 304 sem corpo quando nada mudou. Imagens e uploads seguem 24h:
+    // quando uma foto muda, ela ganha nome novo (ver docs/TEAM.md).
+    const revalida = ext === '.html' || ext === '.js' || ext === '.css';
+    const lastModified = stat.mtime.toUTCString();
+    const headers = {
       'Content-Type': mime,
-      'Content-Length': stat.size,
-      // HTML sempre revalidado (pode mudar a qualquer commit); imagens e
-      // uploads podem ser cacheados por mais tempo (ver docs/CATALOGO.md).
-      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400',
-    });
+      'Cache-Control': revalida ? 'no-cache' : 'public, max-age=86400',
+      'Last-Modified': lastModified,
+    };
+    const ims = req.headers['if-modified-since'];
+    if (ims && Math.floor(stat.mtimeMs / 1000) <= Math.floor(Date.parse(ims) / 1000)) {
+      res.writeHead(304, headers); return res.end();
+    }
+    headers['Content-Length'] = stat.size;
+    res.writeHead(200, headers);
     fs.createReadStream(absPath).pipe(res);
   });
 }

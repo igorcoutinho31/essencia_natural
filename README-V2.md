@@ -98,6 +98,14 @@ O que no código deixa isso funcionar:
   sai idêntica (produtos, marcas, fotos, vínculos) à base de
   desenvolvimento.
 
+**Cache de CSS/JS:** o servidor manda HTML, JS e CSS com `no-cache` +
+`Last-Modified` (o navegador revalida a cada visita e recebe um 304 leve
+quando nada mudou). Além disso, `index.html` e a página de produto
+carregam os arquivos com `?v=AAAAMMDD-N` — ao mexer em qualquer `.js` ou
+`.css`, suba esse número nos dois lugares (`index.html` e
+`server/routes/productPage.js`). Imagens continuam com cache de 24h (foto
+nova = nome de arquivo novo, ver `docs/TEAM.md`).
+
 O servidor responde `GET /health` com `{ ok: true }` e trata
 `SIGTERM`/`SIGINT` com desligamento gracioso (espera até 10s as requisições
 em andamento terminarem, pra não cortar um upload no meio da troca de
