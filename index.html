@@ -466,12 +466,33 @@
     <button class="bag-limpar" id="sac-limpar" type="button">Esvaziar sacola</button>
   </div>
 </dialog>
+
+<!-- Passo entre a sacola e o WhatsApp: escolher com quem prefere falar.
+     Todo pedido continua indo para o mesmo WhatsApp da loja — a escolha
+     só entra como uma linha a mais na mensagem. Os cards deste modal são
+     montados por JS a partir da própria seção #equipe acima (mesmos
+     nomes e fotos, nunca duplicados aqui) — ver assets/js/atendimento.js.
+     Pra trocar/adicionar/remover alguém aqui, basta editar a seção
+     #equipe (ver instrução lá) — este modal acompanha sozinho. -->
+<dialog class="atendimento" id="atendimento" aria-labelledby="at-titulo">
+  <div class="bag-topo">
+    <h2 id="at-titulo">Escolher atendimento</h2>
+    <button class="bag-fechar" id="at-fechar" type="button" aria-label="Fechar">&times;</button>
+  </div>
+  <div class="at-corpo">
+    <p class="at-sub">Com quem você prefere falar? O pedido vai sempre para o mesmo WhatsApp da loja — é só pra gente já saber sua preferência.</p>
+    <ul class="at-grid" id="at-grid" role="list"></ul>
+    <button class="btn btn-ghost at-sem" id="at-sem" type="button">Sem preferência</button>
+  </div>
+</dialog>
+
 <div class="toast" id="toast" role="status" aria-live="polite" hidden>
   <span id="toast-t"></span>
   <button type="button" id="toast-ver">Ver sacola</button>
 </div>
 
 <script src="assets/js/menu.js"></script>
+<script src="assets/js/atendimento.js"></script>
 <script src="assets/js/sacola.js"></script>
 <script src="assets/js/vida.js"></script>
 <script src="assets/js/marcas.js"></script>
