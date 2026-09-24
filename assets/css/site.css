@@ -210,29 +210,34 @@
       rgba(11,9,6,0) 75%);
     filter:blur(30px);
   }
-  /* o selo e a luz vivem no mesmo recorte circular; a sombra fica aqui
-     (e não na <img>) porque overflow:hidden cortaria um drop-shadow
-     aplicado no filho */
+  /* A sombra fica no selo; o recorte redondo fica nos filhos, com
+     clip-path. Antes o recorte era overflow:hidden + border-radius no
+     próprio selo — o Safari do iPhone/iPad ignora esse arredondamento
+     quando o mesmo elemento tem filter/will-change e mostrava o brilho
+     num QUADRADO em volta do logo. clip-path não tem esse problema. */
   .brasao-selo{
     position:relative;z-index:1;display:flex;
-    border-radius:50%;overflow:hidden;
+    border-radius:50%;
     filter:drop-shadow(0 26px 64px rgba(0,0,0,.7))
            drop-shadow(0 0 40px rgba(201,164,76,.26));
   }
-  .hero-brasao picture{display:flex}
+  .hero-brasao picture{display:flex;border-radius:50%;-webkit-clip-path:circle(50% at 50% 50%);clip-path:circle(50% at 50% 50%)}
   .hero-brasao img{
     display:block;
     width:clamp(220px,31vw,400px);
     height:auto;aspect-ratio:1;object-fit:contain;
   }
   /* luz que atravessa o selo, como reflexo em metal polido */
-  .brasao-brilho{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:50%}
+  /* recorte com clip-path (ver acima) e o blend no próprio contêiner:
+     clip-path cria um grupo isolado, então o overlay tem de ficar aqui
+     pra continuar misturando com a imagem do selo */
+  .brasao-brilho{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:50%;
+    -webkit-clip-path:circle(50% at 50% 50%);clip-path:circle(50% at 50% 50%);mix-blend-mode:overlay}
   .brasao-brilho::before{
     content:"";position:absolute;
     top:-60%;height:220%;width:38%;left:-100%;
     transform:rotate(20deg);
     filter:blur(9px);
-    mix-blend-mode:overlay;
     background:linear-gradient(90deg,
       rgba(198,148,52,0) 0%,
       rgba(226,176,72,.5) 30%,
@@ -908,7 +913,10 @@
   .site-header.rolou{background:rgba(11,9,6,.94);box-shadow:0 12px 34px -18px #000}
   .hero-particulas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   .hero-brasao{perspective:900px}
-  .brasao-selo{transition:transform .25s ease-out;will-change:transform}
+  .brasao-selo{transition:transform .25s ease-out}
+  /* a inclinação com o mouse só existe em aparelho com mouse (vida.js);
+     no celular/tablet will-change só criava camada à toa */
+  @media (hover:hover){.brasao-selo{will-change:transform}}
   @media (prefers-reduced-motion:no-preference){
     .hero-brasao::before{animation:respira 9s ease-in-out infinite}
     html.rv-on .hero-conteudo>*{animation:entra .9s cubic-bezier(.2,.7,.3,1) both}

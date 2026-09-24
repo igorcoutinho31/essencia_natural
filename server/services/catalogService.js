@@ -265,7 +265,7 @@ function createProduct(data) {
     slug,
     name: data.name,
     brandId: data.brandId ?? null,
-    category: data.category ?? null,
+    category: normalizarCategoria(data.category),
     volume: data.volume ?? null,
     gender: data.gender ?? null,
     family: data.family ?? null,
@@ -307,8 +307,10 @@ function updateProductFull(id, data) {
   `).run({
     id,
     name: data.name ?? current.name,
-    brandId: data.brandId ?? current.brand_id,
-    category: data.category ?? current.category,
+    // `'x' in data` e não `??`: o formulário manda brandId null quando se
+    // escolhe "—" (tirar a marca) — com `??` isso mantinha a marca antiga.
+    brandId: 'brandId' in data ? (data.brandId === '' ? null : data.brandId) : current.brand_id,
+    category: 'category' in data ? normalizarCategoria(data.category, id) : current.category,
     volume: data.volume ?? current.volume,
     gender: data.gender ?? current.gender,
     family: data.family ?? current.family,
@@ -414,6 +416,64 @@ function reorderImages(productId, orderedIds) {
   touch(productId);
 }
 
+// ---------- categorias ----------
+// Categoria é texto livre no admin. Sem normalizar, "Perfume", "perfume",
+// "Perfume " (espaço no fim) e "Perfumes" viravam 4 categorias diferentes
+// no filtro do site — o produto novo ficava num chip separado dos outros.
+// A chave ignora maiúsculas, acentos, espaços extras e o "s" do plural; o
+// texto gravado é sempre o da categoria que já existe.
+
+function chaveCategoria(s) {
+  return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().replace(/\s+/g, ' ').trim().replace(/s$/, '');
+}
+
+/** Devolve a grafia oficial de uma categoria digitada no admin: a de uma
+ *  categoria já existente com a mesma chave (a mais usada), ou o texto
+ *  limpo com a 1ª letra maiúscula se for uma categoria nova. Vazio → null.
+ *  `excetoId`: ao editar, não conta o próprio produto (senão um erro de
+ *  digitação que só ele tem viraria a "grafia oficial"). */
+function normalizarCategoria(raw, excetoId) {
+  if (raw == null) return null;
+  const limpo = String(raw).replace(/\s+/g, ' ').trim();
+  if (!limpo) return null;
+  const k = chaveCategoria(limpo);
+  const existentes = db.prepare(`
+    SELECT category, COUNT(*) AS n FROM products
+    WHERE category IS NOT NULL AND TRIM(category) <> '' AND id <> ?
+    GROUP BY category ORDER BY n DESC, category ASC
+  `).all(excetoId ?? -1);
+  const igual = existentes.find((e) => chaveCategoria(e.category) === k);
+  if (igual) return igual.category.replace(/\s+/g, ' ').trim();
+  return limpo.charAt(0).toLocaleUpperCase('pt-BR') + limpo.slice(1);
+}
+
+/** Corrige o que já está gravado (roda ao subir o servidor; idempotente):
+ *  junta variações da mesma categoria na grafia mais usada. É o que
+ *  conserta, no próximo deploy, o produto que já foi salvo com a
+ *  categoria "diferente". */
+function normalizarCategoriasGravadas() {
+  const grupos = new Map();
+  for (const r of db.prepare(`SELECT category, COUNT(*) AS n FROM products
+      WHERE category IS NOT NULL GROUP BY category ORDER BY n DESC, category ASC`).all()) {
+    const limpo = r.category.replace(/\s+/g, ' ').trim();
+    const k = limpo ? chaveCategoria(limpo) : '';
+    if (!grupos.has(k)) grupos.set(k, { oficial: limpo || null, variantes: [] });
+    grupos.get(k).variantes.push(r.category);
+  }
+  const upd = db.prepare('UPDATE products SET category = ? WHERE category = ?');
+  let mudou = 0;
+  for (const { oficial, variantes } of grupos.values()) {
+    for (const v of variantes) if (v !== oficial) mudou += Number(upd.run(oficial, v).changes);
+  }
+  return mudou;
+}
+
+function listCategories() {
+  return db.prepare(`SELECT category, COUNT(*) AS n FROM products
+    WHERE category IS NOT NULL GROUP BY category ORDER BY n DESC, category ASC`).all().map((r) => r.category);
+}
+
 // ---------- marcas ----------
 
 function ensureBrand(name) {
@@ -428,6 +488,11 @@ function listBrandsAdmin() {
   return db.prepare('SELECT id, name, slug, logo_path AS logoPath FROM brands ORDER BY name ASC').all();
 }
 
+{
+  const n = normalizarCategoriasGravadas();
+  if (n) console.log(`[catalogo] ${n} produto(s) com categoria unificada (ex.: "perfume " → "Perfume").`);
+}
+
 module.exports = {
   stockStatus: computeAvailability,
   isStockReliable,
@@ -439,4 +504,5 @@ module.exports = {
   createProduct, updateProductFull, setOlisekLink, setPrice, setActive, setFeatured, setStockManual, despublish,
   addImage, removeImage, setMainImage, reorderImages,
   ensureBrand, listBrandsAdmin,
+  listCategories, normalizarCategoria, normalizarCategoriasGravadas,
 };
