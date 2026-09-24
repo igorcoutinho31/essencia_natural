@@ -423,8 +423,10 @@ function reorderImages(productId, orderedIds) {
 // A chave ignora maiúsculas, acentos, espaços extras e o "s" do plural; o
 // texto gravado é sempre o da categoria que já existe.
 
+const INVISIVEIS = /[\u200B-\u200D\u2060\uFEFF\u00AD]/g; // espaço de largura zero, BOM, hífen suave
+
 function chaveCategoria(s) {
-  return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '')
+  return String(s).replace(INVISIVEIS, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/\s+/g, ' ').trim().replace(/s$/, '');
 }
 
@@ -435,7 +437,7 @@ function chaveCategoria(s) {
  *  digitação que só ele tem viraria a "grafia oficial"). */
 function normalizarCategoria(raw, excetoId) {
   if (raw == null) return null;
-  const limpo = String(raw).replace(/\s+/g, ' ').trim();
+  const limpo = String(raw).replace(INVISIVEIS, '').replace(/\s+/g, ' ').trim();
   if (!limpo) return null;
   const k = chaveCategoria(limpo);
   const existentes = db.prepare(`
@@ -444,7 +446,7 @@ function normalizarCategoria(raw, excetoId) {
     GROUP BY category ORDER BY n DESC, category ASC
   `).all(excetoId ?? -1);
   const igual = existentes.find((e) => chaveCategoria(e.category) === k);
-  if (igual) return igual.category.replace(/\s+/g, ' ').trim();
+  if (igual) return igual.category.replace(INVISIVEIS, '').replace(/\s+/g, ' ').trim();
   return limpo.charAt(0).toLocaleUpperCase('pt-BR') + limpo.slice(1);
 }
 
@@ -456,7 +458,7 @@ function normalizarCategoriasGravadas() {
   const grupos = new Map();
   for (const r of db.prepare(`SELECT category, COUNT(*) AS n FROM products
       WHERE category IS NOT NULL GROUP BY category ORDER BY n DESC, category ASC`).all()) {
-    const limpo = r.category.replace(/\s+/g, ' ').trim();
+    const limpo = r.category.replace(INVISIVEIS, '').replace(/\s+/g, ' ').trim();
     const k = limpo ? chaveCategoria(limpo) : '';
     if (!grupos.has(k)) grupos.set(k, { oficial: limpo || null, variantes: [] });
     grupos.get(k).variantes.push(r.category);

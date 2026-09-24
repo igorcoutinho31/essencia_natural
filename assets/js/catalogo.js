@@ -93,11 +93,23 @@
     }
 
     /* ---- filtros ---- */
+    /* chave da categoria: ignora maiúsculas, acentos, espaços extras e o
+       "s" do plural — mesma regra do servidor (catalogService). O servidor
+       já grava tudo unificado; isto é só a rede de segurança pra nunca
+       aparecer "Perfume" duas vezes nos filtros. */
+    function catKey(c){
+      return String(c || '').replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().replace(/\s+/g, ' ').trim().replace(/s$/, '');
+    }
     function montarChips(){
-      var contagens = {}, ordemCats = [];
-      produtos.forEach(function(p){ var c = p.category; if (!c) return; if (!(c in contagens)) { contagens[c]=0; ordemCats.push(c); } contagens[c]++; });
+      var contagens = {}, rotulo = {}, ordemCats = [];
+      produtos.forEach(function(p){
+        var k = catKey(p.category); if (!k) return;
+        if (!(k in contagens)) { contagens[k]=0; rotulo[k]=String(p.category).replace(/\s+/g,' ').trim(); ordemCats.push(k); }
+        contagens[k]++;
+      });
       var lista = [['todos','Todos',produtos.length]];
-      ordemCats.forEach(function(c){ if (contagens[c] > 0) lista.push([c, c, contagens[c]]); });
+      ordemCats.forEach(function(k){ if (contagens[k] > 0) lista.push([k, rotulo[k], contagens[k]]); });
       chipsEl.textContent = '';
       lista.forEach(function(item){
         var b = el('button','chip'); b.type = 'button'; b.dataset.cat = item[0];
@@ -125,7 +137,7 @@
     function listaAtual(){
       var t = norm(termo);
       var out = produtos.filter(function(p){
-        if (filtro !== 'todos' && p.category !== filtro) return false;
+        if (filtro !== 'todos' && catKey(p.category) !== filtro) return false;
         if (fMarca && p.brandSlug !== fMarca) return false;
         if (fGenero && p.gender !== fGenero) return false;
         if (soEstoque && !podeComprar(p)) return false;
