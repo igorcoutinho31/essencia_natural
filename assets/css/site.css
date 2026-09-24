@@ -210,16 +210,19 @@
       rgba(11,9,6,0) 75%);
     filter:blur(30px);
   }
-  /* A sombra fica no selo; o recorte redondo fica nos filhos, com
-     clip-path. Antes o recorte era overflow:hidden + border-radius no
-     próprio selo — o Safari do iPhone/iPad ignora esse arredondamento
-     quando o mesmo elemento tem filter/will-change e mostrava o brilho
-     num QUADRADO em volta do logo. clip-path não tem esse problema. */
+  /* O recorte redondo fica nos filhos, com clip-path (não com
+     overflow:hidden no selo, que o Safari do iPhone/iPad deixava quadrado
+     junto com filter/will-change). */
+  /* Sombra com box-shadow num círculo (border-radius:50%), e não com
+     filter:drop-shadow: o Safari do iPhone/iPad cortava a sombra do
+     filter na borda QUADRADA da imagem — era o "quadradinho" escuro em
+     volta do logo no celular. O círculo do logo encosta nas 4 bordas do
+     arquivo, então a sombra redonda casa certinho com ele. */
   .brasao-selo{
     position:relative;z-index:1;display:flex;
     border-radius:50%;
-    filter:drop-shadow(0 26px 64px rgba(0,0,0,.7))
-           drop-shadow(0 0 40px rgba(201,164,76,.26));
+    box-shadow:0 26px 64px rgba(0,0,0,.7),
+               0 0 40px rgba(201,164,76,.26);
   }
   .hero-brasao picture{display:flex;border-radius:50%;-webkit-clip-path:circle(50% at 50% 50%);clip-path:circle(50% at 50% 50%)}
   .hero-brasao img{
