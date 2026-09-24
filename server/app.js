@@ -172,7 +172,7 @@ async function handle(req, res) {
       if (pathname === '/admin/produtos/novo' && method === 'GET') {
         if (req.user.role !== 'admin') { res.writeHead(302, { Location: '/admin/produtos' }); return res.end(); }
         const catalogService = require('./services/catalogService');
-        return adminPages.productFormPage(req, res, req.user, null, { brands: catalogService.listBrandsAdmin() });
+        return adminPages.productFormPage(req, res, req.user, null, { brands: catalogService.listBrandsAdmin(), categories: catalogService.listCategories() });
       }
       m = pathname.match(/^\/admin\/produtos\/(\d+)$/);
       if (m && method === 'GET') {
@@ -180,7 +180,7 @@ async function handle(req, res) {
         const product = catalogService.getAdminProductById(Number(m[1]));
         if (!product) return notFound(res);
         if (req.user.role !== 'admin') delete product.priceHistory;
-        return adminPages.productFormPage(req, res, req.user, product, { brands: catalogService.listBrandsAdmin() });
+        return adminPages.productFormPage(req, res, req.user, product, { brands: catalogService.listBrandsAdmin(), categories: catalogService.listCategories() });
       }
       return notFound(res);
     }

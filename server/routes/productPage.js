@@ -187,7 +187,9 @@ function render(req, res, product, related) {
     <div class="foot-base">
       <span>&copy; 2026 Essência Natural — Perfumaria.</span>
       <span>Perfumes árabes e importados — São Paulo, SP</span>
+      <a class="foot-equipe" href="/admin/login" rel="nofollow">Área da equipe</a>
     </div>
+    <p class="foot-credito">Desenvolvido por <a href="https://www.instagram.com/itechsolutionsofc?stkn=M2NnazJrd2Z4MDdy&amp;utm_source=qr" target="_blank" rel="noopener noreferrer">ITech Solutions</a></p>
   </div>
 </section>
 
@@ -222,10 +224,10 @@ function render(req, res, product, related) {
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-t"></span><button type="button" id="toast-ver">Ver sacola</button></div>
 
 <script>window.__PRODUTO__ = ${JSON.stringify(product)}; window.__RELACIONADOS__ = ${JSON.stringify(related)};</script>
-<script src="/assets/js/menu.js?v=20260923-2"></script>
-<script src="/assets/js/atendimento.js?v=20260923-2"></script>
-<script src="/assets/js/sacola.js?v=20260923-2"></script>
-<script src="/assets/js/vida.js?v=20260923-2"></script>
+<script src="/assets/js/menu.js?v=20260924-1"></script>
+<script src="/assets/js/atendimento.js?v=20260924-1"></script>
+<script src="/assets/js/sacola.js?v=20260924-1"></script>
+<script src="/assets/js/vida.js?v=20260924-1"></script>
 <script>
   (function(){
     if (window.ENSacola) window.ENSacola.catalogo([window.__PRODUTO__].concat(window.__RELACIONADOS__));
@@ -256,8 +258,8 @@ ${product.image ? `<meta property="og:image" content="${escapeHTML(product.image
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/css/site.css?v=20260923-2">
-<link rel="stylesheet" href="/assets/css/product.css?v=20260923-2">
+<link rel="stylesheet" href="/assets/css/site.css?v=20260924-1">
+<link rel="stylesheet" href="/assets/css/product.css?v=20260924-1">
 </head>
 <body>
 ${body}
@@ -269,7 +271,7 @@ ${body}
 function productPage(req, res, slug) {
   const product = catalogService.getPublicProductBySlug(slug);
   if (!product) {
-    sendHTML(res, 404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20260923-2"></head><body style="padding:80px 24px;text-align:center;background:#0b0906;color:#f4ecd8;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
+    sendHTML(res, 404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20260924-1"></head><body style="padding:80px 24px;text-align:center;background:#0b0906;color:#f4ecd8;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
     return;
   }
   const related = catalogService.getRelated(slug, 4);

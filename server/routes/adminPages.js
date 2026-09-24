@@ -191,7 +191,7 @@ function productsListPage(req, res, user, { q, filter }) {
   sendHTML(res, 200, layout({ title: 'Produtos', user, active: 'produtos', body }));
 }
 
-function productFormPage(req, res, user, product, { brands }) {
+function productFormPage(req, res, user, product, { brands, categories = [] }) {
   const isNew = !product;
   const isAdmin = user.role === 'admin';
   const p = product || { name: '', brandId: null, category: '', volume: '', gender: '', family: '', description: '',
@@ -208,7 +208,9 @@ function productFormPage(req, res, user, product, { brands }) {
       </div>
     </div>
     <div class="a-grid3">
-      <div class="a-field"><label>Categoria</label><input type="text" id="f-category" value="${escapeHTML(p.category || '')}" ${isAdmin ? '' : 'disabled'}></div>
+      <div class="a-field"><label>Categoria</label><input type="text" id="f-category" list="f-category-opcoes" autocomplete="off" value="${escapeHTML(p.category || '')}" ${isAdmin ? '' : 'disabled'}>
+        <datalist id="f-category-opcoes">${categories.map((c) => `<option value="${escapeHTML(c)}">`).join('')}</datalist>
+        <p class="a-help">Escolha uma da lista. Se digitar "perfume", "Perfumes" etc., o sistema grava como a categoria que já existe.</p></div>
       <div class="a-field"><label>Gênero</label>
         <select id="f-gender" ${isAdmin ? '' : 'disabled'}>
           <option value="" ${!p.gender ? 'selected' : ''}>—</option>
