@@ -1,0 +1,134 @@
+:root{
+  --links-bg:#0b0906;
+  --links-bg-2:#15110b;
+  --links-gold:#c9a44c;
+  --links-gold-2:#e6c86f;
+  --links-ink:#f3ead8;
+  --links-dim:#b8aa92;
+  --links-line:rgba(201,164,76,.24);
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body.links-page{
+  margin:0;
+  color:var(--links-ink);
+  font-family:'Jost',system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(201,164,76,.14),transparent 34rem),
+    linear-gradient(180deg,#120e08 0%,var(--links-bg) 55%,#080604 100%);
+}
+body.links-page::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;opacity:.18;
+  background-image:
+    linear-gradient(45deg,transparent 46%,rgba(201,164,76,.22) 47%,rgba(201,164,76,.22) 48%,transparent 49%),
+    linear-gradient(-45deg,transparent 46%,rgba(201,164,76,.13) 47%,rgba(201,164,76,.13) 48%,transparent 49%);
+  background-size:46px 46px;
+  mask-image:linear-gradient(to bottom,black,transparent 72%);
+}
+.links-shell{
+  min-height:100svh;
+  display:grid;
+  place-items:center;
+  padding:max(28px,env(safe-area-inset-top)) 18px max(30px,env(safe-area-inset-bottom));
+}
+.links-card{
+  width:min(100%,560px);
+  position:relative;
+  text-align:center;
+  padding:clamp(20px,4vw,34px);
+  border:1px solid var(--links-line);
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(25,20,13,.93),rgba(11,9,6,.96));
+  box-shadow:0 30px 90px -38px #000;
+  backdrop-filter:blur(14px);
+}
+.links-logo{display:inline-block;width:clamp(132px,34vw,178px);aspect-ratio:1;margin:0 auto 12px}
+.links-logo img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 12px 28px rgba(0,0,0,.4))}
+.links-kicker{
+  margin:0 0 7px;
+  color:var(--links-gold);
+  text-transform:uppercase;
+  letter-spacing:.22em;
+  font-size:.68rem;
+}
+.links-card h1{
+  margin:0;
+  font-family:'Cinzel',Georgia,serif;
+  font-size:clamp(1.55rem,6vw,2.2rem);
+  font-weight:600;
+  letter-spacing:.05em;
+}
+.links-slogan{
+  margin:8px 0 24px;
+  color:var(--links-gold-2);
+  font-family:'Cinzel',Georgia,serif;
+  font-size:clamp(.92rem,3.6vw,1.06rem);
+}
+.links-list{display:grid;gap:11px}
+.link-btn{
+  min-height:56px;
+  display:grid;
+  grid-template-columns:34px 1fr 22px;
+  align-items:center;
+  gap:10px;
+  padding:10px 15px;
+  border:1px solid var(--links-line);
+  border-radius:14px;
+  color:var(--links-ink);
+  background:rgba(255,255,255,.025);
+  text-decoration:none;
+  font-weight:500;
+  letter-spacing:.01em;
+  transition:transform .2s ease,border-color .2s ease,background .2s ease;
+}
+.link-btn:hover,.link-btn:focus-visible{
+  transform:translateY(-2px);
+  border-color:rgba(230,200,111,.6);
+  background:rgba(201,164,76,.08);
+}
+.link-btn:focus-visible{outline:2px solid var(--links-gold-2);outline-offset:3px}
+.link-btn--primary{
+  color:#140f07;
+  border-color:transparent;
+  background:linear-gradient(135deg,var(--links-gold-2),#b88a2f);
+  box-shadow:0 14px 34px -18px rgba(230,200,111,.75);
+}
+.link-btn--primary:hover,.link-btn--primary:focus-visible{background:linear-gradient(135deg,#efd77f,#c99b3d);border-color:transparent}
+.link-icon{
+  width:34px;height:34px;border-radius:50%;
+  display:grid;place-items:center;
+  border:1px solid rgba(201,164,76,.35);
+  color:var(--links-gold-2);
+  font-size:1rem;
+}
+.link-btn--primary .link-icon{color:#140f07;border-color:rgba(20,15,7,.3)}
+.link-icon--text{font-size:1.15rem}
+.link-arrow{font-size:1.5rem;line-height:1;color:var(--links-gold)}
+.link-btn--primary .link-arrow{color:#140f07}
+.links-store{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  margin:24px 0 0;
+  padding:18px 12px 0;
+  border-top:1px solid var(--links-line);
+}
+.links-store strong{font-family:'Cinzel',Georgia,serif;font-size:.86rem;color:var(--links-ink)}
+.links-store span{font-size:.78rem;line-height:1.55;color:var(--links-dim)}
+.links-footer{
+  margin-top:20px;
+  color:rgba(184,170,146,.68);
+  font-size:.68rem;
+  line-height:1.7;
+}
+.links-footer p{margin:2px 0}
+.links-footer a{color:var(--links-gold);text-underline-offset:3px}
+@media(max-width:430px){
+  .links-shell{padding-inline:12px}
+  .links-card{padding:22px 14px;border-radius:18px}
+  .link-btn{min-height:54px;padding-inline:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .link-btn{transition:none}
+}
