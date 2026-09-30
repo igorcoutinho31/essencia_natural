@@ -34,6 +34,8 @@ const STATIC_ROOTS = [
 const STATIC_FILES = {
   '/': path.join(ROOT, 'index.html'),
   '/index.html': path.join(ROOT, 'index.html'),
+  '/links': path.join(ROOT, 'links.html'),
+  '/links/': path.join(ROOT, 'links.html'),
   '/robots.txt': path.join(ROOT, 'robots.txt'),
   '/sitemap.xml': path.join(ROOT, 'sitemap.xml'),
   '/favicon.ico': path.join(ROOT, 'assets', 'icons', 'favicon.ico'),
