@@ -251,12 +251,27 @@ async function applyOlisekLink(req, res) {
   sendJSON(res, 200, { product });
 }
 
+// ---------- OliSek: API oficial (liberada 05/10/2026) ----------
+
+/** Botão "Sincronizar agora" na tela de produto — chama a OliSek na hora
+ *  (nunca automático, ver docs/OLISEK-INTEGRATION.md). */
+async function syncOlisekStock(req, res, id) {
+  if (!requireAdmin(req, res)) return;
+  try {
+    const product = await catalogService.syncStockFromOlisek(Number(id));
+    if (!product) return sendJSON(res, 404, { error: 'not_found' });
+    sendJSON(res, 200, { product });
+  } catch (e) {
+    sendJSON(res, e.status || 502, { error: e.message || 'olisek_sync_failed', olisekError: e.olisekError || null });
+  }
+}
+
 module.exports = {
   login, logout, me, changePassword,
   listProducts, getProduct, createProduct, updateProductFull,
   setPrice, setActive, setFeatured, setStock, setOlisekLink, despublish,
   createBrand, listBrands,
   uploadImage, deleteImage, setMainImage, reorderImages,
-  parseOlisekReport, applyOlisekLink,
+  parseOlisekReport, applyOlisekLink, syncOlisekStock,
   isAdmin,
 };

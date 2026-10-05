@@ -142,42 +142,54 @@ do que foi importado e quando):
   serve só como referência de nomes, caso um vínculo "provável" precise ser
   conferido manualmente depois.
 
-### O que ainda não existe (fica pronto para quando a API existir)
-- Nenhuma chamada de rede para a OliSek acontece hoje — nem do navegador,
-  nem do servidor. Isso é intencional: sem uma chave de API oficial, não
-  há nada de verdade pra chamar, e simular uma resposta seria inventar
-  dado.
-- `olisekService.apiConfigured()` verifica duas variáveis de ambiente
-  (`OLISEK_API_URL` e `OLISEK_API_KEY`) que hoje não existem em lugar
-  nenhum — a função sempre devolve `false`.
-- `olisekService.getStockFromApi(id)` já existe como função, mas lança um
-  erro proposital (`501 not_implemented`) — é o "buraco" que vai ser
-  preenchido quando a API existir.
+### API oficial liberada (05/10/2026)
 
-## Onde a futura chave de API vai entrar
+A OliSek abriu uma API REST documentada em `https://olisek.com.br/api`
+(v1). Autenticação por **login/senha** (não uma chave fixa): `POST
+/v1/auth` devolve um token JWT (Bearer) válido por 24h. Endpoints usados
+por este site: `GET /v1/getProduct?id=X` (um produto, pelo `id_product` —
+é o que guardamos como `olisek_id`) e `GET /v1/listProducts` (busca
+paginada, reservado para uma futura tela de match manual). A API também
+tem rotas de clientes e dados da empresa que este site não usa.
 
-Quando a Essência Natural conseguir acesso oficial à API da OliSek:
+- `server/services/olisekService.js` agora faz a chamada de verdade:
+  autentica, guarda o token em memória (renovando sozinho perto do
+  vencimento ou se a OliSek devolver `401`), e expõe `getStockFromApi`,
+  `getProductFromApi` e `listProductsFromApi`.
+- `olisekService.apiConfigured()` verifica duas variáveis de ambiente,
+  **`OLISEK_LOGIN`** e **`OLISEK_PASSWORD`** (nunca em nenhum arquivo do
+  repositório, nunca em código que roda no navegador — só variável de
+  ambiente do servidor no Railway/Render, ver `README-V2.md`). Enquanto
+  ficarem em branco, a função devolve `false` e nenhuma chamada é feita —
+  a importação manual de relatório continua funcionando normalmente.
+- `OLISEK_API_URL` é opcional (padrão `https://olisek.com.br/api/v1`).
+- **Este ambiente de desenvolvimento não tem acesso de rede a
+  `olisek.com.br`** (proxy de saída bloqueia o domínio) — a implementação
+  foi escrita e revisada contra a documentação oficial da API, mas **ainda
+  não foi testada contra o servidor de verdade**. O primeiro teste real
+  (login + busca de um produto conhecido, ex. ATHEERI/804491) precisa
+  acontecer com acesso de rede de verdade — local, no Railway, ou em
+  qualquer ambiente que alcance a internet pública.
 
-1. A URL base e a chave/token de acesso vão em **variáveis de ambiente do
-   servidor** (`OLISEK_API_URL`, `OLISEK_API_KEY`) — nunca em nenhum
-   arquivo do repositório, e nunca em código que roda no navegador do
-   cliente. No Railway/Render (ver README-V2.md), isso se configura no
-   painel do provedor, na seção de variáveis de ambiente do serviço.
-2. Só um arquivo muda: `server/services/olisekService.js`, função
-   `getStockFromApi`. Hoje ela lança `501`; o comentário
-   `// TODO(V3): fetch(...)` já mostra exatamente a forma da chamada que
-   precisa entrar ali (servidor chamando a OliSek diretamente — nunca o
-   navegador do cliente chamando a OliSek).
-3. Nada mais no site precisa mudar: `catalogService`, as rotas públicas,
-   a página de produto e o admin só conhecem a interface do
-   `olisekService` (`getLocalStock`, `getStockFromApi`, `parseReport`) —
-   não sabem (nem precisam saber) se o dado veio de uma API ou de uma
-   importação manual.
-4. Decisão de produto pendente para quando a API existir: rodar a sincronia
-   automaticamente (ex.: a cada X minutos, um job no servidor chama a API
-   e atualiza o estoque) ou manter como um botão manual em `/admin`
-   ("Sincronizar agora"). Nenhuma das duas está implementada — é uma
-   escolha que fica pra quando a API estiver disponível de verdade.
+### Como sincronizar hoje: botão manual em `/admin`
+
+Decisão tomada em 05/10/2026: sincronização **sob demanda**, nunca
+automática em segundo plano. Na tela de produto, seção "Vínculo OliSek",
+um produto que já tem `olisek_id` vinculado ganha o botão **"Sincronizar
+agora com a OliSek"** (só aparece se `OLISEK_LOGIN`/`OLISEK_PASSWORD`
+estiverem configurados). Ao clicar:
+
+1. Chama `POST /api/admin/products/:id/olisek/sync` (`adminApi.syncOlisekStock`).
+2. Que chama `catalogService.syncStockFromOlisek(id)` → `olisekService.getStockFromApi(olisekId)`.
+3. Grava o estoque retornado, marca `stock_source = 'olisek_api'` e
+   `olisek_synced_at = datetime('now')`.
+
+Isso **não muda `olisek_link_status` sozinho** — um vínculo `probable` ou
+`needs_review` continua precisando de confirmação humana (regra 6: nunca
+inferir "confirmado" automaticamente), mesmo depois de sincronizado pela
+API. Um job automático (rodar a cada X minutos sozinho) fica como ideia
+futura, não implementada — a estrutura (`olisekService`/`catalogService`)
+já suporta isso sem mudar mais nada, se um dia for decidido.
 
 ## Regra permanente: curadoria antes de publicar
 

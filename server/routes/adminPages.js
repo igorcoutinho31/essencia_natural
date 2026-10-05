@@ -5,6 +5,7 @@
 'use strict';
 
 const catalogService = require('../services/catalogService');
+const olisekService = require('../services/olisekService');
 const { sendHTML, escapeHTML } = require('../util');
 
 function layout({ title, user, active, body }) {
@@ -239,9 +240,17 @@ function productFormPage(req, res, user, product, { brands, categories = [] }) {
         <p>ID <b>${p.olisekId}</b> — ${escapeHTML(p.olisekName || '')}
           <span class="badge ${olisekLinkInfo.cls}">${olisekLinkInfo.text}</span>
         </p>
-        <p class="a-help">Estoque de origem: ${p.stockSource === 'olisek_import' ? 'importado da OliSek' : p.stockSource === 'manual' ? 'digitado manualmente' : 'nenhum (nunca confirmado)'}.</p>
+        <p class="a-help">Estoque de origem: ${p.stockSource === 'olisek_api' ? 'sincronizado ao vivo pela API da OliSek' : p.stockSource === 'olisek_import' ? 'importado da OliSek (relatório colado)' : p.stockSource === 'manual' ? 'digitado manualmente' : 'nenhum (nunca confirmado)'}.</p>
+        ${p.olisekSyncedAt ? `<p class="a-help">Última sincronização pela API: ${escapeHTML(p.olisekSyncedAt)}.</p>` : ''}
       ` : '<p class="a-help">Ainda sem vínculo com a OliSek — estoque só é considerado confiável depois de um vínculo confirmado ou de um número digitado manualmente (ver docs/OLISEK-INTEGRATION.md).</p>'}
       <p class="a-help">Vendas acumuladas (OliSek): <b>${p.sales}</b> — só muda com uma importação real da OliSek, nunca é digitado à mão aqui (ver docs/OLISEK-INTEGRATION.md).</p>
+      ${isAdmin && p.olisekId ? `
+      <div class="a-sync-olisek" style="margin-top:10px">
+        ${olisekService.apiConfigured()
+          ? '<button class="btn btn-ghost btn-sm" id="f-sync-olisek" type="button">Sincronizar agora com a OliSek</button>'
+          : '<p class="a-help">Sincronização pela API desligada — defina OLISEK_LOGIN e OLISEK_PASSWORD nas variáveis de ambiente do servidor para habilitar (ver docs/OLISEK-INTEGRATION.md). Até lá, o vínculo abaixo continua funcionando normalmente.</p>'}
+      </div>
+      ` : ''}
       ${isAdmin ? `
       <div class="a-grid3" style="margin-top:10px">
         <div class="a-field"><label>ID OliSek</label><input type="number" id="f-olisek-id" value="${p.olisekId ?? ''}" placeholder="deixe em branco para desvincular"></div>
@@ -389,6 +398,16 @@ function productFormPage(req, res, user, product, { brands, categories = [] }) {
       post('/api/admin/products/' + PRODUCT_ID + '/olisek', 'PUT', data)
         .then(function(){ msg(document.getElementById('a-msg-olisek'), 'Vínculo OliSek atualizado.', true); setTimeout(function(){location.reload();}, 900); })
         .catch(function(e){ msg(document.getElementById('a-msg-olisek'), (e && e.message) || (e && e.error) || 'Erro.', false); });
+    });
+    var syncOlisek = document.getElementById('f-sync-olisek');
+    if (syncOlisek) syncOlisek.addEventListener('click', function(){
+      syncOlisek.disabled = true; syncOlisek.textContent = 'Sincronizando...';
+      post('/api/admin/products/' + PRODUCT_ID + '/olisek/sync', 'POST')
+        .then(function(){ msg(document.getElementById('a-msg-olisek'), 'Estoque sincronizado com a OliSek.', true); setTimeout(function(){location.reload();}, 900); })
+        .catch(function(e){
+          syncOlisek.disabled = false; syncOlisek.textContent = 'Sincronizar agora com a OliSek';
+          msg(document.getElementById('a-msg-olisek'), (e && e.error) || (e && e.message) || 'Erro ao sincronizar.', false);
+        });
     });
     var despub = document.getElementById('f-despublicar');
     if (despub) despub.addEventListener('click', function(){

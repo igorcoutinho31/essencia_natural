@@ -155,8 +155,9 @@ siga na primeira vez que o site for publicado de verdade.
 
 1. **Variáveis de ambiente** no painel do Railway (produção nunca usa um
    arquivo `.env`): `STORAGE_DIR` e `TRUST_PROXY=1` (ver "Publicar no
-   Railway", passo 3). `OLISEK_API_URL`/`OLISEK_API_KEY` ficam em branco
-   até a OliSek liberar acesso — ver `docs/OLISEK-INTEGRATION.md`. Todas as
+   Railway", passo 3). `OLISEK_LOGIN`/`OLISEK_PASSWORD` (API oficial da
+   OliSek, liberada 05/10/2026) ficam em branco até a loja decidir ativar a
+   sincronização automática — ver `docs/OLISEK-INTEGRATION.md`. Todas as
    variáveis estão explicadas em `.env.example`.
 2. **Volume persistente** montado no mesmo caminho de `STORAGE_DIR` (passo
    2). Sem ele, todo deploy novo apaga produtos, preços, fotos novas e a
