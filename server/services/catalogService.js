@@ -6,6 +6,7 @@
 
 const db = require('../db');
 const { slugify, uniqueSlug } = require('../util');
+const olisekService = require('./olisekService');
 
 const STOCK_THRESHOLD = { ultimas: 10 }; // configurável: stock<=10 = "Últimas unidades"
 const PLACEHOLDER_IMAGE = '/assets/images/placeholder-produto.svg';
@@ -18,6 +19,7 @@ const PLACEHOLDER_IMAGE = '/assets/images/placeholder-produto.svg';
  *  `stock_source` 'none' é só o valor padrão da coluna, nunca uma afirmação
  *  de ninguém. */
 function isStockReliable(row) {
+  if (row.stock_source === 'olisek_api') return true; // acabou de vir direto da OliSek, ao vivo
   if (row.stock_source === 'olisek_import') return row.olisek_link_status === 'confirmed' || row.olisek_link_status === 'probable';
   if (row.stock_source === 'manual') return true;
   return false;
@@ -83,6 +85,7 @@ function rowToAdmin(row) {
     olisekId: row.olisek_id,
     olisekName: row.olisek_name,
     olisekLinkStatus: row.olisek_link_status,
+    olisekSyncedAt: row.olisek_synced_at,
     name: row.name,
     brandId: row.brand_id,
     brand: row.brand_name || null,
@@ -347,6 +350,27 @@ function setOlisekLink(id, { olisekId, olisekName, linkStatus, stock, sales }) {
   return getAdminProductById(id);
 }
 
+/** Sincroniza o estoque de um produto direto da API da OliSek, sob demanda
+ *  (botão "Sincronizar agora" em /admin — nunca automático, ver
+ *  docs/OLISEK-INTEGRATION.md). Produto precisa já ter um `olisek_id`
+ *  vinculado (vindo de um vínculo manual anterior); isso não muda sozinho
+ *  o `olisek_link_status` — continua precisando de confirmação humana se
+ *  ainda não tinha sido confirmado (regra 6: nunca inferir "confirmado"
+ *  sozinho). Lança erro (status 400/501/502) se não houver vínculo, se a
+ *  API não estiver configurada, ou se a chamada falhar — quem chama decide
+ *  como mostrar isso no admin. */
+async function syncStockFromOlisek(id) {
+  const current = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
+  if (!current) return null;
+  if (!current.olisek_id) throw Object.assign(new Error('product_not_linked'), { status: 400 });
+  const stock = await olisekService.getStockFromApi(current.olisek_id);
+  db.prepare(`
+    UPDATE products SET stock=?, stock_source='olisek_api', olisek_synced_at=datetime('now'), updated_at=datetime('now')
+    WHERE id=?
+  `).run(stock, id);
+  return getAdminProductById(id);
+}
+
 /** Preço — vendedora e admin. Sempre grava histórico. */
 function setPrice(id, { price, comparePrice }, user) {
   const current = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
@@ -503,7 +527,7 @@ module.exports = {
   VALID_LINK_STATUS,
   getPublicProducts, getPublicProductBySlug, getRelated, getBrandsPublic,
   getAdminProducts, getAdminProductById, getAdminFilterCounts,
-  createProduct, updateProductFull, setOlisekLink, setPrice, setActive, setFeatured, setStockManual, despublish,
+  createProduct, updateProductFull, setOlisekLink, syncStockFromOlisek, setPrice, setActive, setFeatured, setStockManual, despublish,
   addImage, removeImage, setMainImage, reorderImages,
   ensureBrand, listBrandsAdmin,
   listCategories, normalizarCategoria, normalizarCategoriasGravadas,

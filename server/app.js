@@ -146,6 +146,8 @@ async function handle(req, res) {
       if (m && method === 'PUT') return await adminApi.setStock(req, res, m[1]);
       m = pathname.match(/^\/api\/admin\/products\/(\d+)\/olisek$/);
       if (m && method === 'PUT') return await adminApi.setOlisekLink(req, res, m[1]);
+      m = pathname.match(/^\/api\/admin\/products\/(\d+)\/olisek\/sync$/);
+      if (m && method === 'POST') return await adminApi.syncOlisekStock(req, res, m[1]);
       m = pathname.match(/^\/api\/admin\/products\/(\d+)\/images$/);
       if (m && method === 'POST') return await adminApi.uploadImage(req, res, m[1]);
       m = pathname.match(/^\/api\/admin\/products\/(\d+)\/images\/reorder$/);

@@ -4,17 +4,20 @@
 
 Tudo passa por `server/services/catalogService.js` — é a única parte do
 código que fala com o banco (`data/essencia.sqlite`). Rotas públicas,
-rotas de admin e a futura integração com a OliSek nunca leem o SQLite
-direto: todas chamam funções deste serviço. Isso é o que permite trocar
-"de onde vem o estoque" (hoje: importado manualmente; amanhã: API da
-OliSek) sem tocar em mais nada.
+rotas de admin e a integração com a OliSek nunca leem o SQLite direto:
+todas chamam funções deste serviço. Isso é o que permitiu trocar "de onde
+vem o estoque" (importação manual → API oficial da OliSek, liberada
+05/10/2026) sem tocar em mais nada fora de `catalogService.js` e
+`olisekService.js`.
 
 ### Tabelas (ver `server/db.js` para o schema completo)
 - `products` — nome, marca, categoria, notas, preço, `compare_price`
-  (preço "de", para promoção), estoque, `stock_source` (`'olisek_import'` /
-  `'manual'` / `'none'` — de onde veio o número, ver seção "Estoque"
-  abaixo), `active` (publicado ou não), `featured` (destaque), e os três
-  campos de vínculo com a OliSek: `olisek_id`, `olisek_name`,
+  (preço "de", para promoção), estoque, `stock_source` (`'olisek_api'` /
+  `'olisek_import'` / `'manual'` / `'none'` — de onde veio o número, ver
+  seção "Estoque" abaixo), `olisek_synced_at` (quando o botão "Sincronizar
+  agora" chamou a API pela última vez para aquele produto — só
+  informativo), `active` (publicado ou não), `featured` (destaque), e os
+  três campos de vínculo com a OliSek: `olisek_id`, `olisek_name`,
   `olisek_link_status` (`'confirmed'` / `'probable'` / `'needs_review'` /
   `'unlinked'` — ver `docs/OLISEK-INTEGRATION.md`).
 - `product_images` — um produto tem N fotos; uma é `is_main`.

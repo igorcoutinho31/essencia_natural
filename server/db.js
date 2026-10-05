@@ -184,4 +184,15 @@ CREATE INDEX IF NOT EXISTS idx_price_history_product ON price_history(product_id
   }
 }
 
+// V3 (05/10/2026): API oficial da OliSek liberada — coluna
+// `olisek_synced_at` guarda quando o botão "Sincronizar agora" (/admin)
+// chamou a API pela última vez para aquele produto. Só informativo pro
+// admin; não decide nada sozinho. Ver docs/OLISEK-INTEGRATION.md.
+{
+  const productCols3 = db.prepare('PRAGMA table_info(products)').all().map((c) => c.name);
+  if (!productCols3.includes('olisek_synced_at')) {
+    db.exec('ALTER TABLE products ADD COLUMN olisek_synced_at TEXT');
+  }
+}
+
 module.exports = db;
