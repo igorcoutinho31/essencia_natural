@@ -86,4 +86,12 @@ fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 if (totalDeProdutos() === 0) montarBaseDoZero();
 copiarFotosDoRepositorio();
 
+// Criação opcional de um admin adicional via variáveis temporárias do
+// Railway. É idempotente: se o username já existir, não muda senha nem
+// permissões. Depois de confirmar o login, as variáveis podem ser apagadas.
+execFileSync(process.execPath, [path.join(__dirname, 'create-admin-from-env.js')], {
+  stdio: 'inherit',
+  env: process.env,
+});
+
 require('./app');
