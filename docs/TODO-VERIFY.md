@@ -87,14 +87,17 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   marcas, é só trocar o `brand_id` dele em `/admin`.
 - Não publicar marca sem confirmação. Não criar logo fictício.
 
-## Domínio final / SEO — PENDENTE
-- Sem domínio definido: `canonical`, `og:url`, URLs absolutas de `og:image`
-  e `twitter:image`, `url`/`image` do JSON-LD e o `sitemap.xml` (hoje
-  rascunho com host `DOMINIO-FINAL-PENDENTE`) dependem dele.
+## Domínio final / SEO — PARCIALMENTE RESOLVIDO
+- Domínio informado pelo cliente em 16/10/2026:
+  `https://www.lojaessencianatural.com.br`.
+- Sitemap corrigido para geração dinâmica com a home e todos os produtos
+  públicos; `robots.txt` aponta para ele. Ver `docs/SITEMAP.md`.
+  Publicação e leitura pelo Google ainda precisam ser conferidas em produção.
+- Revisão de `canonical`, `og:url`, URLs absolutas de `og:image`
+  e `twitter:image` e `url`/`image` do JSON-LD continua pendente.
 - `og:image`/`twitter:image` estão com caminho relativo: o WhatsApp só
   mostra a prévia com URL absoluta. Trocar quando o domínio existir.
-- `robots.txt` liberado para todos, sem a linha `Sitemap:` (acrescentar
-  depois do domínio).
+- `robots.txt` permite o site e mantém os bloqueios de `/admin` e `/api/admin`.
 - JSON-LD sem CEP (não confirmado) e com endereço "Sobreloja 215" (ver o
   conflito 213/215 acima).
 - O favicon usa o monograma EN recortado do logo redondo (699 px); um
