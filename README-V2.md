@@ -194,8 +194,10 @@ siga na primeira vez que o site for publicado de verdade.
    `server/routes/productPage.js` monta `og:image` e a URL do produto sem
    um domínio absoluto (ver o comentário "Canônico e URL absolutas... não
    inventamos aqui" no próprio arquivo) porque o domínio de produção ainda
-   não existia. Depois de decidir o domínio, atualizar isso e a
-   `sitemap.xml`/`robots.txt` da raiz do projeto.
+   não existia. O domínio foi informado em 16/10/2026:
+   `https://www.lojaessencianatural.com.br`. A revisão dessas tags continua
+   pendente. O sitemap agora é dinâmico, servido pelo backend, e o
+   `robots.txt` já aponta para ele (ver `docs/SITEMAP.md`).
 9. **Testar um upload de foto de produto de ponta a ponta** em produção
    (não só local): abrir `/admin`, editar um produto, subir uma imagem JPG
    ou WEBP e confirmar que ela aparece no catálogo público. Depois faça

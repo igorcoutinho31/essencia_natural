@@ -18,6 +18,7 @@ const auth = require('./auth');
 const { sendJSON, sendHTML, MIME_BY_EXT } = require('./util');
 const publicApi = require('./routes/publicApi');
 const productPage = require('./routes/productPage');
+const sitemap = require('./routes/sitemap');
 const adminApi = require('./routes/adminApi');
 const adminPages = require('./routes/adminPages');
 
@@ -37,7 +38,6 @@ const STATIC_FILES = {
   '/links': path.join(ROOT, 'links.html'),
   '/links/': path.join(ROOT, 'links.html'),
   '/robots.txt': path.join(ROOT, 'robots.txt'),
-  '/sitemap.xml': path.join(ROOT, 'sitemap.xml'),
   '/favicon.ico': path.join(ROOT, 'assets', 'icons', 'favicon.ico'),
 };
 
@@ -105,6 +105,8 @@ async function handle(req, res) {
   const method = req.method;
 
   try {
+    if (pathname === '/sitemap.xml' && (method === 'GET' || method === 'HEAD')) return sitemap.serveSitemap(req, res);
+
     // ---- healthcheck (para orquestrador de deploy — Railway/Render/etc.) ----
     if (pathname === '/health' && method === 'GET') return sendJSON(res, 200, { ok: true, uptime: process.uptime() });
 
