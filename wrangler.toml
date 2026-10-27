@@ -7,6 +7,14 @@ compatibility_date = "2025-09-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
+# Domínio oficial (o domínio precisa estar ATIVO nesta conta da Cloudflare —
+# ver docs/CLOUDFLARE.md, passo 7). O endereço sem "www" é redirecionado
+# para o "www" (Worker + Redirect Rule).
+routes = [
+  { pattern = "www.lojaessencianatural.com.br", custom_domain = true },
+  { pattern = "lojaessencianatural.com.br", custom_domain = true },
+]
+
 # Roda o Worker perto do banco D1 (várias consultas por página ficam
 # rápidas); os arquivos estáticos continuam saindo da borda mais próxima
 # do visitante.
