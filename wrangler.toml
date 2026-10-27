@@ -1,0 +1,56 @@
+# Cloudflare Workers — Essência Natural. Passo a passo em docs/CLOUDFLARE.md.
+name = "essencia-natural"
+main = "src/worker.js"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# Roda o Worker perto do banco D1 (várias consultas por página ficam
+# rápidas); os arquivos estáticos continuam saindo da borda mais próxima
+# do visitante.
+[placement]
+mode = "smart"
+
+# Arquivos estáticos: só a pasta public/ é publicada. public/_headers
+# aplica os cabeçalhos de segurança e de cache.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+html_handling = "auto-trailing-slash"
+not_found_handling = "none"
+run_worker_first = ["/api/*", "/admin", "/admin/*", "/produto/*", "/uploads/*", "/sitemap.xml", "/health", "/favicon.ico"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "essencia-natural"
+# Troque pelo id impresso por `npx wrangler d1 create essencia-natural`.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# Fotos enviadas pelo /admin: por padrão ficam no próprio D1 (plano
+# grátis, sem cartão). Para usar o R2 (ativar o R2 pede cartão, mesmo sem
+# cobrar dentro da cota), crie o bucket e descomente as três linhas:
+# [[r2_buckets]]
+# binding = "UPLOADS"
+# bucket_name = "essencia-natural-uploads"
+
+# Otimização extra das fotos pelo Cloudflare Images — DESLIGADA para ficar
+# 100% no plano grátis: o navegador já reduz cada foto para 1600px/WEBP
+# antes do envio. Para ligar (cota grátis de 5 mil transformações/mês),
+# descomente as duas linhas abaixo. Ver src/images.js.
+# [images]
+# binding = "IMAGES"
+
+[triggers]
+crons = ["*/30 * * * *"]
+
+[vars]
+SITE_URL = "https://www.lojaessencianatural.com.br"
+OLISEK_API_URL = "https://olisek.com.br/api/v1"
+# "1" liga a sincronização automática do estoque com a OliSek (só produtos
+# com vínculo confirmado), a cada 30 minutos. Ver docs/OLISEK-INTEGRATION.md.
+OLISEK_AUTO_SYNC = "0"
+# OLISEK_LOGIN e OLISEK_PASSWORD são segredos: `npx wrangler secret put OLISEK_LOGIN`.
+
+[observability]
+enabled = true

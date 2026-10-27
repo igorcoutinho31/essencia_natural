@@ -1,0 +1,25 @@
+# Cabeçalhos dos arquivos estáticos servidos direto pela Cloudflare (as
+# respostas do Worker recebem os mesmos em src/http.js — manter iguais;
+# tests/security.test.js confere).
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Imagens: cache de 24h (foto nova = nome de arquivo novo, ver docs/TEAM.md).
+# HTML/CSS/JS seguem o padrão da Cloudflare (revalida a cada visita, 304 leve).
+/assets/brands/*
+  Cache-Control: public, max-age=86400
+/assets/catalog/*
+  Cache-Control: public, max-age=86400
+/assets/icons/*
+  Cache-Control: public, max-age=86400
+/assets/images/*
+  Cache-Control: public, max-age=86400
+/assets/social/*
+  Cache-Control: public, max-age=86400
+/assets/team/*
+  Cache-Control: public, max-age=86400

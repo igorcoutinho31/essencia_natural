@@ -2,9 +2,9 @@
 
 ## ⚠️ Atualizado na V2 (23/09/2026)
 
-**`data/catalog.json` não é mais a fonte de verdade** — ele só serve hoje
-como o histórico do que foi importado uma vez (por `server/seed.js`) para
-dentro do banco de dados (`data/essencia.sqlite`). Para incluir, remover,
+**`seed/catalog.json` não é mais a fonte de verdade** — ele só serve hoje
+como o histórico do que foi importado uma vez (por `scripts/seed.js`) para
+dentro do banco de dados (`.local/essencia.sqlite`). Para incluir, remover,
 precificar ou corrigir um produto agora, o caminho é `/admin` (ver
 `docs/ADMIN.md`) — não editar mais o JSON esperando que o site reflita a
 mudança. Detalhes da nova arquitetura em `docs/CATALOGO.md`. O restante
@@ -13,7 +13,7 @@ e continua útil como registro histórico dos dados de origem.
 
 ## Catálogo real (integrado ao site em 19/09/2026)
 
-Fonte de verdade **até a V2**: **`data/catalog.json`**. O site renderiza os
+Fonte de verdade **até a V2**: **`seed/catalog.json`**. O site renderiza os
 cards por JavaScript a partir desse arquivo — nenhum produto está escrito
 à mão no `index.html`. Para incluir, remover ou corrigir um item, edite o
 JSON.
@@ -21,7 +21,7 @@ JSON.
 - Total: **34 itens**
 - Origem: pacote extraído do Instagram @essencianaturall__ enviado pelo
   cliente (campo `generated_from` do próprio JSON)
-- Imagens: `assets/catalog/`, uma por item, convertidas de JPG para WebP
+- Imagens: `seed/fotos/`, uma por item, convertidas de JPG para WebP
   (máx. 700px de largura, proporção 3:4). De 19,3 MB para 1,79 MB.
 
 ### Campos por item

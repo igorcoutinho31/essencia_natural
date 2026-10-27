@@ -1,10 +1,10 @@
-# Banco de dados da V2 — gerado localmente por server/seed.js +
-# server/migrate-images.js, nunca deve ser commitado (evita conflitos e
-# não expõe hash de senha nem sessões). Ver README-V2.md para recriar.
-data/essencia.sqlite
-data/essencia.sqlite-wal
-data/essencia.sqlite-shm
-data/essencia.sqlite-journal
+# Dados locais do servidor Node (banco SQLite + fotos enviadas pelo /admin).
+# Nunca commitar: contém hash de senha e sessões. Ver server/paths.js.
+.local/
+
+# Estado local do `wrangler dev` (D1/R2 de teste).
+.wrangler/
+.dev.vars
 
 # Segredos locais (nunca existe .env commitado neste projeto)
 .env
@@ -13,21 +13,17 @@ data/essencia.sqlite-journal
 
 node_modules/
 
+# Backups baixados do /admin (contêm hashes de senha) e bancos soltos.
+*backup*.json
+*.sqlite
+*.sqlite-*
+
 # Arquivos que o Claude entrega pelo chat (bundles, patches, zips) e o
 # usuário salva localmente pra referência — nunca fazem parte do site.
 Claude outputs/
-
-# Fotos enviadas pelo /admin a partir de agora (fechamento V2, regra 12) —
-# o conjunto atual de fotos do catálogo (uploads/products/*/principal.*)
-# já está commitado de propósito, como parte do material inicial do site;
-# a partir daqui, uploads/ precisa de armazenamento persistente em produção
-# (ver README-V2.md, "Checklist para colocar no ar") e não deve mais crescer
-# dentro do repositório git a cada foto nova que uma vendedora envia.
-uploads/products/*/*
-!uploads/products/*/principal.*
-
-# Bundles do git e originais em PNG das fotos da equipe (ficam só na
-# máquina de quem enviou; o site usa as versões .webp otimizadas).
 *.bundle
-assets/team/*nova.png
-assets/team/*certa.png
+
+# Originais em PNG das fotos da equipe (ficam só na máquina de quem enviou;
+# o site usa as versões .webp otimizadas).
+public/assets/team/*nova.png
+public/assets/team/*certa.png
