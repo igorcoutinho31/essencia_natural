@@ -8,10 +8,11 @@ Instruções para agentes (Claude Code ou outros) trabalhando neste repositório
    nunca publicar essas informações como definitivas.
 3. Ler `docs/SITE-ARCHITECTURE.md` antes de mexer em qualquer coisa
    relacionada ao hero.
-4. Desde a V2, o site tem backend (`server/`) e banco de dados
-   (`data/essencia.sqlite`). Antes de mexer em catálogo, preço, estoque,
-   admin ou OliSek, ler `README-V2.md` e o doc específico
-   (`docs/CATALOGO.md`, `docs/ADMIN.md` ou `docs/OLISEK-INTEGRATION.md`).
+4. O site tem backend (`src/`, Worker da Cloudflare com D1; o mesmo
+   código roda no Node local por `server/`). Antes de mexer em catálogo,
+   preço, estoque, admin ou OliSek, ler `docs/BACKEND.md` e o doc
+   específico (`docs/CATALOGO.md`, `docs/ADMIN.md` ou
+   `docs/OLISEK-INTEGRATION.md`). Hospedagem: `docs/CLOUDFLARE.md`.
 
 ## Regras não-negociáveis
 - O hero animado de 240 frames foi aposentado e `assets/frames/` foi removida
@@ -25,13 +26,22 @@ Instruções para agentes (Claude Code ou outros) trabalhando neste repositório
   `docs/TODO-VERIFY.md` como resolvida.
 - Não copiar identidade visual, texto ou layout de sites de benchmark
   (ex.: onuh.com.br) — usar apenas como referência de lógica comercial.
-- Mudanças de design/estrutura no `index.html` exigem plano apresentado e
+- Mudanças de design/estrutura no `public/index.html` exigem plano apresentado e
   aprovação explícita antes da implementação.
 - Antes de comandos git destrutivos ou push, confirmar que não há trabalho
   manual concorrente do usuário no mesmo repositório.
-- Backend só com módulos nativos do Node (sem `npm install` — bloqueado
-  neste ambiente, ver README-V2.md). Não adicionar `require()` de pacote
-  nenhum sem antes confirmar que o ambiente de destino consegue instalar.
+- Backend sem dependências de runtime: só JavaScript padrão e módulos
+  `node:` suportados pelo Worker (`nodejs_compat`). O código de `src/` não
+  pode usar `node:fs`, `node:sqlite` nem nada que só exista no Node — isso
+  fica em `server/`, `scripts/` e `tools/`. O `wrangler` é a única
+  dependência (de desenvolvimento).
+- `src/` fala com o banco só pela API do D1 (`prepare/bind/first/all/run/
+  batch`) e com as fotos só por `src/storage.js`. Mudança de esquema = novo
+  arquivo em `migrations/` (idempotente, `IF NOT EXISTS`), nunca editar um
+  já publicado.
+- Estoque só muda por movimentação (`src/services/inventory.js`); nunca
+  `UPDATE products SET stock` direto.
+- Rodar `npm test` antes de dar uma mudança por concluída.
 - Preço nunca é inventado em lugar nenhum (banco, API, admin, schema.org).
   Sem preço confirmado, o campo fica `null` e a interface mostra
   "Consulte" — nunca um número calculado.

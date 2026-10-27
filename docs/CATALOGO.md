@@ -2,15 +2,15 @@
 
 ## Onde os dados moram
 
-Tudo passa por `server/services/catalogService.js` — é a única parte do
-código que fala com o banco (`data/essencia.sqlite`). Rotas públicas,
+Tudo passa por `src/services/catalog.js` (e, para o estoque,
+`src/services/inventory.js`) — são as únicas partes do código que falam
+com o banco (D1 na Cloudflare; `.local/essencia.sqlite` no Node local). Rotas públicas,
 rotas de admin e a integração com a OliSek nunca leem o SQLite direto:
 todas chamam funções deste serviço. Isso é o que permitiu trocar "de onde
 vem o estoque" (importação manual → API oficial da OliSek, liberada
-05/10/2026) sem tocar em mais nada fora de `catalogService.js` e
-`olisekService.js`.
+05/10/2026) sem tocar em mais nada fora de `catalog.js` e `olisek.js`.
 
-### Tabelas (ver `server/db.js` para o schema completo)
+### Tabelas (ver `migrations/0001_init.sql` para o schema completo)
 - `products` — nome, marca, categoria, notas, preço, `compare_price`
   (preço "de", para promoção), estoque, `stock_source` (`'olisek_api'` /
   `'olisek_import'` / `'manual'` / `'none'` — de onde veio o número, ver
@@ -21,7 +21,7 @@ vem o estoque" (importação manual → API oficial da OliSek, liberada
   `olisek_link_status` (`'confirmed'` / `'probable'` / `'needs_review'` /
   `'unlinked'` — ver `docs/OLISEK-INTEGRATION.md`).
 - `product_images` — um produto tem N fotos; uma é `is_main`.
-- `price_history` — toda vez que `catalogService.setPrice()` roda, uma
+- `price_history` — toda vez que `catalog.setPrice()` roda, uma
   linha nova é gravada aqui (preço antigo, novo, quem mudou, quando).
   Nunca é apagada, nem quando o produto é despublicado.
 - `brands` — nome + slug + `logo_path` (17 das 18 marcas confirmadas já
@@ -39,12 +39,12 @@ vínculo está certo, sem depender de decorar qual produto é qual.
 ## "Não inventar preço" — como isso é garantido no código
 
 - No banco, `price` é `NULL` até alguém digitar um valor em `/admin`.
-- `catalogService.rowToPublic()` só expõe o preço se o produto estiver
+- `catalog.rowToPublic()` só expõe o preço se o produto estiver
   `active`; se `price` for `NULL`, a API pública devolve `"price": null`.
 - No front-end (`assets/js/catalogo.js`, `precoTexto()`), `price: null`
   vira o texto **"Consulte"** — nunca um número calculado, arredondado ou
   estimado.
-- O mesmo vale para a página de produto (`server/routes/productPage.js`)
+- O mesmo vale para a página de produto (`src/routes/productPage.js`)
   e para o schema.org `Product` (`offers` só ganha o campo `price` quando
   ele existe de verdade).
 
@@ -54,7 +54,7 @@ vínculo está certo, sem depender de decorar qual produto é qual.
 estoque e a regra de "esse produto aparece no catálogo ou não" viraram
 duas perguntas separadas — antes eram uma coisa só (o antigo estado
 "Consulte disponibilidade"), agora cada uma tem sua própria função em
-`catalogService.js`.
+`src/services/catalog.js`.
 
 ### 1. Qual selo mostrar (`computeAvailability(row)`)
 
@@ -67,7 +67,7 @@ Olha só o número de `stock` — três estados, nunca o número exato:
 | `11` ou mais | Em estoque               |
 
 O limite "10" é o único número mágico do sistema e está isolado em uma
-constante (`STOCK_THRESHOLD.ultimas`, topo de `catalogService.js`) —
+constante (`STOCK_THRESHOLD.ultimas`, topo de `src/services/catalog.js`) —
 mudar o limite é editar um número, não reescrever lógica.
 
 ### 2. Se o produto aparece no catálogo público (`isPubliclyVisible(row)`)
@@ -108,7 +108,7 @@ se não tiver foto?" — sempre há uma imagem pra mostrar. `hasImage: false`
 no JSON da API indica que é o placeholder, caso algum consumidor precise
 distinguir os dois casos.
 
-## API pública (`server/routes/publicApi.js`)
+## API pública (`src/routes/public.js`)
 
 - `GET /api/products` — lista os produtos publicados: `active=1` **e**
   `isPubliclyVisible(row)` (ver seção "Estoque" acima — estoque zerado
@@ -144,7 +144,7 @@ produtos relacionados.
 
 Vem de `GET /api/brands` (`assets/js/marcas.js`) — nenhuma marca é escrita
 à mão no `index.html`. As marcas cadastradas em `brands` são todas as que
-`server/seed.js` criou porque a loja confirmou trabalhar com elas
+`scripts/seed.js` criou porque a loja confirmou trabalhar com elas
 (constante `MARCAS_CONFIRMADAS`), mais as marcas dos dois scripts de
 import de logo (ver abaixo) — mas nem toda marca cadastrada aparece
 necessariamente na grade pública; ver a regra de visibilidade logo a
@@ -152,8 +152,8 @@ seguir.
 
 **Logos — atualizado 23/09/2026:** o cliente enviou `Marcas.zip` (22
 arquivos) e depois o logo da Armaf em separado.
-`server/import-marcas-logos-2026-09-23.js` e
-`server/import-marcas-novas-2026-09-23.js` (mantidos no repositório como
+`scripts/import-marcas-logos-2026-09-23.js` e
+`scripts/import-marcas-novas-2026-09-23.js` (mantidos no repositório como
 registro do que foi importado) padronizaram os nomes pelo slug da marca,
 salvaram em `assets/brands/` e ligaram o logo de cada marca via
 `brands.logo_path`. Hoje as 24 marcas cadastradas têm logo — nenhuma
@@ -176,7 +176,7 @@ Anfar, Ferassa, Maison Asrar, Volaré e Ard Al Zaafaran — nascem com
 menos um produto **ativo e publicamente visível** (`isPubliclyVisible`,
 ver seção "Estoque" acima) vinculado. Até lá, elas existem normalmente em
 `brands` (com logo já ligado) mas `getBrandsPublic()`
-(`server/services/catalogService.js`) as filtra do resultado — não
+(`src/services/catalog.js`) as filtra do resultado — não
 aparecem em `GET /api/brands` nem em `/#marcas`. Nenhum produto foi
 criado só pra fazer essas marcas aparecerem — regra explícita do
 cliente.
@@ -187,29 +187,20 @@ A OliSek é o sistema de gestão de toda a loja — inclusive itens que não
 são perfume (a loja vende outras coisas também). O vínculo com o site
 **nunca é automático**: um produto só aparece publicado no catálogo se
 alguém do time (vendedora ou admin) confirmar o vínculo em `/admin`
-(hoje, isso é feito manualmente por `server/seed.js`; quando existir
+(hoje, isso é feito manualmente por `scripts/seed.js`; quando existir
 importação de relatório da OliSek, o fluxo malha os IDs mas ainda exige
 confirmação humana antes de publicar — ver `docs/OLISEK-INTEGRATION.md`).
 Isso evita, por exemplo, um carregador de celular ou um acessório
 qualquer aparecerem no meio da vitrine de perfumes.
 
-## Limitação conhecida: otimização de imagem
+## Otimização de imagem
 
-O upload de foto em `/admin` valida que o arquivo é mesmo um JPG/PNG/WEBP
-de verdade (lê a assinatura de bytes, não confia na extensão) e grava um
-arquivo real em `/uploads/products/<slug>/`. O que **não existe hoje** é
-redimensionamento/compressão automática — a imagem é salva do tamanho que
-a pessoa mandou. Isso acontece porque o ambiente onde a V2 foi construída
-bloqueia `npm install`, e a ferramenta padrão pra isso (`sharp`) é um
-pacote do npm. Dois caminhos pra resolver, quando a loja escolher onde
-hospedar:
-1. Se o servidor de produção permitir `npm install`, adicionar `sharp` e
-   redimensionar em `server/routes/adminApi.js` (`uploadImage`) antes de
-   gravar o arquivo — é a solução mais simples.
-2. Sem isso, o caminho é reduzir a imagem no navegador antes de enviar
-   (usando `<canvas>`, que não depende de nenhum pacote) — dá mais
-   trabalho de implementar mas funciona em qualquer hospedagem.
-Enquanto isso não é feito, o cuidado prático é a pessoa que sobe a foto já
-mandar um arquivo de tamanho razoável (a V1 usava fotos de até 700px de
-largura, convertidas pra WebP — o mesmo padrão continua sendo uma boa
-prática manual até a automação existir).
+Resolvido na migração para a Cloudflare (10/2026), nas duas pontas:
+1. O navegador reduz a foto para no máximo 1600px e converte para WEBP
+   (qualidade 85) antes de enviar — vale em qualquer hospedagem.
+2. Opcional (desligado por padrão, para ficar no plano grátis — ver
+   `wrangler.toml`): o Worker ainda passa a imagem pelo Cloudflare Images
+   (binding `IMAGES`, ver `src/images.js`) e fica com o resultado só se ele
+   for menor. Se o serviço não estiver disponível, grava a imagem como
+   chegou — o upload nunca falha por causa da otimização.
+O formato real do arquivo continua sendo validado pelos bytes (JPG/PNG/WEBP).
