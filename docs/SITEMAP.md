@@ -2,12 +2,12 @@
 
 ## Implementação (16/10/2026)
 
-`GET /sitemap.xml` agora é atendido por `server/routes/sitemap.js`, registrado
-em `server/app.js`. O antigo arquivo estático, que listava só a home, foi
+`GET /sitemap.xml` agora é atendido por `src/routes/public.js`, registrado
+em `src/app.js`. O antigo arquivo estático, que listava só a home, foi
 removido. O endereço público continua o mesmo.
 
-A resposta XML UTF-8 contém a página inicial e todos os produtos retornados
-por `catalogService.getPublicProducts()`, sem filtros ou paginação. Assim,
+A resposta XML UTF-8 contém a página inicial, `/links` e todos os produtos
+retornados por `getPublicProducts()` (`src/services/catalog.js`), sem filtros ou paginação. Assim,
 segue exatamente as regras das páginas de produto: `active = 1` e
 `stock > 0 || sales >= 10`. Produtos ocultos/despublicados ficam de fora.
 Não há rotas administrativas no sitemap.
@@ -16,14 +16,15 @@ Todas as URLs usam `https://www.lojaessencianatural.com.br`, independente
 do host da requisição. Slugs são codificados para URL e o texto é escapado
 para XML. A consulta acontece em cada pedido, com `Cache-Control: no-store`,
 para refletir alterações no catálogo. HEAD retorna os mesmos cabeçalhos sem
-corpo. Não são inventadas datas `lastmod`.
+corpo. Cada produto leva `<lastmod>` com a data real da última alteração
+(`updated_at`); a home e `/links` ficam sem data (não é inventada).
 
 `robots.txt` informa o endereço absoluto do sitemap e preserva `Allow: /`,
 `Disallow: /admin` e `Disallow: /api/admin`.
 
 ## Verificação local
 
-Execute `node --test tests/sitemap.test.js`. O teste usa um banco temporário
+Execute `npm test` (o sitemap está em `tests/public.test.js`). O teste usa um banco temporário
 isolado e verifica catálogo vazio, produtos públicos/ocultos/despublicados,
 estoque zerado com dez vendas, caracteres especiais, atualização automática,
 GET/HEAD, cabeçalhos, robots e respostas das rotas existentes. Não altera

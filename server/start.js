@@ -1,97 +1,38 @@
-// Ponto de entrada em produção (`npm start`). Faz duas coisas antes de subir
-// o servidor:
+// Ponto de entrada do servidor Node em produção (`npm start`) — usado pelo
+// Railway até a troca para a Cloudflare terminar (ver docs/CLOUDFLARE.md).
+// Na Cloudflare, quem roda é src/worker.js; este arquivo não é usado lá.
 //
-// 1. Primeira vez num disco vazio (banco sem nenhum produto): monta a base
-//    inteira rodando, na ordem, os mesmos scripts do README-V2.md ("Do zero
-//    de verdade") — marcas, os 34 produtos, fotos, vínculos OliSek, logos e
-//    a conta administradora. A senha temporária do admin aparece UMA vez
-//    no log do deploy; o primeiro login obriga a trocar.
-//    Nas vezes seguintes (o banco já tem produtos) isso é pulado — nenhum
-//    script roda de novo por cima do que a equipe editou no /admin.
-//
-// 2. Sempre: garante que as fotos do catálogo que estão no repositório
-//    (uploads/products/*/principal.*) existem no disco de uploads. Só copia
-//    o que falta — nunca sobrescreve uma foto que já está lá.
-//
-// Localmente continua valendo `node server/app.js` direto; este arquivo só
-// importa quando o banco/uploads moram num volume (STORAGE_DIR).
-'use strict';
+// 1. Banco vazio (primeira vez num volume novo): monta a base inteira com os
+//    mesmos scripts de sempre (marcas, 34 produtos, fotos, vínculos OliSek,
+//    logos e a conta `admin`). A senha temporária aparece UMA vez no log.
+// 2. Sempre: cria o admin opcional das variáveis CREATE_ADMIN_* e unifica
+//    variações de categoria.
+import fs from 'node:fs';
 
-// node:sqlite (o banco) só existe a partir do Node 22.13 — se a hospedagem
-// subir uma versão mais velha, falha aqui com uma mensagem clara em vez de
-// um erro obscuro lá no meio do servidor. A versão usada no deploy vem do
-// campo "engines" do package.json.
-try { require('node:sqlite'); } catch {
-  console.error(`[start] Este site precisa do Node 22.13 ou mais novo (encontrado: ${process.version}). Confira o campo "engines" do package.json.`);
+// node:sqlite só existe a partir do Node 22.13.
+try { await import('node:sqlite'); } catch {
+  console.error(`[start] Este site precisa do Node 22.13 ou mais novo (encontrado: ${process.version}).`);
   process.exit(1);
 }
 
-const fs = require('node:fs');
-const path = require('node:path');
-const { execFileSync } = require('node:child_process');
-const { ROOT, STORAGE_DIR, DB_PATH, UPLOADS_DIR } = require('./paths');
+const { storagePaths } = await import('./paths.js');
+const { openDatabase } = await import('./sqlite-d1.js');
+const { normalizarCategoriasGravadas } = await import('../src/services/catalog.js');
+const { createNodeDeps, listen } = await import('./app.js');
 
-const SCRIPTS_PRIMEIRA_VEZ = [
-  'seed.js',
-  'migrate-images.js',
-  'olisek-import-2026-09-23.js',
-  'olisek-link-status-2026-09-24.js',
-  'import-marcas-logos-2026-09-23.js',
-  'import-marcas-novas-2026-09-23.js',
-];
+const { STORAGE_DIR, DB_PATH, UPLOADS_DIR } = storagePaths();
+if (STORAGE_DIR) console.log(`[start] Guardando banco e fotos em ${STORAGE_DIR} (STORAGE_DIR).`);
+fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
-function totalDeProdutos() {
-  if (!fs.existsSync(DB_PATH)) return 0;
-  const { DatabaseSync } = require('node:sqlite');
-  const db = new DatabaseSync(DB_PATH);
-  try {
-    const tem = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='products'").get();
-    return tem ? db.prepare('SELECT COUNT(*) AS c FROM products').get().c : 0;
-  } finally {
-    db.close();
-  }
-}
+const db = openDatabase(DB_PATH);
 
-function montarBaseDoZero() {
-  console.log(`[start] Banco vazio em ${DB_PATH} — montando a base inicial.`);
-  for (const script of SCRIPTS_PRIMEIRA_VEZ) {
-    console.log(`[start] -> node server/${script}`);
-    execFileSync(process.execPath, [path.join(__dirname, script)], { stdio: 'inherit', env: process.env });
-  }
+const { run: montarBaseInicial } = await import('../scripts/base-inicial.js');
+if (await montarBaseInicial(db, UPLOADS_DIR)) {
   console.log('[start] Base inicial pronta. Anote a senha temporária do admin impressa acima.');
 }
 
-function copiarFotosDoRepositorio() {
-  const origem = path.join(ROOT, 'uploads', 'products');
-  const destino = path.join(UPLOADS_DIR, 'products');
-  if (path.resolve(origem) === path.resolve(destino) || !fs.existsSync(origem)) return;
-  let copiadas = 0;
-  for (const slug of fs.readdirSync(origem)) {
-    const dirOrigem = path.join(origem, slug);
-    if (!fs.statSync(dirOrigem).isDirectory()) continue;
-    for (const arquivo of fs.readdirSync(dirOrigem)) {
-      if (!arquivo.startsWith('principal.')) continue;
-      const alvo = path.join(destino, slug, arquivo);
-      if (fs.existsSync(alvo)) continue;
-      fs.mkdirSync(path.dirname(alvo), { recursive: true });
-      fs.copyFileSync(path.join(dirOrigem, arquivo), alvo);
-      copiadas += 1;
-    }
-  }
-  if (copiadas) console.log(`[start] ${copiadas} foto(s) do catálogo copiadas para ${destino}.`);
-}
+await (await import('../scripts/create-admin-from-env.js')).run(db);
+const n = await normalizarCategoriasGravadas(db);
+if (n) console.log(`[catalogo] ${n} produto(s) com categoria unificada.`);
 
-if (STORAGE_DIR) console.log(`[start] Guardando banco e fotos em ${STORAGE_DIR} (STORAGE_DIR).`);
-fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-if (totalDeProdutos() === 0) montarBaseDoZero();
-copiarFotosDoRepositorio();
-
-// Criação opcional de um admin adicional via variáveis temporárias do
-// Railway. É idempotente: se o username já existir, não muda senha nem
-// permissões. Depois de confirmar o login, as variáveis podem ser apagadas.
-execFileSync(process.execPath, [path.join(__dirname, 'create-admin-from-env.js')], {
-  stdio: 'inherit',
-  env: process.env,
-});
-
-require('./app');
+listen(createNodeDeps(process.env, { db }));

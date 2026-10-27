@@ -41,7 +41,7 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 
 ## Catálogo / Produtos
 - Catálogo real de 34 itens integrado em 19/09/2026 a partir do pacote do
-  Instagram. Fonte de verdade: `data/catalog.json`. Ver `docs/PRODUCTS.md`.
+  Instagram. Fonte de verdade: `seed/catalog.json`. Ver `docs/PRODUCTS.md`.
 - PREÇOS — PENDENTE: nenhum dos 34 itens tem `price` ou `wholesale_price`.
   O site NÃO exibe preço, nem "a partir de", nem "consultar preço" em
   formato de preço — só o botão "Consultar no WhatsApp". Só publicar valor
@@ -55,7 +55,7 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   QAWAFI`, `perfume FATIMA com sabonetes em formato de Rosas`, `Fakhar
   Rose, o mais querido pelas mulheres`). Publicados como estão, sem
   reescrita por conta própria. Confirmar o nome correto com o cliente e
-  corrigir em `data/catalog.json`.
+  corrigir em `seed/catalog.json`.
 - `Aurora` está classificado como `Marca / Coleção` e pode não ser um
   produto avulso — confirmar se deve sair do catálogo.
 
@@ -75,8 +75,8 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   mas não em `MARCAS_CONFIRMADAS`: Amouage, Anfar, Ferassa, Maison Asrar,
   Volaré e Ard Al Zaafaran) e mandou também o logo da Armaf, que tinha
   ficado de fora do zip original. Hoje as 24 marcas cadastradas têm logo
-  em `assets/brands/` (ver `server/import-marcas-logos-2026-09-23.js`,
-  `server/import-marcas-novas-2026-09-23.js` e `docs/CATALOGO.md`, seção
+  em `assets/brands/` (ver `scripts/import-marcas-logos-2026-09-23.js`,
+  `scripts/import-marcas-novas-2026-09-23.js` e `docs/CATALOGO.md`, seção
   "Grade de marcas"). Nenhuma pendência de logo restante.
 - As 6 marcas novas foram cadastradas (`brands`) mas **não aparecem** em
   `/#marcas` ainda, por regra explícita do cliente: só entram na grade
@@ -87,16 +87,17 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   marcas, é só trocar o `brand_id` dele em `/admin`.
 - Não publicar marca sem confirmação. Não criar logo fictício.
 
-## Domínio final / SEO — PARCIALMENTE RESOLVIDO
+## Domínio final / SEO — RESOLVIDO NO CÓDIGO (10/2026)
 - Domínio informado pelo cliente em 16/10/2026:
   `https://www.lojaessencianatural.com.br`.
 - Sitemap corrigido para geração dinâmica com a home e todos os produtos
   públicos; `robots.txt` aponta para ele. Ver `docs/SITEMAP.md`.
   Publicação e leitura pelo Google ainda precisam ser conferidas em produção.
-- Revisão de `canonical`, `og:url`, URLs absolutas de `og:image`
-  e `twitter:image` e `url`/`image` do JSON-LD continua pendente.
-- `og:image`/`twitter:image` estão com caminho relativo: o WhatsApp só
-  mostra a prévia com URL absoluta. Trocar quando o domínio existir.
+- `canonical`, `og:url`, `og:image`/`twitter:image` absolutos e
+  `url`/`image` do JSON-LD feitos na home, em `/links` e nas páginas de
+  produto, todos com o domínio acima. Pendente só conferir em produção (o
+  domínio ainda aponta para o Railway): prévia do link no WhatsApp e
+  Google Search Console. Ver `docs/CLOUDFLARE.md`, passo 7.
 - `robots.txt` permite o site e mantém os bloqueios de `/admin` e `/api/admin`.
 - JSON-LD sem CEP (não confirmado) e com endereço "Sobreloja 215" (ver o
   conflito 213/215 acima).
@@ -130,13 +131,12 @@ ler e aprovar:
 - `#rodape`: o CTA final.
 
 ## SEO
-- Ver "Domínio final / SEO" acima. og:image, favicon, JSON-LD e robots já
-  existem; falta o que depende do domínio.
+- Ver "Domínio final / SEO" acima.
 
 ## Sacola / vendas online — PENDENTE
 - Preços: o cliente vai enviar a lista. **Atualizado na V2**: preço não é
   mais um campo do JSON — é editado em `/admin/produtos/:id`, por produto,
-  e fica guardado em `data/essencia.sqlite` (com histórico completo de
+  e fica guardado em `.local/essencia.sqlite` (com histórico completo de
   quem mudou e quando, ver `docs/ADMIN.md`). Atacado (preço "de"/promoção)
   segue sob consulta enquanto não houver política definida. Confirmar com
   o cliente se o preço pode ser público.
@@ -187,7 +187,7 @@ ler e aprovar:
   seção "Grade de marcas").
 - Otimização automática de imagem no upload do admin: não existe hoje
   (ver a limitação documentada em `docs/CATALOGO.md`).
-- Senha temporária do admin: gerada por `server/seed.js`/
-  `server/reset-admin-password.js` e entregue fora do repositório (nunca
+- Senha temporária do admin: gerada por `scripts/seed.js`/
+  `scripts/reset-admin-password.js` e entregue fora do repositório (nunca
   commitada). Trocar assim que possível.
 
