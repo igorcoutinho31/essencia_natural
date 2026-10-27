@@ -23,7 +23,7 @@ movimentação da OliSek (`Essencia Natural.pdf`, exportado em
 `https://olisek.com.br`, 22/09/2026 23:58) com ID, nome e estoque atual de
 todos os itens já cadastrados na loja. A partir dele, **27 dos 34 produtos
 do catálogo** agora têm `olisek_id` gravado no banco (script de importação:
-`server/olisek-import-2026-09-23.js`, mantido no repositório como registro
+`scripts/olisek-import-2026-09-23.js`, mantido no repositório como registro
 do que foi importado e quando):
 
   | Produto no site | ID OliSek | Nome na OliSek | Estoque | Confiança |
@@ -62,7 +62,7 @@ do que foi importado e quando):
   valores: `confirmed` / `probable` / `needs_review` / `unlinked`. Nessa
   migração, **Fakhar Black** e **Fakhar Gold** foram reclassificados de
   "provável" para **"precisa revisão"** (`needs_review`) — ver
-  `server/olisek-link-status-2026-09-24.js`.
+  `scripts/olisek-link-status-2026-09-24.js`.
 
   ⚠️ **Atualização 23/09/2026 (segundo fechamento da V2— regra mudou):**
   no primeiro fechamento, um vínculo `needs_review`/`unlinked` fazia o selo
@@ -128,7 +128,7 @@ do que foi importado e quando):
   suficientes. **Nenhum dos 7 é apagado do banco** — continuam existindo
   normalmente em `/admin`, no filtro "Ocultos do catálogo".
 
-- `server/services/olisekService.js` já tem uma função `parseReport(texto)`
+- `src/services/olisek.js` já tem uma função `parseReport(texto)`
   que lê um relatório colado (exportado/copiado manualmente da OliSek, em
   CSV simples) e devolve as linhas interpretadas — pronta pra alimentar
   uma tela de importação em lote no admin.
@@ -152,14 +152,14 @@ por este site: `GET /v1/getProduct?id=X` (um produto, pelo `id_product` —
 paginada, reservado para uma futura tela de match manual). A API também
 tem rotas de clientes e dados da empresa que este site não usa.
 
-- `server/services/olisekService.js` agora faz a chamada de verdade:
+- `src/services/olisek.js` agora faz a chamada de verdade:
   autentica, guarda o token em memória (renovando sozinho perto do
   vencimento ou se a OliSek devolver `401`), e expõe `getStockFromApi`,
   `getProductFromApi` e `listProductsFromApi`.
-- `olisekService.apiConfigured()` verifica duas variáveis de ambiente,
+- `apiConfigured() (`src/services/olisek.js`)` verifica duas variáveis de ambiente,
   **`OLISEK_LOGIN`** e **`OLISEK_PASSWORD`** (nunca em nenhum arquivo do
   repositório, nunca em código que roda no navegador — só variável de
-  ambiente do servidor no Railway/Render, ver `README-V2.md`). Enquanto
+  ambiente do servidor — segredos do Worker na Cloudflare, ver `CLOUDFLARE.md`). Enquanto
   ficarem em branco, a função devolve `false` e nenhuma chamada é feita —
   a importação manual de relatório continua funcionando normalmente.
 - `OLISEK_API_URL` é opcional (padrão `https://olisek.com.br/api/v1`).
@@ -168,28 +168,36 @@ tem rotas de clientes e dados da empresa que este site não usa.
   foi escrita e revisada contra a documentação oficial da API, mas **ainda
   não foi testada contra o servidor de verdade**. O primeiro teste real
   (login + busca de um produto conhecido, ex. ATHEERI/804491) precisa
-  acontecer com acesso de rede de verdade — local, no Railway, ou em
+  acontecer com acesso de rede de verdade — local, na Cloudflare, ou em
   qualquer ambiente que alcance a internet pública.
 
-### Como sincronizar hoje: botão manual em `/admin`
+### Como sincronizar
 
-Decisão tomada em 05/10/2026: sincronização **sob demanda**, nunca
-automática em segundo plano. Na tela de produto, seção "Vínculo OliSek",
-um produto que já tem `olisek_id` vinculado ganha o botão **"Sincronizar
-agora com a OliSek"** (só aparece se `OLISEK_LOGIN`/`OLISEK_PASSWORD`
-estiverem configurados). Ao clicar:
+Decisão de 05/10/2026: sincronização **sob demanda**. Desde a migração
+para a Cloudflare (10/2026) há três formas, todas desligadas enquanto
+`OLISEK_LOGIN`/`OLISEK_PASSWORD` não estiverem configurados:
 
-1. Chama `POST /api/admin/products/:id/olisek/sync` (`adminApi.syncOlisekStock`).
-2. Que chama `catalogService.syncStockFromOlisek(id)` → `olisekService.getStockFromApi(olisekId)`.
-3. Grava o estoque retornado, marca `stock_source = 'olisek_api'` e
-   `olisek_synced_at = datetime('now')`.
+1. **Um produto** — tela do produto, seção "Vínculo OliSek", botão
+   **"Sincronizar agora com a OliSek"** (`POST
+   /api/admin/products/:id/olisek/sync`).
+2. **Todos de uma vez** — `/admin/estoque`, botão **"Sincronizar todos com
+   a OliSek"** (`POST /api/admin/stock/olisek-sync`): só produtos com
+   vínculo **confirmado**. Um erro num produto não interrompe os outros; a
+   tela mostra quantos mudaram, quantos ficaram iguais e quantos falharam.
+3. **Automática (opcional, desligada por padrão)** — com
+   `OLISEK_AUTO_SYNC = "1"` no `wrangler.toml`, o cron do Worker faz o
+   mesmo que o item 2 a cada 30 minutos. É uma decisão da loja: ligar só
+   depois de confirmar que os números da OliSek batem com a prateleira.
 
-Isso **não muda `olisek_link_status` sozinho** — um vínculo `probable` ou
+Em todos os casos: o estoque retornado vira uma movimentação
+`olisek_api` no histórico de estoque (só quando o número muda),
+`stock_source = 'olisek_api'` e `olisek_synced_at` atualizado
+(`syncStockFromOlisek` em `src/services/catalog.js`).
+
+Nada disso muda `olisek_link_status` — um vínculo `probable` ou
 `needs_review` continua precisando de confirmação humana (regra 6: nunca
-inferir "confirmado" automaticamente), mesmo depois de sincronizado pela
-API. Um job automático (rodar a cada X minutos sozinho) fica como ideia
-futura, não implementada — a estrutura (`olisekService`/`catalogService`)
-já suporta isso sem mudar mais nada, se um dia for decidido.
+inferir "confirmado" automaticamente), e por isso fica fora da
+sincronização em lote e da automática.
 
 ## Regra permanente: curadoria antes de publicar
 

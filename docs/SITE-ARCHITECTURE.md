@@ -19,7 +19,7 @@ social, equipe, loja), não o hero.
 Ordem real das `<section>` no `index.html` (V1.1, 21/09/2026 — enxuta):
 
 1. `#hero` — quem é a loja: logo em destaque, título, 2 CTAs
-2. `#catalogo` — 34 produtos reais de `data/catalog.json`, com filtros por
+2. `#catalogo` — 34 produtos reais de `seed/catalog.json`, com filtros por
    categoria, busca por nome/marca, ordenação, modal de detalhes e
    "Ver mais" em lotes de 12
 3. `#marcas` — marcas disponíveis (visual; slots em `assets/brands/`)
@@ -90,7 +90,7 @@ catálogo real, selos de confiança ainda não confirmados).
 - **Zero script externo.** O GSAP foi removido na passada final: as duas
   seções que o usavam (contadores e "explosão das notas") saíram por
   conterem dados inventados. Só as fontes do Google continuam externas.
-- O catálogo é renderizado por JS a partir de `data/catalog.json`. Isso
+- O catálogo é renderizado por JS a partir de `seed/catalog.json`. Isso
   exige servir por HTTP — abrir o `index.html` direto do disco faz o
   navegador bloquear o JSON por CORS, e a página mostra um aviso
   explicando em vez de falhar em silêncio.
@@ -114,7 +114,7 @@ catálogo real, selos de confiança ainda não confirmados).
 - Estado no `localStorage` (`en_sacola_v1`: id, quantidade, nome, marca,
   entrega, CEP, nome, obs), sempre em try/catch.
 - Preços: aparecem sozinhos (card, modal, sacola e total) quando o
-  `data/catalog.json` trouxer `price` como número em reais. Sem preço, nada
+  `seed/catalog.json` trouxer `price` como número em reais. Sem preço, nada
   é exibido. O total só aparece se TODOS os itens da sacola tiverem preço.
 - Caminho futuro: migrar para plataforma de loja virtual ou checkout próprio
   quando houver preços, estoque e definição de frete (ver TODO-VERIFY).
@@ -129,9 +129,9 @@ Brasília, calculado pelos horários do site; não conhece feriados).
 
 ## V2 — catálogo/admin de verdade (23/09/2026)
 
-A V2 vira o site de estático (tudo em `data/catalog.json`) para um
+A V2 vira o site de estático (tudo em `seed/catalog.json`) para um
 site+backend real, mantendo a mesma identidade visual — **não foi um
-redesign**. Documentação específica: `README-V2.md` (visão geral e como
+redesign**. Documentação específica: `BACKEND.md` (visão geral e como
 rodar), `docs/CATALOGO.md` (arquitetura de dados e catálogo público),
 `docs/ADMIN.md` (o painel `/admin`), `docs/OLISEK-INTEGRATION.md` (o que é
 real hoje vs. o que é manual vs. o que fica pronto pra API).
@@ -140,17 +140,17 @@ Resumo do que mudou:
 - `index.html` deixou de ter `<style>`/`<script>` inline: agora carrega
   `assets/css/site.css` e `assets/js/{menu,sacola,vida,marcas,catalogo}.js`.
 - O catálogo (`#catalogo`) e a grade de marcas (`#marcas`) não vêm mais de
-  `data/catalog.json` — vêm de `/api/products` e `/api/brands`, servidos
-  por `server/app.js`, que lê um banco SQLite (`data/essencia.sqlite`).
+  `seed/catalog.json` — vêm de `/api/products` e `/api/brands`, servidos
+  pelo backend (`src/`, Worker da Cloudflare), que lê o banco D1.
 - Cada produto ganhou uma página própria em `/produto/:slug`
-  (`server/routes/productPage.js`), renderizada no servidor, com SEO/OG e
+  (`src/routes/productPage.js`), renderizada no servidor, com SEO/OG e
   JSON-LD `Product` — sempre só com dados reais (sem preço/nota/GTIN
   inventado).
-- Existe agora um painel `/admin` (`server/routes/adminPages.js` +
+- Existe agora um painel `/admin` (`src/routes/adminPages.js` +
   `adminApi.js`) com duas contas: vendedora (preço, estoque, fotos,
   destaque) e admin/gerente (tudo isso + cadastro completo e despublicar).
-- `data/catalog.json` continua no repositório só como fonte histórica —
-  `server/seed.js` o lê uma única vez para popular o banco; depois disso o
+- `seed/catalog.json` continua no repositório só como fonte histórica —
+  `scripts/seed.js` o lê uma única vez para popular o banco; depois disso o
   banco é que manda.
 - `assets/frames/` continua removida; nada disso voltou na V2.
 
