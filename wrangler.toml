@@ -1,6 +1,8 @@
 # Cloudflare Workers — Essência Natural. Passo a passo em docs/CLOUDFLARE.md.
 name = "essencia-natural"
 main = "src/worker.js"
+# Conta Cloudflare da loja (todo comando do wrangler vai para ela).
+account_id = "75f388661b59a17b2cc18ee60a32f5c1"
 compatibility_date = "2025-09-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
@@ -23,8 +25,7 @@ run_worker_first = ["/api/*", "/admin", "/admin/*", "/produto/*", "/uploads/*", 
 [[d1_databases]]
 binding = "DB"
 database_name = "essencia-natural"
-# Troque pelo id impresso por `npx wrangler d1 create essencia-natural`.
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "ecb7f931-21db-44b4-868f-790793349a19"
 migrations_dir = "migrations"
 
 # Fotos enviadas pelo /admin: por padrão ficam no próprio D1 (plano
