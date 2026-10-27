@@ -13,7 +13,7 @@ build step; backend em JavaScript sem dependências de runtime.
 
 ## Estado atual
 - **V3 (10/2026): hospedagem na Cloudflare.** O backend (`src/`) roda num
-  Worker com banco D1 e fotos no R2; o mesmo código roda no Node local
+  Worker com banco D1 (fotos também no D1, plano grátis); o mesmo código roda no Node local
   (`server/`) para desenvolver e testar. Estoque com histórico de
   movimentações, login com limite de tentativas, cabeçalhos de segurança e
   SEO com o domínio oficial. Ver `docs/BACKEND.md` (arquitetura) e

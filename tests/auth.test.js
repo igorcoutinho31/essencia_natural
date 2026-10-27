@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createTestApp } from './helpers.js';
-import { LOGIN_LIMITS } from '../src/auth.js';
+import { LOGIN_LIMITS, needsRehash } from '../src/auth.js';
 
 test('login, sessão por cookie seguro e logout', async (t) => {
   const app = createTestApp();
@@ -35,6 +35,23 @@ test('senha errada e bloqueio após tentativas seguidas', async (t) => {
   assert.equal((await tentar('senha-forte-1')).status, 200);
   const row = await app.db.prepare("SELECT * FROM login_attempts WHERE key = 'user:admin'").first();
   assert.equal(row, null);
+});
+
+test('senha no formato antigo (V2) continua valendo e é convertida no login', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  const crypto = await import('node:crypto');
+  const salt = 'abcdef0123456789';
+  const antigo = crypto.scryptSync('senha-da-v2', salt, 64).toString('hex'); // como a V2 gravava
+  await app.db.prepare("INSERT INTO users (name, username, password_hash, password_salt, role, must_change_password) VALUES ('Loja', 'loja', ?, ?, 'admin', 0)").bind(antigo, salt).run();
+  assert.equal(needsRehash(antigo), true);
+  await app.login('loja', 'senha-da-v2');
+  const { password_hash: novo } = await app.db.prepare("SELECT password_hash FROM users WHERE username = 'loja'").first();
+  assert.match(novo, /^scrypt\$2048\$8\$1\$[0-9a-f]{128}$/);
+  assert.equal(needsRehash(novo), false);
+  app.logout();
+  await app.login('loja', 'senha-da-v2'); // mesma senha, formato novo
+  assert.equal((await app.call('/api/admin/login', { method: 'POST', body: { username: 'loja', password: 'errada-123' } })).status, 401);
 });
 
 test('senha temporária: só deixa trocar a senha; troca derruba outras sessões', async (t) => {

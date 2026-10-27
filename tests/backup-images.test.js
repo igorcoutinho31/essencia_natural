@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { createTestApp, PNG_DATA_URL } from './helpers.js';
 import { SqliteD1, applyMigrations } from '../server/sqlite-d1.js';
 import { BACKUP_TABLES, backupToSQL } from '../src/services/backup.js';
+import { d1Storage, uploadSQL } from '../src/storage.js';
+import crypto from 'node:crypto';
 
 test('upload de foto: valida o formato real, grava, serve e apaga', async (t) => {
   const app = createTestApp();
@@ -20,6 +22,7 @@ test('upload de foto: valida o formato real, grava, serve e apaga', async (t) =>
   const foto = await app.call(image.path);
   assert.equal(foto.status, 200);
   assert.equal(foto.headers.get('content-type'), 'image/png');
+  assert.equal(foto.headers.get('cache-control'), 'public, max-age=31536000, immutable');
   const etag = foto.headers.get('etag');
   assert.equal((await app.call(image.path, { headers: { 'if-none-match': etag } })).status, 304);
 
@@ -99,4 +102,42 @@ test('backup de um banco antigo (sem histórico de estoque) abre o histórico co
   assert.deepEqual(m.map((x) => ({ ...x })), [{ kind: 'inicial', stock_before: 0, stock_after: 7 }]);
   assert.throws(() => backupToSQL({ format: 'outro' }, cols), /não é um backup/);
   destino.close();
+});
+
+test('fotos guardadas no D1 (plano grátis): grava em pedaços, serve, entra no backup e apaga', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  app.deps.storage = d1Storage(app.db);
+  await app.createUser();
+  await app.login();
+  const id = await app.insertProduct({ slug: 'grande', stock: 1 });
+  // Foto de ~200 KB: precisa de vários pedaços de 64 KB em base64.
+  const png = Buffer.from(PNG_DATA_URL.split(',')[1], 'base64');
+  const grande = Buffer.concat([png, crypto.randomBytes(200 * 1024)]);
+  const r = await app.call(`/api/admin/products/${id}/images`, { method: 'POST', body: { dataUrl: 'data:image/png;base64,' + grande.toString('base64') } });
+  assert.equal(r.status, 201);
+  const { image } = await r.json();
+  const { c } = await app.db.prepare('SELECT COUNT(*) AS c FROM upload_chunks').first();
+  assert.ok(c >= 4, `esperava vários pedaços, veio ${c}`);
+  const foto = await app.call(image.path);
+  assert.equal(foto.status, 200);
+  assert.deepEqual(Buffer.from(await foto.arrayBuffer()), grande);
+  assert.equal((await app.call(image.path, { headers: { 'if-none-match': foto.headers.get('etag') } })).status, 304);
+
+  const backup = await (await app.call('/api/admin/backup')).json();
+  assert.equal(backup.uploads.length, 1);
+  assert.deepEqual(Buffer.from(backup.uploads[0].base64, 'base64'), grande);
+
+  // O SQL da importação recria a mesma foto num banco novo.
+  const destino = new SqliteD1(':memory:');
+  t.after(() => destino.close());
+  applyMigrations(destino);
+  for (const f of backup.uploads) destino.raw.exec(uploadSQL(f.key, Buffer.from(f.base64, 'base64'), f.contentType));
+  const copia = await d1Storage(destino).get(backup.uploads[0].key);
+  assert.deepEqual(Buffer.from(copia.body), grande);
+  assert.ok(uploadSQL('k', grande, 'image/png').split('\n').every((linha) => linha.length < 100 * 1024), 'cada comando SQL < 100 KB (limite do D1)');
+
+  assert.equal((await app.call(`/api/admin/products/${id}/images/${image.id}`, { method: 'DELETE', headers: { origin: 'https://www.lojaessencianatural.com.br' } })).status, 200);
+  assert.equal((await app.call(image.path)).status, 404);
+  assert.equal((await app.db.prepare('SELECT COUNT(*) AS c FROM upload_chunks').first()).c, 0);
 });

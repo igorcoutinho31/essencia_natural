@@ -63,7 +63,10 @@ async function serveUpload(ctx, key) {
   if (!obj) return notFoundPage();
   const headers = {
     'Content-Type': obj.contentType || 'application/octet-stream',
-    'Cache-Control': 'public, max-age=86400',
+    // Cada foto enviada ganha um nome novo e nunca é sobrescrita: o
+    // navegador guarda por 1 ano e não pede de novo (economiza pedidos ao
+    // Worker — o plano grátis tem 100 mil por dia).
+    'Cache-Control': 'public, max-age=31536000, immutable',
   };
   if (obj.etag) {
     headers.ETag = obj.etag;

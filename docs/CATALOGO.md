@@ -198,7 +198,8 @@ qualquer aparecerem no meio da vitrine de perfumes.
 Resolvido na migração para a Cloudflare (10/2026), nas duas pontas:
 1. O navegador reduz a foto para no máximo 1600px e converte para WEBP
    (qualidade 85) antes de enviar — vale em qualquer hospedagem.
-2. Na Cloudflare, o Worker ainda passa a imagem pelo Cloudflare Images
+2. Opcional (desligado por padrão, para ficar no plano grátis — ver
+   `wrangler.toml`): o Worker ainda passa a imagem pelo Cloudflare Images
    (binding `IMAGES`, ver `src/images.js`) e fica com o resultado só se ele
    for menor. Se o serviço não estiver disponível, grava a imagem como
    chegou — o upload nunca falha por causa da otimização.
