@@ -8,7 +8,7 @@ Instruções para agentes (Claude Code ou outros) trabalhando neste repositório
    nunca publicar essas informações como definitivas.
 3. Ler `docs/SITE-ARCHITECTURE.md` antes de mexer em qualquer coisa
    relacionada ao hero.
-4. O site tem backend (`src/`, Worker da Cloudflare com D1 e R2; o mesmo
+4. O site tem backend (`src/`, Worker da Cloudflare com D1; o mesmo
    código roda no Node local por `server/`). Antes de mexer em catálogo,
    preço, estoque, admin ou OliSek, ler `docs/BACKEND.md` e o doc
    específico (`docs/CATALOGO.md`, `docs/ADMIN.md` ou

@@ -2,13 +2,13 @@
 //
 // Bindings:
 //   DB       D1 (banco SQLite gerenciado)          — migrations/*.sql
-//   UPLOADS  R2 (fotos enviadas pelo /admin)
+//   UPLOADS  R2 (opcional) — sem ele, as fotos ficam no próprio D1
 //   ASSETS   arquivos estáticos (pasta public/)
 //   IMAGES   Cloudflare Images (opcional; otimiza as fotos enviadas)
 // Variáveis/segredos: SITE_URL, OLISEK_API_URL, OLISEK_AUTO_SYNC,
 // OLISEK_LOGIN e OLISEK_PASSWORD (estes dois via `wrangler secret put`).
 import { handle, configFromEnv } from './app.js';
-import { r2Storage } from './storage.js';
+import { r2Storage, d1Storage } from './storage.js';
 import { purgeExpired } from './auth.js';
 import { normalizarCategoriasGravadas, syncAllFromOlisek } from './services/catalog.js';
 import { apiConfigured } from './services/olisek.js';
@@ -16,7 +16,7 @@ import { apiConfigured } from './services/olisek.js';
 function deps(env, request) {
   return {
     db: env.DB,
-    storage: r2Storage(env.UPLOADS),
+    storage: env.UPLOADS ? r2Storage(env.UPLOADS) : d1Storage(env.DB),
     assets: env.ASSETS,
     images: env.IMAGES,
     config: configFromEnv(env),

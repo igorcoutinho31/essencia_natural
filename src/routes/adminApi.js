@@ -52,6 +52,12 @@ export async function login(ctx) {
     return json(401, { error: 'invalid_credentials', message: 'Usuário ou senha incorretos.' });
   }
   await auth.clearLoginFailures(ctx.db, ctx.clientIp, username);
+  // Senha no formato antigo (V2): regrava no formato atual, que cabe no
+  // limite de CPU do plano grátis da Cloudflare. A pessoa nem percebe.
+  if (auth.needsRehash(user.password_hash)) {
+    const { hash, salt } = auth.hashPassword(password);
+    await ctx.db.prepare('UPDATE users SET password_hash=?, password_salt=? WHERE id=?').bind(hash, salt, user.id).run();
+  }
   const session = await auth.createSession(ctx.db, user.id);
   return json(200, { user: publicUser(user) }, { 'Set-Cookie': auth.sessionCookie(session.id, { secure: ctx.https }) });
 }
@@ -66,7 +72,7 @@ export async function me(ctx) {
   return json(200, { user: publicUser(ctx.user) });
 }
 
-export const MIN_PASSWORD_LENGTH = 8;
+export const MIN_PASSWORD_LENGTH = 10;
 
 export async function changePassword(ctx) {
   const body = await readJson(ctx.request, 64 * 1024);

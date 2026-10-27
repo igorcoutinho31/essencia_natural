@@ -33,9 +33,9 @@ Onde cada coisa roda:
 |-----------------|----------------------------------|--------------------------------------|
 | Código          | Worker `src/worker.js`           | `server/app.js`                      |
 | Banco           | D1 (SQLite gerenciado)           | `.local/essencia.sqlite` (`node:sqlite`) |
-| Fotos do admin  | R2 (`essencia-natural-uploads`)  | `.local/uploads/`                    |
+| Fotos do admin  | D1 (tabelas `uploads`); R2 opcional | `.local/uploads/`                 |
 | Estáticos       | Static Assets (`public/`)        | `server/static.js` lendo `public/`   |
-| Otimização foto | binding Images + navegador       | só navegador                          |
+| Otimização foto | navegador (+ Images, se ligado)  | só navegador                          |
 
 Como as duas pontas usam o mesmo `src/`, o que passa nos testes locais é o
 mesmo código que roda na Cloudflare. O código de `src/` só fala com o banco
@@ -71,7 +71,7 @@ Admin em `http://localhost:3000/admin/login`. Perdeu a senha local?
 Para testar no runtime real da Cloudflare, sem publicar nada:
 
 ```bash
-npm run cf:importar -- --do-zero --local   # base inicial no D1/R2 locais
+npm run cf:importar -- --do-zero --local   # base inicial no D1 local
 npm run cf:dev                              # http://127.0.0.1:8787
 ```
 
@@ -91,12 +91,14 @@ upload/otimização de foto, backup → importação e o servidor Node.
 ## Banco de dados
 
 Esquema em `migrations/` (0001 = tabelas da V2; 0002 = estoque e
-segurança). Na Cloudflare: `npm run cf:migrar`. No Node: aplicado sozinho
+segurança; 0003 = fotos guardadas no D1). Na Cloudflare: `npm run cf:migrar`. No Node: aplicado sozinho
 ao abrir o banco (os arquivos são idempotentes).
 
 Tabelas: `products`, `brands`, `product_images`, `price_history`,
 `stock_movements` (livro-razão do estoque), `users`, `sessions`,
-`login_attempts`, `settings`.
+`login_attempts`, `settings`, `uploads` + `upload_chunks` (fotos, quando
+não se usa R2: cada foto em pedaços de 64 KB de base64, porque o D1 limita
+o tamanho de cada comando SQL — ver `src/storage.js`).
 
 ## Estoque (livro-razão)
 
@@ -120,7 +122,10 @@ do banco grava o saldo no produto. Tipos: `inicial`, `entrada`, `saida`,
 ## Segurança
 
 - Senhas com scrypt (as mesmas de antes continuam valendo); senha nova com
-  no mínimo 8 caracteres; trocar a senha encerra as outras sessões.
+  no mínimo 10 caracteres; trocar a senha encerra as outras sessões.
+  Custo do scrypt ajustado (N=2048, ~3,5 ms) para caber nos 10 ms de CPU
+  do plano grátis de Workers; senhas da V2 (N=16384) continuam valendo e
+  são regravadas no formato novo no primeiro login certo.
 - Senha temporária: até trocar, a conta não consegue fazer mais nada.
 - 5 senhas erradas para o mesmo usuário (ou 20 do mesmo IP) em 15 minutos
   bloqueiam o login por 15 minutos.
@@ -151,8 +156,9 @@ levar os dados do Railway para a Cloudflare e como cópia de segurança. O
 arquivo contém os hashes das senhas: guarde em lugar privado. Para
 restaurar: `npm run cf:importar -- arquivo.json --remote` (substitui
 tudo). O D1 também tem o Time Travel da Cloudflare, que volta o banco para
-qualquer minuto dos últimos 30 dias no plano pago (`npx wrangler d1
-time-travel`).
+qualquer minuto dos últimos 7 dias no plano grátis (`npx wrangler d1
+time-travel`). Mesmo assim, baixe o backup completo de vez em quando (por
+exemplo, toda semana) e guarde fora da Cloudflare.
 
 ## Cache de CSS/JS
 

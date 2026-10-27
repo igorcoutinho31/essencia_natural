@@ -27,14 +27,19 @@ database_name = "essencia-natural"
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "migrations"
 
-[[r2_buckets]]
-binding = "UPLOADS"
-bucket_name = "essencia-natural-uploads"
+# Fotos enviadas pelo /admin: por padrão ficam no próprio D1 (plano
+# grátis, sem cartão). Para usar o R2 (ativar o R2 pede cartão, mesmo sem
+# cobrar dentro da cota), crie o bucket e descomente as três linhas:
+# [[r2_buckets]]
+# binding = "UPLOADS"
+# bucket_name = "essencia-natural-uploads"
 
-# Otimização das fotos enviadas pelo /admin (opcional — sem isso, o site
-# grava a foto já reduzida pelo navegador). Ver src/images.js.
-[images]
-binding = "IMAGES"
+# Otimização extra das fotos pelo Cloudflare Images — DESLIGADA para ficar
+# 100% no plano grátis: o navegador já reduz cada foto para 1600px/WEBP
+# antes do envio. Para ligar (cota grátis de 5 mil transformações/mês),
+# descomente as duas linhas abaixo. Ver src/images.js.
+# [images]
+# binding = "IMAGES"
 
 [triggers]
 crons = ["*/30 * * * *"]

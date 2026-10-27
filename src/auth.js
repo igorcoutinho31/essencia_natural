@@ -1,7 +1,7 @@
 // Autenticação própria: hash de senha com scrypt (node:crypto — funciona
-// igual no Worker da Cloudflare com `nodejs_compat` e no Node; os hashes já
-// gravados continuam valendo) e sessão por cookie httpOnly guardada no
-// banco. Nunca existe senha nem token em texto no front-end.
+// igual no Worker da Cloudflare com `nodejs_compat` e no Node) e sessão por
+// cookie httpOnly guardada no banco. Nunca existe senha nem token em texto
+// no front-end.
 import crypto from 'node:crypto';
 import { Buffer } from 'node:buffer';
 
@@ -12,16 +12,40 @@ export const SESSION_DAYS = 7;
 // mesmo IP) dentro de 15 minutos bloqueiam novas tentativas por 15 minutos.
 export const LOGIN_LIMITS = { perUser: 5, perIp: 20, windowMinutes: 15, lockMinutes: 15 };
 
-export function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
-  const hash = crypto.scryptSync(String(password), salt, 64).toString('hex');
-  return { hash, salt };
+// Custo do scrypt. O plano GRÁTIS de Workers dá 10 ms de CPU por pedido; o
+// custo antigo (N=16384, ~29 ms) não cabe. N=2048 leva ~3,5 ms. A força que
+// sai daqui é compensada pelo limite de tentativas de login (acima) e pela
+// senha mínima de 10 caracteres.
+export const SCRYPT = { N: 2048, r: 8, p: 1 };
+const LEGACY_SCRYPT = { N: 16384, r: 8, p: 1 }; // hashes da V2 (sem prefixo)
+
+// Formato gravado em users.password_hash: "scrypt$N$r$p$<hex>". Hash sem
+// prefixo = formato antigo da V2 (N=16384) — continua sendo aceito e é
+// regravado no formato novo no primeiro login certo (ver needsRehash).
+function parseHash(stored) {
+  const s = String(stored);
+  const m = /^scrypt\$(\d+)\$(\d+)\$(\d+)\$([0-9a-f]+)$/.exec(s);
+  if (m) return { params: { N: Number(m[1]), r: Number(m[2]), p: Number(m[3]) }, hex: m[4] };
+  return { params: LEGACY_SCRYPT, hex: s };
 }
 
-export function verifyPassword(password, salt, hash) {
-  const attempt = crypto.scryptSync(String(password), salt, 64);
-  const real = Buffer.from(String(hash), 'hex');
+export function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
+  const hex = crypto.scryptSync(String(password), salt, 64, SCRYPT).toString('hex');
+  return { hash: `scrypt$${SCRYPT.N}$${SCRYPT.r}$${SCRYPT.p}$${hex}`, salt };
+}
+
+export function verifyPassword(password, salt, stored) {
+  const { params, hex } = parseHash(stored);
+  const real = Buffer.from(hex, 'hex');
+  const attempt = crypto.scryptSync(String(password), salt, real.length || 64, { ...params, maxmem: 64 * 1024 * 1024 });
   if (attempt.length !== real.length) return false;
   return crypto.timingSafeEqual(attempt, real);
+}
+
+/** true quando o hash gravado não está no formato/custo atual. */
+export function needsRehash(stored) {
+  const { params } = parseHash(stored);
+  return !String(stored).startsWith('scrypt$') || params.N !== SCRYPT.N || params.r !== SCRYPT.r || params.p !== SCRYPT.p;
 }
 
 export function generateTempPassword() {

@@ -1,7 +1,7 @@
 # Hospedagem na Cloudflare — e a troca saindo do Railway
 
-O site roda num **Worker** da Cloudflare com banco **D1** e fotos no **R2**
-(arquitetura em `docs/BACKEND.md`). Este guia leva o site do Railway para a
+O site roda num **Worker** da Cloudflare com banco **D1** — as fotos
+enviadas pelo `/admin` também ficam no D1 (arquitetura em `docs/BACKEND.md`). Este guia leva o site do Railway para a
 Cloudflare **sem perder nada** (produtos, preços, estoque, fotos, contas e
 senhas) e com o site no ar o tempo todo.
 
@@ -10,19 +10,46 @@ senhas) e com o site no ar o tempo todo.
 - O site fica na rede da Cloudflare, com servidores em São Paulo para os
   arquivos e as fotos. O Railway só tinha servidor nos EUA.
 - Não há servidor nem disco para manter: banco e fotos são serviços
-  gerenciados, com backup do banco por 30 dias (Time Travel).
+  gerenciados, com o banco recuperável minuto a minuto por 7 dias.
 - HTTPS, proteção contra ataques e DNS no mesmo painel.
-- Custo: plano **Workers Paid, US$ 5/mês** (o mesmo do Railway Hobby). Ele
-  é necessário porque o login (scrypt) passa do limite de CPU do plano
-  grátis. D1, R2 e Images ficam dentro das cotas incluídas com folga para o
-  tamanho da loja.
+- **Custo zero**: tudo cabe no plano grátis (detalhes abaixo). O Railway
+  (US$ 5/mês) pode ser desligado no fim.
 
-## O que você precisa
+## Custo: plano grátis
 
-- Conta na Cloudflare (<https://dash.cloudflare.com>) com o plano Workers Paid.
-- Node 22 instalado no computador.
-- Acesso ao painel do Registro.br (ou onde o domínio
-  `lojaessencianatural.com.br` foi comprado).
+Nada aqui exige cartão de crédito. O projeto foi ajustado para os limites
+grátis:
+
+| Serviço                  | Limite grátis                          | Uso estimado da loja                                  |
+|--------------------------|----------------------------------------|-------------------------------------------------------|
+| Workers (pedidos)        | 100 mil por dia                        | ~40 por visitante novo; ~2.500 visitantes novos/dia cabem. Visitas repetidas quase não contam (fotos ficam 1 ano no navegador) |
+| Workers (CPU)            | 10 ms por pedido                       | login ~4 ms (hash ajustado); páginas bem menos        |
+| Arquivos estáticos       | ilimitado e grátis                     | home, CSS, JS, logos                                  |
+| D1 (banco)               | 5 GB; 5 milhões de leituras/dia        | menos de 1 MB; ~100 leituras por visita               |
+| Fotos (no D1)            | dentro dos 5 GB do D1                  | ~3 MB hoje; milhares de fotos cabem                    |
+| Cron (sincronização)     | incluso                                 | a cada 30 min                                          |
+| Domínio na Cloudflare    | plano Free                              | DNS + HTTPS                                            |
+| Builds automáticos       | 3.000 min/mês                           | ~1 min por publicação                                  |
+
+O que continua sendo pago é só o que a loja já paga hoje: o registro do
+domínio `lojaessencianatural.com.br` no Registro.br (anual).
+
+Se um dia o site passar dos 100 mil pedidos por dia, a Cloudflare recusa
+os pedidos acima do limite até o dia virar (não cobra nada sozinha). Nesse
+caso, a saída é o plano Workers Paid (US$ 5/mês) — sem mudar código.
+
+Três ajustes foram feitos para caber no grátis:
+- **Senha**: o hash antigo (scrypt N=16384, ~29 ms de CPU) não cabia nos
+  10 ms. O novo (N=2048, ~3,5 ms) é compensado pelo bloqueio após 5
+  tentativas erradas e pela senha mínima de 10 caracteres. Quem entrar no
+  `/admin` do Railway depois do passo 1 já é convertido sem perceber;
+  quem não entrar recebe uma senha temporária na importação (passo 4).
+- **Cloudflare Images**: desligado. O navegador já reduz cada foto para
+  1600px/WEBP antes do envio.
+- **Fotos no D1 em vez do R2**: ativar o R2 pede cartão (ou PayPal), mesmo
+  sem cobrar dentro da cota. Guardando as fotos no próprio banco, nenhum
+  cartão é necessário. Se um dia quiser o R2, é só ligar no `wrangler.toml`
+  (o código já suporta os dois).
 
 ## Passo a passo
 
@@ -34,6 +61,9 @@ mesmas senhas. Ela ganha o histórico de estoque e o botão de backup que
 o passo 4 usa.
 
 Confira: abra o site no Railway, entre no `/admin` e veja o menu **Estoque**.
+**Peça para cada pessoa da equipe entrar uma vez no `/admin` do Railway**
+nesse período: isso converte a senha dela para o formato do plano grátis
+e ela continua com a mesma senha depois da troca.
 
 ### 2. Preparar a pasta no computador
 
@@ -46,11 +76,10 @@ npm install
 npx wrangler login          # abre o navegador para autorizar sua conta
 ```
 
-### 3. Criar o banco e o armazenamento de fotos (uma vez só)
+### 3. Criar o banco (uma vez só)
 
 ```bash
 npx wrangler d1 create essencia-natural
-npx wrangler r2 bucket create essencia-natural-uploads
 ```
 
 O primeiro comando imprime um `database_id`. Copie e cole no
@@ -68,7 +97,11 @@ dessa mudança.
 npm run cf:importar -- caminho/do/essencia-natural-backup-....json --remote
 ```
 
-O comando aplica o esquema do banco, grava os dados e envia as fotos.
+O comando aplica o esquema do banco e grava os dados e as fotos. Se
+alguma conta ainda estiver com a senha no formato antigo (a pessoa não
+entrou no Railway depois do passo 1), o comando imprime uma **senha
+temporária** para ela no final — anote e repasse; o primeiro login obriga
+a trocar.
 Rodar de novo **substitui** tudo pelo conteúdo do arquivo novo, então dá
 para repetir com um backup mais recente na hora da troca (passo 7).
 
@@ -88,11 +121,8 @@ npm run cf:smoke -- https://essencia-natural.<sua-conta>.workers.dev
 ```
 
 Depois teste à mão: entre no `/admin` com o **mesmo usuário e senha de
-antes**, abra um produto, envie uma foto e confira o catálogo pelo celular.
+antes** (ou a temporária impressa no passo 4), abra um produto, envie uma foto e confira o catálogo pelo celular.
 
-Se o deploy reclamar do binding `IMAGES` (conta sem Cloudflare Images),
-apague o bloco `[images]` do `wrangler.toml`. As fotos continuam sendo
-reduzidas no navegador antes do envio.
 
 ### 6. OliSek (opcional)
 
@@ -158,5 +188,5 @@ e publica o site, como o Railway fazia.
 | Criar conta (administração/vendedora) | `npm run cf:admin -- criar <usuario> "<Nome>" [--vendedora] --remote` |
 | Desativar conta                       | `npm run cf:admin -- desativar <usuario> --remote`                 |
 | Backup                                | `/admin/estoque` → Baixar backup completo                          |
-| Voltar o banco no tempo               | `npx wrangler d1 time-travel restore essencia-natural --timestamp=<data>` |
+| Voltar o banco no tempo (até 7 dias)  | `npx wrangler d1 time-travel restore essencia-natural --timestamp=<data>` |
 | Testar mudanças antes de publicar     | `npm run cf:importar -- backup.json --local` e `npm run cf:dev`    |

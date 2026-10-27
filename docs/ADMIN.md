@@ -6,7 +6,7 @@
 criada junto com a base inicial (usuário `admin`, senha temporária gerada
 na hora — anotada no terminal, nunca gravada em nenhum arquivo do
 projeto). No primeiro login, o sistema **obriga** a trocar a senha antes
-de liberar qualquer outra tela ou ação. Senha nova: no mínimo 8
+de liberar qualquer outra tela ou ação. Senha nova: no mínimo 10
 caracteres; trocar a senha encerra as sessões abertas em outros aparelhos.
 
 Senha perdida ou conta nova: na Cloudflare,
@@ -131,9 +131,11 @@ máximo 1600px e converte para WEBP antes de enviar, e manda como um
    primeiros bytes do arquivo (não confia na extensão nem no que o
    navegador diz que é).
 2. Recusa arquivos maiores que 8MB.
-3. Na Cloudflare, passa a imagem pelo Cloudflare Images (mesmo limite de
-   1600px, WEBP) e fica com o resultado se ele for menor.
-4. Grava o arquivo no R2 (Cloudflare) ou em `.local/uploads/` (Node), e
+3. Se o Cloudflare Images estiver ligado (vem desligado, para ficar no
+   plano grátis), passa a imagem por ele também e fica com o resultado se
+   ele for menor.
+4. Grava a foto no banco D1 (Cloudflare; ou no R2, se ligado) ou em
+   `.local/uploads/` (Node), e
    ela é servida em `/uploads/products/<slug>/<arquivo>`.
 5. Registra a foto no banco (`product_images`), marcando como principal
    se for a primeira foto do produto.
