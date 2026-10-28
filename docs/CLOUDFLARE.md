@@ -166,6 +166,16 @@ dele. Quando estiver tudo certo, baixe um último backup (guarde em lugar
 seguro), apague o serviço no Railway e remova o `railway.json` do
 repositório.
 
+> **Como foi feito (27–28/10/2026):** o período de teste do Railway acabou
+> antes da troca e o serviço foi desligado, sem backup possível. A base foi
+> recriada com `npm run cf:importar -- --do-zero --remote` (o catálogo
+> inicial do repositório); o que a equipe tinha editado no `/admin` do
+> Railway não veio. O domínio passou para a conta Cloudflare da loja
+> (`jill`/`kaiser.ns.cloudflare.com`), o redirecionamento sem `www` → `www`
+> é uma Redirect Rule manual (Hostname = `lojaessencianatural.com.br`), e a
+> publicação automática (Builds) está ligada no `main`, sem Preview builds.
+> `railway.json` removido do repositório.
+
 ## Publicação automática a cada `git push`
 
 Cloudflare → Workers & Pages → `essencia-natural` → **Settings → Builds →

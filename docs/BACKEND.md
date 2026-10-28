@@ -238,6 +238,5 @@ virar uma suíte pesada:
   produto do catálogo ser realmente dessa marca (`brands.requires_product`
   — ver `docs/CATALOGO.md`). Nenhum produto foi criado só por causa
   delas.
-- Desligar o Railway depois que a Cloudflare estiver no ar com os dados
-  importados (ver `docs/CLOUDFLARE.md`, passo 8) e então apagar
-  `railway.json` do repositório.
+- Apagar o projeto antigo no painel do Railway (o serviço já está parado
+  desde o fim do período de teste; ver `docs/CLOUDFLARE.md`, passo 8).
