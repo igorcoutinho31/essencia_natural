@@ -150,15 +150,37 @@ trocar. Só o hash vai para o banco.
 
 ## Backup
 
-`/admin/estoque` → **Baixar backup completo** (só administração): um JSON
-com todas as tabelas (menos sessões) e as fotos enviadas. Serve para
-levar os dados do Railway para a Cloudflare e como cópia de segurança. O
-arquivo contém os hashes das senhas: guarde em lugar privado. Para
-restaurar: `npm run cf:importar -- arquivo.json --remote` (substitui
-tudo). O D1 também tem o Time Travel da Cloudflare, que volta o banco para
-qualquer minuto dos últimos 7 dias no plano grátis (`npx wrangler d1
-time-travel`). Mesmo assim, baixe o backup completo de vez em quando (por
-exemplo, toda semana) e guarde fora da Cloudflare.
+**Automático — ninguém precisa fazer nada** (`src/services/autoBackup.js`,
+migração 0004):
+
+- **Cópia semanal dos dados.** O cron do Worker (a cada 30 min) confere se a
+  última cópia tem 7+ dias e, se tiver, faz outra. Guarda as **12 mais
+  recentes** (~3 meses). A cópia é feita inteira em SQL dentro do D1
+  (`INSERT … SELECT json_object(…)`), porque o plano grátis dá só 10 ms de
+  CPU ao Worker — serializar milhares de produtos em JavaScript não caberia.
+- **Fotos apagadas ficam 90 dias** numa fila (`upload_trash`) antes de sumir
+  de vez, para uma cópia de até ~3 meses ainda encontrar as fotos que cita.
+- **Time Travel do D1:** volta o banco inteiro para qualquer minuto dos
+  últimos 7 dias (`npx wrangler d1 time-travel restore essencia-natural
+  --timestamp=<data>`).
+
+Em `/admin/estoque` → **Backups automáticos** aparece a data da última cópia
+e um link para baixar cada uma (só administração). **Baixar cópia dos dados
+agora** gera uma cópia na hora. Esses arquivos trazem **só os dados** (sem
+fotos — 1000 fotos num JSON passariam do limite do Worker) e contêm os
+hashes das senhas: guarde em lugar privado.
+
+**Restaurar** (substitui todos os dados; as fotos que já estão no site são
+mantidas): `npm run cf:importar -- arquivo.json --remote`.
+
+**Cópia completa com fotos, fora da Cloudflare** (só se for trocar de
+hospedagem ou por precaução extra; roda no PC, sem limite de CPU):
+`npx wrangler d1 export essencia-natural --remote --output=essencia-completa.sql`.
+Esse `.sql` traz o banco inteiro, fotos incluídas (tabelas `uploads`).
+
+O que as cópias automáticas **não** cobrem: perder a própria conta da
+Cloudflare (as cópias moram nela). Para isso, a `d1 export` acima de tempos
+em tempos — é responsabilidade de quem mantém o site, não da loja.
 
 ## Cache de CSS/JS
 

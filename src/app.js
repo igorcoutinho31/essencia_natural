@@ -11,6 +11,7 @@ import * as auth from './auth.js';
 import * as catalog from './services/catalog.js';
 import * as inventory from './services/inventory.js';
 import * as olisek from './services/olisek.js';
+import { listSnapshots } from './services/autoBackup.js';
 import * as publicRoutes from './routes/public.js';
 import { productPage } from './routes/productPage.js';
 import * as adminApi from './routes/adminApi.js';
@@ -111,6 +112,8 @@ async function adminRoutes(ctx) {
     if (pathname === '/api/admin/stock/movements' && method === 'GET') return adminApi.listMovements(ctx);
     if (pathname === '/api/admin/stock/olisek-sync' && method === 'POST') return adminApi.syncAllOlisek(ctx);
     if (pathname === '/api/admin/backup' && method === 'GET') return adminApi.backup(ctx);
+    m = pathname.match(/^\/api\/admin\/backups\/(\d+)$/);
+    if (m && method === 'GET') return adminApi.autoBackupDownload(ctx, m[1]);
 
     m = pathname.match(/^\/api\/admin\/products\/(\d+)$/);
     if (m && method === 'GET') return adminApi.getProduct(ctx, m[1]);
@@ -182,6 +185,7 @@ async function adminRoutes(ctx) {
       filtro: ctx.url.searchParams.get('filtro') || 'todos',
       olisekConfigured: olisek.apiConfigured(ctx.config),
       autoSync: ctx.config.olisekAutoSync,
+      snapshots: await listSnapshots(db),
     });
   }
   const hoje = new Date().toISOString().slice(0, 10);

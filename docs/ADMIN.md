@@ -42,7 +42,7 @@ responsabilidade da administração, não da venda do dia a dia).
 | Trocar as fotos (subir, reordenar, definir principal, excluir) | ✅ | ✅        |
 | Publicar/ocultar um produto no site (`active`)      | ❌         | ✅              |
 | Movimentar estoque (entrada, saída, ajuste) e ver o histórico | ❌ | ✅     |
-| Tela `/admin/estoque`, CSV e backup completo          | ❌         | ✅              |
+| Tela `/admin/estoque`, CSV e backups                  | ❌         | ✅              |
 | Editar nome, marca, categoria, notas, descrição      | ❌         | ✅              |
 | Editar o vínculo OliSek (ID, nome, status)           | ❌         | ✅              |
 | Criar produto novo                                  | ❌         | ✅              |
@@ -102,8 +102,11 @@ movimentações. Em `/admin/estoque`: saldos de todos os produtos com
 filtros (estoque baixo 1–10, zerados, origem não confirmada), as últimas
 50 movimentações, **Baixar saldos (CSV)**, **Baixar movimentações (CSV)**
 (abrem direto no Excel), **Sincronizar todos com a OliSek** (se a API
-estiver configurada) e **Baixar backup completo** (dados + fotos; contém
-hashes de senha — guardar em lugar privado).
+estiver configurada) e o quadro **Backups automáticos**: o sistema guarda
+sozinho uma cópia dos dados por semana (as 12 mais recentes) e fotos
+apagadas por 90 dias — ninguém da loja precisa fazer nada. Os links de
+download servem só para emergências (contêm hashes de senha — guardar em
+lugar privado). Detalhes em `docs/BACKEND.md`, "Backup".
 
 ## Preço: como o histórico funciona
 

@@ -3,8 +3,9 @@
 // no banco de destino (produtos, marcas, usuários, históricos).
 //
 //   npm run cf:importar -- backup.json --remote
-//       backup baixado em /admin/estoque ("Baixar backup completo") no site
-//       antigo (Railway) — é o caminho normal da migração.
+//       backup baixado em /admin/estoque (cópia manual ou uma das cópias
+//       automáticas semanais). Esses backups trazem só os DADOS: as fotos
+//       que já estão no site são mantidas.
 //   npm run cf:importar -- essencia.sqlite --uploads pasta/uploads --remote
 //       se você tiver o arquivo do banco e a pasta de fotos em mãos.
 //   npm run cf:importar -- --do-zero --remote
@@ -136,6 +137,10 @@ async function main() {
     });
     if (semFotos) {
       console.log('\n3/3 Fotos puladas (--sem-fotos).');
+    } else if (!fotos.length) {
+      // Backup só de dados (botão do admin ou cópia automática): as fotos que
+      // já estão no site ficam como estão — nada é apagado.
+      console.log('\n3/3 O backup não traz fotos — as fotos que já estão no site foram mantidas.');
     } else if (usaR2()) {
       console.log(`\n3/3 Enviando ${fotos.length} foto(s) para o R2 ${target}...`);
       fotos.forEach((f, i) => {

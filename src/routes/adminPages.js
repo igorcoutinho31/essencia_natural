@@ -4,6 +4,7 @@
 // a sessão viaja sozinha pelo cookie httpOnly, nunca por token no JS.
 import * as olisek from '../services/olisek.js';
 import { LOW_STOCK_THRESHOLD } from '../services/inventory.js';
+import { KEEP_SNAPSHOTS, TRASH_DAYS } from '../services/autoBackup.js';
 import { MIN_PASSWORD_LENGTH } from './adminApi.js';
 import { escapeHTML } from '../util.js';
 import { html } from '../http.js';
@@ -512,7 +513,7 @@ const SOURCE_LABELS = {
 /** /admin/estoque — visão geral (só admin): saldos, estoque baixo/zerado,
  *  últimas movimentações, exportação CSV, sincronização em lote com a
  *  OliSek e backup completo. */
-export function stockPage(user, { overview, movements, filtro, olisekConfigured, autoSync }) {
+export function stockPage(user, { overview, movements, filtro, olisekConfigured, autoSync, snapshots = [] }) {
   const { products, totals } = overview;
   const filtros = [
     ['todos', 'Todos', () => true],
@@ -553,18 +554,31 @@ export function stockPage(user, { overview, movements, filtro, olisekConfigured,
       <a class="btn btn-ghost btn-sm" href="/admin/estoque.csv">Baixar saldos (CSV)</a>
       <a class="btn btn-ghost btn-sm" href="/admin/estoque/movimentacoes.csv">Baixar movimentações (CSV)</a>
       ${olisekConfigured ? '<button class="btn btn-gold btn-sm" id="a-sync-todos" type="button">Sincronizar todos com a OliSek</button>' : ''}
-      <a class="btn btn-ghost btn-sm" href="/api/admin/backup">Baixar backup completo</a>
+      <a class="btn btn-ghost btn-sm" href="/api/admin/backup">Baixar cópia dos dados agora</a>
     </div>
     <p class="a-help">${olisekConfigured
       ? `Sincronização com a OliSek: ${autoSync ? '<b>automática ligada</b> (a cada 30 minutos, só vínculos confirmados)' : 'sob demanda (botão acima ou na tela de cada produto)'}.`
       : 'API da OliSek não configurada — a sincronização fica desligada (ver docs/OLISEK-INTEGRATION.md).'}
-      O backup inclui os dados e as fotos; contém os hashes das senhas, então guarde em lugar privado.</p>
+</p>
     <div class="a-tabs">${tabs}</div>
     <div class="a-card">
       <table>
         <thead><tr><th>Produto</th><th>Saldo</th><th>Origem</th><th>ID OliSek</th><th>Última movimentação</th></tr></thead>
         <tbody>${linhas || '<tr><td colspan="5" class="a-help">Nenhum produto neste filtro.</td></tr>'}</tbody>
       </table>
+    </div>
+    <div class="a-card">
+      <h2>Backups automáticos</h2>
+      <p class="a-help">${snapshots.length
+        ? `O sistema guarda sozinho uma cópia dos dados por semana (as ${KEEP_SNAPSHOTS} mais recentes). Última cópia: <b>${escapeHTML(snapshots[0].createdAt)}</b> (horário UTC).`
+        : 'O sistema faz sozinho uma cópia dos dados por semana. A primeira sai em até 30 minutos depois da publicação.'}
+        Fotos apagadas ficam guardadas por ${TRASH_DAYS} dias antes de sumir de vez. Ninguém precisa fazer nada — os links abaixo são só para emergências.
+        Os arquivos baixados contêm os códigos das senhas da equipe: guarde em lugar privado.</p>
+      ${snapshots.length ? `<div class="a-hist"><table>
+        <thead><tr><th>Cópia</th><th>Quando (UTC)</th><th>Produtos</th><th>Movimentações</th><th></th></tr></thead>
+        <tbody>${snapshots.map((s) => `<tr><td>#${s.id}</td><td>${escapeHTML(s.createdAt)}</td><td>${Number(s.summary.products || 0)}</td><td>${Number(s.summary.stock_movements || 0)}</td>
+          <td><a class="btn btn-ghost btn-sm" href="/api/admin/backups/${s.id}">Baixar</a></td></tr>`).join('')}</tbody>
+      </table></div>` : ''}
     </div>
     <div class="a-card">
       <h2>Últimas movimentações</h2>

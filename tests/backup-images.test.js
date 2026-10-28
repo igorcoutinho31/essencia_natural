@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createTestApp, PNG_DATA_URL } from './helpers.js';
 import { SqliteD1, applyMigrations } from '../server/sqlite-d1.js';
-import { BACKUP_TABLES, backupToSQL } from '../src/services/backup.js';
+import { BACKUP_TABLES, backupToSQL, exportBackup } from '../src/services/backup.js';
+import { purgeTrash } from '../src/services/autoBackup.js';
 import { d1Storage, uploadSQL } from '../src/storage.js';
 import crypto from 'node:crypto';
 
@@ -29,6 +30,11 @@ test('upload de foto: valida o formato real, grava, serve e apaga', async (t) =>
   const pub = (await (await app.call('/api/products/slug/perfume')).json()).product;
   assert.equal(pub.image, image.path);
   assert.equal((await app.call(`/api/admin/products/${id}/images/${image.id}`, { method: 'DELETE', headers: { origin: 'https://www.lojaessencianatural.com.br' } })).status, 200);
+  // A foto sai do produto na hora, mas o arquivo só some depois de 90 dias.
+  assert.equal((await (await app.call('/api/products/slug/perfume')).json()).product.hasImage, false);
+  assert.equal((await app.call(image.path)).status, 200);
+  assert.equal(await purgeTrash(app.db, app.deps.storage), 0, 'ainda dentro dos 90 dias');
+  assert.equal(await purgeTrash(app.db, app.deps.storage, 0), 1);
   assert.equal((await app.call(image.path)).status, 404);
 });
 
@@ -68,7 +74,7 @@ test('backup completo → SQL → banco novo fica idêntico', async (t) => {
   const res = await app.call('/api/admin/backup');
   assert.match(res.headers.get('content-disposition'), /essencia-natural-backup-.*\.json/);
   const backup = await res.json();
-  assert.equal(backup.uploads.length, 1);
+  assert.equal(backup.uploads.length, 0, 'o botão do admin baixa só os dados (fotos ficam no site)');
   assert.equal(backup.tables.sessions, undefined, 'sessões não vão no backup');
 
   const destino = new SqliteD1(':memory:');
@@ -124,7 +130,7 @@ test('fotos guardadas no D1 (plano grátis): grava em pedaços, serve, entra no 
   assert.deepEqual(Buffer.from(await foto.arrayBuffer()), grande);
   assert.equal((await app.call(image.path, { headers: { 'if-none-match': foto.headers.get('etag') } })).status, 304);
 
-  const backup = await (await app.call('/api/admin/backup')).json();
+  const backup = await exportBackup(app.db, app.deps.storage); // backup completo (ferramentas do PC)
   assert.equal(backup.uploads.length, 1);
   assert.deepEqual(Buffer.from(backup.uploads[0].base64, 'base64'), grande);
 
@@ -138,6 +144,7 @@ test('fotos guardadas no D1 (plano grátis): grava em pedaços, serve, entra no 
   assert.ok(uploadSQL('k', grande, 'image/png').split('\n').every((linha) => linha.length < 100 * 1024), 'cada comando SQL < 100 KB (limite do D1)');
 
   assert.equal((await app.call(`/api/admin/products/${id}/images/${image.id}`, { method: 'DELETE', headers: { origin: 'https://www.lojaessencianatural.com.br' } })).status, 200);
+  assert.equal(await purgeTrash(app.db, app.deps.storage, 0), 1);
   assert.equal((await app.call(image.path)).status, 404);
   assert.equal((await app.db.prepare('SELECT COUNT(*) AS c FROM upload_chunks').first()).c, 0);
 });

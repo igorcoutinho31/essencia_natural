@@ -197,6 +197,6 @@ e publica o site, como o Railway fazia.
 | Resetar a senha de alguém             | `npm run cf:admin -- resetar-senha <usuario> --remote`             |
 | Criar conta (administração/vendedora) | `npm run cf:admin -- criar <usuario> "<Nome>" [--vendedora] --remote` |
 | Desativar conta                       | `npm run cf:admin -- desativar <usuario> --remote`                 |
-| Backup                                | `/admin/estoque` → Baixar backup completo                          |
+| Backup                                | Automático (semanal, 12 cópias). Emergência: `/admin/estoque` → Backups automáticos |
 | Voltar o banco no tempo (até 7 dias)  | `npx wrangler d1 time-travel restore essencia-natural --timestamp=<data>` |
 | Testar mudanças antes de publicar     | `npm run cf:importar -- backup.json --local` e `npm run cf:dev`    |
