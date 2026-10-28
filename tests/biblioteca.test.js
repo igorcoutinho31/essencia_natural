@@ -4,6 +4,7 @@ import { createTestApp, PNG_DATA_URL } from './helpers.js';
 import * as R from '../tools/biblioteca-regras.js';
 import { planejar, sqlCadastros, sqlLigarFotos } from '../tools/biblioteca-plano.js';
 import { d1Storage } from '../src/storage.js';
+import { planejarLimpeza, sqlLimpeza } from '../tools/cf-limpar-nomes.js';
 
 const item = (over = {}) => ({
   source: 'onuh', sourceId: 'onuh:x', sourceUrl: 'https://exemplo/x', name: 'Afnan 9 Am Dive EDP 100 ml', brand: 'Afnan',
@@ -28,6 +29,19 @@ test('regras: nome, categoria, notas e marca', () => {
   assert.equal(R.chaveMarca('OPENBOX'), null);
 });
 
+test('regras: nome de vitrine sem marca, volume e concentração repetidos', () => {
+  const t = (nome, marca, extra = {}) => R.tituloProduto(nome, { marca, ...extra });
+  assert.deepEqual(t('AL WATANIAH EQAAB EDP H 100ML', 'Al Wataniah'), { nome: 'Eqaab', volume: '100 ml', concentracao: 'EDP' });
+  assert.equal(t('Maison Al Hambra Maison Alhambra Lovely Cherie EDP 150 ml', 'Maison Alhambra').nome, 'Lovely Cherie');
+  assert.equal(t('Rasasi Al Rasasi Hawas Kobra EDP 100 ml', 'Rasasi').nome, 'Hawas Kobra');
+  assert.equal(t('.. AEROSOL AMBIENTE AL WATANIAH OUD AL SHABAB', 'Al Wataniah').nome, 'Aerosol Ambiente Oud Al Shabab');
+  assert.equal(t('Isabelle la Belle Hawas Black Body Splash Body Splash 300 ml', 'Isabelle la Belle').nome, 'Hawas Black Body Splash');
+  assert.deepEqual(t('Nishane Hacivat Extrait 100 ml', 'Nishane'), { nome: 'Hacivat', volume: '100 ml', concentracao: 'Extrait de Parfum' });
+  assert.equal(t('Club de Nuit 212 VIP', 'Armaf').nome, 'Club de Nuit 212 VIP', 'número do nome fica');
+  assert.equal(t('Lattafa', 'Lattafa').nome, 'Lattafa', 'nunca fica vazio');
+  assert.equal(t('Khamrah 100 ml', 'Lattafa', { volume: '100ML' }).volume, '100 ml', 'volume do campo é padronizado');
+});
+
 test('regras: cruzamento com o relatório da loja', () => {
   const idx = R.indiceRelatorio([{ nome: 'LATTAFA ATHEERI EDP F 100ML' }, { nome: 'AFNAN 9PM ELIXIR EDP U 100ML' }]);
   assert.equal(R.casarRelatorio(idx, 'Atheeri', 'Lattafa'), 'LATTAFA ATHEERI EDP F 100ML');
@@ -44,14 +58,17 @@ test('plano: só fatos, oculto, marca unificada, slug único, sem repetir cadast
     item({ sourceId: 'onuh:2', name: 'Khamrah EDP 100 ml', brand: 'Lattafa', images: [] }),
     item({ sourceId: 'onuh:3', name: 'Rasasi Hawas', brand: 'Rasasi', images: [{ localPath: 'images/aaa.jpg', sha256: 'aaa' }] }),
   ] };
-  const estado = { ...vazio, slugs: ['afnan-9-am-dive-edp-100-ml'], marcas: [{ name: 'Afnan', slug: 'afnan' }], produtosLoja: [{ name: 'KHAMRAH', brand: 'Lattafa' }] };
+  const estado = { ...vazio, slugs: ['afnan-9-am-dive-100-ml'], marcas: [{ name: 'Afnan', slug: 'afnan' }], produtosLoja: [{ name: 'KHAMRAH', brand: 'Lattafa' }] };
   const plano = planejar(catalogo, estado, [{ nome: 'RASASI HAWAS EDP M 100ML' }]);
   assert.equal(plano.resumo.novos, 3);
   assert.equal(plano.resumo.repetidosDaLoja, 1, 'Khamrah já é cadastro da loja');
   assert.equal(plano.resumo.noRelatorio, 1);
   const [a, b, c] = plano.produtos;
-  assert.equal(a.slug, 'afnan-9-am-dive-edp-100-ml-2', 'slug existente não é reaproveitado');
-  assert.equal(b.slug, 'afnan-9-am-dive-edp-100ml');
+  assert.equal(a.slug, 'afnan-9-am-dive-100-ml-2', 'slug existente não é reaproveitado');
+  assert.equal(b.slug, 'afnan-9-am-dive-100-ml-3');
+  assert.equal(a.name, '9 Am Dive', 'nome sem marca, concentração e volume');
+  assert.equal(b.name, '9 Am Dive');
+  assert.equal(b.volume, '100 ml'); assert.equal(b.concentration, 'EDP', 'achados no nome preenchem os campos');
   assert.equal(a.brandSlug, 'afnan'); assert.equal(b.brandSlug, 'afnan', 'AFNAN e Afnan são a mesma marca');
   assert.deepEqual(plano.marcasNovas.map((m) => m.name), ['Rasasi']);
   assert.equal(a.notesTop, 'Limão, Menta'); assert.equal(a.family, 'Cítrico');
@@ -141,4 +158,21 @@ test('importação ponta a ponta: tudo oculto, foto pública só com o produto p
   // Publicar por marca + busca.
   r = await app.call('/api/admin/products/bulk', { method: 'POST', body: { action: 'publicar', criteria: { q: 'Teste 1', source: 'onuh' } } });
   assert.equal((await r.json()).affected, 11, '"Teste 1", "Teste 10".."Teste 19"');
+});
+
+test('limpar nomes já cadastrados: sem marca/volume/EDP no nome, slug intacto, idempotente', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  app.db.raw.exec(`INSERT INTO brands (name, slug) VALUES ('Al Wataniah', 'al-wataniah');
+    INSERT INTO products (slug, name, brand_id, volume, source, source_id) VALUES
+      ('al-wataniah-eqaab', 'AL WATANIAH EQAAB EDP H 100ML', (SELECT id FROM brands WHERE slug='al-wataniah'), '100ml', 'atlantico', 'atlantico:1'),
+      ('ja-limpo', 'Sabah Al Ward', (SELECT id FROM brands WHERE slug='al-wataniah'), '100 ml', 'onuh', 'onuh:1');`);
+  const ler = () => app.db.raw.prepare('SELECT p.id, p.slug, p.name, p.volume, p.concentration, b.name AS brand FROM products p LEFT JOIN brands b ON b.id = p.brand_id WHERE p.source IS NOT NULL ORDER BY p.id').all();
+  const mudancas = planejarLimpeza(ler());
+  assert.equal(mudancas.length, 1, 'só muda o que está sujo');
+  app.db.raw.exec(sqlLimpeza(mudancas));
+  const [a] = ler();
+  assert.deepEqual({ slug: a.slug, name: a.name, volume: a.volume, concentration: a.concentration },
+    { slug: 'al-wataniah-eqaab', name: 'Eqaab', volume: '100 ml', concentration: 'EDP' });
+  assert.equal(planejarLimpeza(ler()).length, 0, 'rodar de novo não muda nada');
 });

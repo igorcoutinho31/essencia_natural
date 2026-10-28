@@ -198,7 +198,7 @@
       cat[id] = p;
       var it = st.itens[id];
       if (it) it.q = Math.min(MAX, it.q + 1);
-      else st.itens[id] = { q:1, n:String(p.name), m:p.brand ? String(p.brand) : '', p:window.ENpreco(p) };
+      else st.itens[id] = { q:1, n:String(p.name) + (p.volume ? ' ' + p.volume : ''), m:p.brand ? String(p.brand) : '', p:window.ENpreco(p) };
       salvar(); atualizarBadge();
       btn.classList.remove('bump'); void btn.offsetWidth; btn.classList.add('bump');
       aviso(p.name + ' foi para a sacola');

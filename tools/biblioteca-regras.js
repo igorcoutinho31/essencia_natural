@@ -46,6 +46,7 @@ const MARCA_ALIAS = {
   lattafaperfumes: 'lattafa',
   aurorascents: 'aurorascents',
   frenchavenueparfums: 'frenchavenue',
+  alhambra: 'maisonalhambra',
 };
 
 // "Marcas" do pacote que na verdade são seções de loja, não marcas.
@@ -55,6 +56,82 @@ export function chaveMarca(nome) {
   const k = chave(nome).replace(/ /g, '');
   if (!k || NAO_MARCAS.has(k)) return null;
   return MARCA_ALIAS[k] || k;
+}
+
+const RE_VOLUME = /(^|\s)(\d+(?:[.,]\d+)?)\s?(ml|g|gr|grs|kg|l|oz)(?=\s|$)/i;
+const CONCENTRACOES = [
+  [/(^|\s)extrait de parfum(?=\s|$)/i, 'Extrait de Parfum'],
+  [/(^|\s)eau de parfum(?=\s|$)/i, 'EDP'],
+  [/(^|\s)eau de toilette(?=\s|$)/i, 'EDT'],
+  [/(^|\s)eau de cologne(?=\s|$)/i, 'EDC'],
+  [/(^|\s)edp(?=\s|$)/i, 'EDP'],
+  [/(^|\s)edt(?=\s|$)/i, 'EDT'],
+  [/(^|\s)edc(?=\s|$)/i, 'EDC'],
+  [/(^|\s)extrait(?=\s|$)/i, 'Extrait de Parfum'],
+];
+const RE_VOLUME_CAMPO = /^(\d+(?:[.,]\d+)?)\s*(ml|g|gr|grs|kg|l|oz)$/i;
+const volumeBonito = (n, u) => `${n.replace('.', ',')} ${u.toLowerCase().replace(/^grs?$/, 'g')}`;
+
+/** Tira a marca do começo/meio do nome ("Lattafa Khamrah" -> "Khamrah"),
+ *  inclusive quando vem repetida ou com outra grafia ("Maison Al Hambra
+ *  Maison Alhambra Lovely Cherie" -> "Lovely Cherie"). */
+function semMarca(palavras, marca) {
+  const alvo = chaveMarca(marca);
+  if (!alvo) return palavras;
+  // "Al Rasasi" = "Rasasi", "Wataniah" = "Al Wataniah"
+  const mesma = (k) => k === alvo || k === 'al' + alvo || 'al' + k === alvo;
+  let ws = palavras.slice();
+  for (let mudou = true; mudou;) {
+    mudou = false;
+    for (let i = 0; i < ws.length && !mudou; i += 1) {
+      for (let n = Math.min(5, ws.length - i); n >= 1; n -= 1) {
+        if (mesma(chaveMarca(ws.slice(i, i + n).join(' '))) && ws.length - n > 0) {
+          ws = ws.slice(0, i).concat(ws.slice(i + n));
+          mudou = true;
+          break;
+        }
+      }
+    }
+  }
+  return ws;
+}
+
+/**
+ * Nome de vitrine: sem a marca, sem volume e sem concentração (que já têm
+ * campo próprio e aparecem ao lado do nome), sem a letra de gênero solta do
+ * fim ("... EDP H 100ML"). Volume e concentração achados no nome preenchem
+ * os campos quando estiverem vazios.
+ *   tituloProduto('LATTAFA KHAMRAH DUKHAN 100ML', { marca: 'Lattafa' })
+ *     -> { nome: 'Khamrah Dukhan', volume: '100 ml', concentracao: null }
+ */
+export function tituloProduto(nomeOriginal, { marca = null, volume = null, concentracao = null } = {}) {
+  let n = limparNome(nomeOriginal);
+  let vol = volume ? String(volume).trim() : null;
+  const vc = vol && RE_VOLUME_CAMPO.exec(vol);
+  if (vc) vol = volumeBonito(vc[1], vc[2]);
+  let conc = concentracao ? String(concentracao).trim() : null;
+  const v = RE_VOLUME.exec(n);
+  if (v) {
+    if (!vol) vol = volumeBonito(v[2], v[3]);
+    n = n.replace(new RegExp(RE_VOLUME.source, 'gi'), ' ');
+  }
+  for (const [re, nome] of CONCENTRACOES) {
+    if (re.test(n)) {
+      if (!conc) conc = nome;
+      n = n.replace(new RegExp(re.source, 'gi'), ' ');
+    }
+  }
+  let ws = n.replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+  while (ws.length > 1 && /^[HMFU]$/i.test(ws[ws.length - 1])) ws.pop();
+  ws = semMarca(ws, marca);
+  // Palavras repetidas em sequência ("Body Splash Body Splash").
+  for (let k = 3; k >= 1; k -= 1) {
+    for (let i = 0; i + 2 * k <= ws.length; i += 1) {
+      if (chave(ws.slice(i, i + k).join(' ')) === chave(ws.slice(i + k, i + 2 * k).join(' '))) { ws.splice(i + k, k); i -= 1; }
+    }
+  }
+  const limpo = ws.join(' ').replace(/^[\s\-–·|,.]+|[\s\-–·|,.]+$/g, '').trim();
+  return { nome: limpo || limparNome(nomeOriginal), volume: vol, concentracao: conc };
 }
 
 /** Categoria limpa a partir da categoria de origem + nome. */

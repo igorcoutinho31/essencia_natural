@@ -17,6 +17,7 @@
     "cf:migrar": "wrangler d1 migrations apply essencia-natural --remote",
     "cf:importar": "node tools/cf-importar.js",
     "cf:biblioteca": "node tools/cf-biblioteca.js",
+    "cf:limpar-nomes": "node tools/cf-limpar-nomes.js",
     "cf:admin": "node tools/cf-admin.js",
     "cf:smoke": "node tools/cf-smoke.js"
   },

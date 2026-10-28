@@ -74,7 +74,10 @@ function absolute(siteUrl, path) {
 function render(siteUrl, product, related) {
   const canonical = `${siteUrl}/produto/${encodeURIComponent(product.slug)}`;
   const ogImage = absolute(siteUrl, product.hasImage ? product.image : '/assets/social/og-essencia-natural.jpg');
-  const title = `${product.name}${product.brand ? ' — ' + product.brand : ''} | ${SITE_NAME}`;
+  // Nome de vitrine é curto ("Khamrah"); título, WhatsApp e Google levam
+  // marca e volume ("Lattafa Khamrah 100 ml").
+  const nomeCompleto = [product.brand, product.name, product.volume].filter(Boolean).join(' ');
+  const title = `${nomeCompleto} | ${SITE_NAME}`;
   const descBase = descricaoUtil(product) ||
     `${product.name}${product.brand ? ', ' + product.brand : ''} — perfumaria árabe e importada na Galeria Pagé, São Paulo. Consulte disponibilidade pelo WhatsApp.`;
   const priceHTML = product.price != null
@@ -151,8 +154,8 @@ function render(siteUrl, product, related) {
           </button>
           <a class="btn btn-ghost" href="${waLink(
             product.price == null
-              ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + product.name + '.'
-              : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + product.name + '.'
+              ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + nomeCompleto + '.'
+              : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + nomeCompleto + '.'
           )}" target="_blank" rel="noopener">Consultar no WhatsApp</a>
         </div>
       </div>
