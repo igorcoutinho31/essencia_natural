@@ -115,6 +115,24 @@ export async function createProduct(ctx) {
   return json(201, { product });
 }
 
+/** Ações em lote da lista de produtos: publicar, ocultar, liberar/bloquear
+ *  fotos — nos produtos selecionados (`ids`) ou em todos os resultados de
+ *  um filtro (`criteria`). Só administração. */
+export async function bulk(ctx) {
+  requireAdmin(ctx);
+  const body = await readJson(ctx.request, 256 * 1024);
+  const c = body.criteria;
+  const criteria = c && typeof c === 'object' ? {
+    q: String(c.q || '').slice(0, 100),
+    filter: c.filter in catalog.ADMIN_FILTERS ? c.filter : 'todos',
+    brandId: /^\d+$/.test(String(c.brandId || '')) ? c.brandId : '',
+    category: String(c.category || '').slice(0, 100),
+    source: ['loja', 'atlantico', 'onuh'].includes(c.source) ? c.source : '',
+  } : null;
+  const affected = await catalog.bulkAction(ctx.db, body.action, { ids: Array.isArray(body.ids) ? body.ids : undefined, criteria });
+  return json(200, { ok: true, affected });
+}
+
 export async function updateProductFull(ctx, id) {
   requireAdmin(ctx);
   const body = await readJson(ctx.request);

@@ -1,0 +1,3349 @@
+{
+ "fonte": "Relatório \"Estoque Essencia Natural\" (OliSek), 22/09/2026 — só nomes de perfumes e cosméticos; quantidades e celulares ficaram de fora.",
+ "itens": [
+  {
+   "nome": "AL WATANIAH SABAH AL WARD EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH DURRAT AL AROOS EDP F 85ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AL AREEQ EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA ROYAL AMBER EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARD AL ZAAFARAN AL BATAL EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAAF AMEERAT AL ARAB EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAAF AMEER AL ARAB EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARD AL ZAAFARAN AL DIRGHAM EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARD AL ZAAFARAN HAREEM AL SULTAN EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH THAHAANI EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH ROSE MYSTERY INTENSE EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH OUD MYSTERY INTENSE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH WATANI NOIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH WATANI INTENSE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA THARWAH GOLD EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH BORAQ EDP M 75ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH ABYAT EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH GHALA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ANSAM GOLD EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN HISTORIC OLMEDA EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AL NASHAMA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AL NASHAMA CAPRICE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA THARWAH SILVER EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH WATANI PURPLE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA EMAAN EDP F 100ML , ,",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HAYA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SALVO EUA EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SALVO ELIXIR EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MAAHIR GOLD EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MAAHIR PRETO EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SCEPTRE OCEANA EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SCEPTRE AMAZONITE EDP M",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN 9AM DIVE EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN 9PM EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN 9PM REBEL EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SHAGAF AL WARD EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ANSAM SILVER EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT MILESTONE EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AJWAD PINK EDP F 60ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AJWAD EDP F 60ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA THE KINGDOM EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA THE KINGDOM EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA DALILAH SPRAY F 150ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KHAMARA EDP U 100ML , ,",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KHAMARA QAHWA EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA ALPINE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH ATTAR AL WESAL EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH AMEERATI EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT URBAN ELIXIR EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT INTENSE EDP M 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA JORGE DI AQUA EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HAYAATI GOLD ELIXIR EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN SOUVENIR BLOOMING BLISS EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AFEEF EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SCEPTRE BRONZITE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA BADEE AL OUD NOBLE BLUSH EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA BADEE AL OUD SUBLIME EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA BADEE AL OUD HONOR AND GLORY EDP F 10",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA BADEE AL OUD FOR GLORY EDP M 100ML black",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA BADEE AL OUD AMETHYST EDP F 100ML . .",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA FAKHAR PRETO EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA FAKHAR ROSE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA FAKHAR GOLD EDP U 100ML SELO NOVO",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ASAD PRETO EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ASAD BOURBON EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ASAD ZANZIBAR EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA YARA BRANCO EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA YARA TOUS EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN AMBER OUD GOLD EDITION EDP U 120M",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA KING EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AL NOBLE SAFEER EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AL NOBLE AMEER EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA AL NOBLE WAZEER EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SHAHEEN SILVER EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA YARA CANDY EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ODYSSEY LIMONI EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ECLAIRE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ANA ABIYEDH EDP 60ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA LEONIE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SAKEENA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DECANTE MISTO",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARD ALZAAFARAN HAYAATI EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA DELILAH EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT WOMAN EDP 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA EMEER EDP (U) 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA COMO MOISELLE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "V.S BODY LOTION VELVET PETALS 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY LOTION BARE VANILLA 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY LOTION COCONUT PASSION 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY LOTION LOVE SPELL 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY LOTION PURE SEDUCTION 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "ASDAAF AMEERAT AL ARAB PRIVE ROSE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPECIAL OUD EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN L VENTURE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ODYSSEY MANDARIN SKY EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MUSAMAM EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA CAFE CITADEL EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA VANILLA ESPRESSO EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PHILOS OPUS NOIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAAF AMEER AL ARAB IMPERIUM EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SHAHEEN GOLD EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MAYAR NATURAL INTENSE F 100ML verde 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA QAED AL FURSAN EDP M 90ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MASA PRIDE EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH BAREEQ AL DHAHAB EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN AMBER OUD DUBAI NIGHT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN AMBER OUD AQUA DUBAI EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT OUD PARFUM U 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA LUXURY DANIA EDP F 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANGEL MUGLER BODY LOTION 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "swit",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MUSAMAM WHITE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA CHANTS TENDERINA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LA ROUGE BAROQUE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HAYAATI EDP 100ML , ,",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA LAHDATH PRIDE EDP F 80ML branco 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA ROYAL AMBER EDP F 150ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ART OF ARABIA II EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ART OF ARABIA III EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HAYAATI AL MALEKY EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA INTRUDE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE SCEPTRE GHOST EDP M 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BISNAGA ISABELLE LA BELLE ANGEL 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL WATANIAH TIARA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MAYAR CHERRY INTENSE EDP 100ML vinho 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BISNAGA ISABELLE LA BELLE LATTAFA ASAD",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "LATTAFA PRIDE LA COLLECTION D´ANTIQUITES 1505",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA YEAH! MAN EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ETER ARABIAN SKY EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA ROSE SEDUCTION VIP POUR",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HIS CONFESSION EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA ATHENA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA NOBLE EDP U 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "V.S BODY LOTION TEMPTATION 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY LOTION AMBER ROMANCE 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "MAISON AL HAMBRA MAITRE DE BLUE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA QAED AL FURSAN WHITE EDP F 90ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "V.S BODY SPLASH BARE VANILLA 250ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY SPLASH COCONUT PASSION 250ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY SPLASH LOVE SPELL 250ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY SPLASH PURE SEDEUCTION 250ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY SPLASH VELVET PETLAS 250ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "MAISON ALHAMBRA REYNA POUR FEMME EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT ICONIC EDP M 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PASTA ISABELLA LA BELLE ANGEL 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "PASTA ISABELLA LA BELLE ASSAD 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "PASTA ISABELLA LA BELLE YARA ROSE 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "LATTAFA PRIDE LA COLLECTION L ANTIQUITES 1910",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE AL QIAM GOLD EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HER CONFESSION EDP F 100ML white 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE GHARAM EDP F 100ML . .",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA TERIAQ EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE ISHQ AL SHUYUKH SILVER EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE ISHQ AL SHUYUKH GOLD EDP M 100ML .",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA ECLAT DE LUNE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA CORAL BLUSH EDP F 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PINK SHIMMER SECRET EDP F",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE LIQUID BRUN EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LA ROUGE BAROQUE EXTREME",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA GLOBE MOON DUST EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA GLOBE RAGE OF THE OCEAN EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA GLOBE ROYAL GREEN EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA GLOBE SAFFRON EXTRAIT EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KHAMARA DUKHAN EDP U 1000ML vinho 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA CHERRY IN THE WOODS EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA GEMINI & GEMINI NOIR EDP H 2X50",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA GLOBE BLACK PYTHON EDP U 100ML . .",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KIT ASAD & ASAD ZANZIBAR EDP M 100ML . .",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ANGHAM EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA JARDIM DE REVE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA JORGE DI PROFUMO DEEP BLUE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SEHR EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH KENZ AL MALIK EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ZIMAYA FATIMA PINK EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CDN LIONHEART F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF YUM YUM EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF DUBAI NIGHTS MIDNIGHT 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF DUBAI NIGHTS UMBRA U EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF THE LIONS CLUB FEROCE U EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF THE LIONS CLUB MONARQUE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF THE LIONS CLUB RUGIR U EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ETER DESERT FLOWER U EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ETER DESERT NIGHT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ETER DESERT STAR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT PRECIEUX EDP 55ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT SILLAGE M EDP 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MAYAR EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PASTA ISABELLE LA BELLE FAKHAR ROSE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAVE NOW BLACK EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAVE NOW WOMAN EDP 100ML ROSE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA TERIAQ INTENSE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE HALA 100ML marrom 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA BRIOCHE VANILLA 100ML . .",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LA VOIE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA DELILAH BLANC 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA DARK DOOR SPORT 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA GLACIER BOLD 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA AVANT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA VICTORIOSO FEARLESS 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA VICTORIOSO HEROIC 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA VICTORIOSO LEGACY 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PERSEUS EXCLUSIF 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF MISS CHIC 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF MISS VOCE VIVA 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF MISS MAGNIFIQ 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NICHE KHANJAR 85ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA OUD SAFFRON EDP M 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT ORIENTICA ROYAL BLUE EDP M 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT ORIENTICA VELVET GOLD EDP F 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA ROYAL AMBER EXTRAIT EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE PISA EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA NICHE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA SCARELET EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA ROSE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA GODDESS EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA DOUBLE BLUE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA QUEEN EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA NICHE FEMME EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PHILOS PURA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA CELESTE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PINK ECLIPSE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN HISTORIC SAHARA EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH AL LAYL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF INFINITY BLACK EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF INFINITY GOLD EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT LIONHEART EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN 9PM POUR FEMME EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN 9AM POUR FEMME EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS BLACK EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS ECLAT EDP FEM 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS ELIXIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS ICE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS FOR HIM EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA VICTORIA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SCEPTRE MALACHITE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA GLACIER ULTRA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA GLACIER POUR HOMME 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA GLACIER LE NOIR 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA NO.2 MEN EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BISNAGA ISABELLE LA BELLE YARA ROSA 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "BISNAGA ISABELLE LA BELLE LATTAFA FAKHAR ROSE",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "BISNAGA ISABELLE LA BELLE ROYAL AMBER 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "BISNAGA ISABELLE LA BELLE LATTAFA ASSAD PRETO",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "BISNAGA ISABELLE LA BELLE LATTAFA ASSAD BOURBON",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "PASTA ISABELLE ASSAD BOURBON 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "PASTA ISABELLE CLUB DE NUIT 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "PASTA ISABELLE DELILAH 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "PASTA ISABELLE SABAH AL WARD 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "PASTA ISABELLE ROYAL AMBER 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "PASTA ISABELLE ALIEN 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "LATTAFA LIAM BLUE SHINE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NICHE EMARATI AL DANA EDP U 100ML branco",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA VIKING BEIRUT EDP M 100ML . .",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LA VIVACITE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SMOKED OUD E VANILA EDP U",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LUXE GOLD EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LUXE STREET EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LUXE BOLD EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN TURATHI ELECTRIC EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN AMBER OUD GOLD 999 DUBAI EDITION",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF TAG DONNA DI TERRA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF TAG UOMO NERO EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF TRES NUIT VALENTINA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SO CANDID POUR HOMME EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA FAKHAR PLATIN EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT MALEKA EDP F 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT AFNAN SUPREMACY IN OUD EDP M 100ML+DEC",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT LATTAFA ASAD 100ML +DEO 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "V.S BODY SPLASH AMBER ROMANCE",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "ZIMAYA TIRAMISU CARAMEL EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ZIMAYA TIRAMISU COCO EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA VIKING KASHMIR EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT LATTAFA BADE´E AL OUD FOR GLORY EDP M",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT ORIENTICA AMBER ROUGE EDP UNISEX",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT ORIENTICA ROYAL AMBER EDP U 30ML+7,5ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LA CHARMANTE ECLATANT EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA CHARMANTE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA YOUR TOUCH INTENSE EDP M",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LA CHARMANTE EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN L´AVENTURE EDP M 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HABIK EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HABIK PINK EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LIP HONEY BY FEANINY EHLKE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH HAYAT EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ANA ABIYEDH ROUGE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN 9PM ELIXIR EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN KIAANA ANGEL EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN KIAANA CRUSH EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN TURATHI BLUE EDP H 90ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH DUHA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH EQAAB EDP H 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAAF FOUAD EDP H 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ECLAIRE BANOFFI EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN SOUVINER DESERT ROSE EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN AMBER OUD GOLD EDITION 60ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA PHAROAH RAMEDDES I 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA PHARAOH RAMESSES II 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANFAR PISTACHIO KUNAFA DUBAI CHOCOLATE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NEBRAS PRIDE 100ML EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAAF REEM 100ML EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "JACQUES BOGART PARIS SILVER SCENT INTENSE EDT",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "JACQUES BOGART PARIS SILVER SCENT EDY 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARD AL ZAAFAARAN SAFEER AL WARD F EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA RAMZ SILVER EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA RAMZ GOLD EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PANTHER POUR HOMME EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LA VIVACITE INTENSA EDP F",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SO CANDID ROUGE 85ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SCEPTRE DESERT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA HERCULES EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ANA ABIYEDH SCARLET EDP 60ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARD AL ZAAFARAN MANAAL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA GLACIER BELLA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE KIDS STOP WAIT GO EDP 75ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE KIDS SING EDP 75ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE KIDS PLAY EDP 75ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE KIDS HAPPY TIME EDP 75ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ROYAL SAPPHIRE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA BLUE SAPPHIRE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA YOUR TOUCH EXTRAIT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA YOUR TOUCH SANTAL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA NARISSA ROSE MUSC FOR HER EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA FLAMING ELIXIR EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA MYSTERIOUS AMBER EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA LOVE SPARK EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA PACIFIC BLUE EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAAF ANDALEEB EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT LATTAFA YARA ROSA+YARA CANDY EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ECLAIRE PISTACHE EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE FRAGRANCE WORLD AETHER EDP U",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT IMPERIALE EDP 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA NARISSA ET MOI EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN AMBER OUD BLEU EDITION EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NICHE CLASSIC STONE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE ART OF NATURE 1 EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE KIDS RIDERS EDP 75ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE SUR MENSURE NOIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH ASAD 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH DELINA EXCLUSIVA 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH FAKHAR ROSE 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH BACCARAT ROUGE",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH YARA ROSE 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE PITAYA 190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE PITAYA 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE COCONUT 190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE COCONUT 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE MELANCIA 190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE MELANCIA 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE BAUNILHA 190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE BAUNILHA 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE PESSEGO 190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE PESSEGO 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE AMORA E AMEIXA190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE AMORA E AMEIXA 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE LIMAO SICILIANO 190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE LIMAO SICILIANO 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE MARACUJA 190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE MARACUJA 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE MORANGO 190G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "LATTAFA BAYAAN EDP F 100ML . .",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL SULTANA ESFOLIANTE MORANGO 150G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "LATTAFA PRIDE ART OF NATURE II EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA ROSE ORIGAMI EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HAYAATI FLORENCE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PHILOS CENTRO EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF TAG HIM EDT M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA EKHTIARI EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NICHE KHALID EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NICHE TOLEEN EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA BAD FEMME EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NICHE VINTAGE RADIO EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAAF YA HABIBTI EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA JORGE DI PROFUMO BLACK EDP M",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PHILOS MESSENGER EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAVE AU SOLEIL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAVE NUIT PARFAITE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SUGAR ME MARSHMALLOW",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SUGAR ME DULCE DE LECHE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SUGAR ME CANDY FLOSS 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT WOMAN INTENSE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LAVA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ZIMAYA FATIMA VELVET LOVE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA QIMMAH WOMAN EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER EMIR VOUX TURQUOISE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER EMIR VOUX ZESTE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER EMIR VOUX BLUE OUD 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER KHAIR CONFECTION 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER KHAIR PISTACHO 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER RIFAAQAT EDP 85ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER QISSA PINK EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANFAR DATE NIGHT FEMME 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANFAR MIDNIGHT HOMME INTENSE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR FAKHAMA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR BLOOM BLOOM EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR LILY EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA LEONIE INTENSE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NICHE TARAF EDP U 100ML 00 000",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANFAR BATEIG AZUL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANFAR ROYAL IMPERIAL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANFAR INTENSE SPORTS EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANFAR ZENIT NOMAD POUR HOME EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH SABAH AL WARD 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH ROYAL AMBER 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLUSH MARACUJA 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLUSH AMORA E AMEIXA 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLUSH LIMAO SICILIANO 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL HARAMAIN DETOUR ECO H EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN DETOUR NOIR H EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN DETOUR ROUGE U EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PETRA U EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ASAD ELIXIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA YARA TOUS ALL OVER SPRAY 150ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA YARA CANDY OIL 20ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ISLAND BREEZE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ISLAND BLISS EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ODYSSEY AOUD EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ODYSSEY TYRANT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE AJWAA EDP 90ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT WOMAN EXTRAIT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR VANILLA VOYAGE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR COFFEE BLEND EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR HUNTER EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR LEGACY ROYAL COLLECTION EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR VISION EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT UNTOLD EDP 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ANFAR MIDNIGHT FROST INTENSE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT MAN EXTRAIT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS VERDE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA YARA ELIXIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SO CANDID TONIGHT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA SUMMER FOREVER EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA PRIDE ART OF ARABIA 1 EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "V.S BODY LOTION ROMANTIC 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY LOTION AQUA KISS 236ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "V.S BODY SPLASH AQUA KISS 250ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AFNAN HISTORIC DORIA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN SUPREMACY PINK EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFAN SUPREMACY SILVER EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT YARA COLLECTION 4X25ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LA COLLECTION D ANTIQUITES 1886",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARD AL ZAAFARAN MILENA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA QUEEN OF ARABIA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE VENENO BIANCO EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH AMNIA EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF TAG-HER POUR FEMME EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH FAKHAR PRETO 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH CLUB DE NUIT INTENSE",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA BODY SPLASH ASAD BOURBON 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "FRENCH AVENUE VULCAN BAIE ROSA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE VULCAN BLACK FRI EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE VULCAN FEU AZUL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN ELIXIR EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN LION EDP H 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE ASAD BOURBON 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE DELILAH 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE ROYAL AMBER 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE BACCARAT ROUGE 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE FAKHAR ROSE 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE YARA ROSE 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE ASAD PRETO 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "LATTAFA ART OF UNIVERSE EDP U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS FOR HIM MALIBU EDP H 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN TIGER EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN CORIUM FOR HIM EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA AMBER ROUGE EDP U 150ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH ETERNAL SUROOR EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH ETERNAL KAYAAN CLASSIC EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SABAH AL WARD VALENTINE EDP F 85ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH DURRAT AL AROOS LOVE EDP F 85 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE CLUB DE NUIT INTENSE 200G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE FAKHAR BLACK 200G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE SABAH AL WARD 200G",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "ARMAF SEDUCTION POUR FEMME EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA ROSE ECLAT EDP 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE VENENO SCARLET 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF SEDUCTION POUR HOMME 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CHECK MATE KING EDP H 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CHECK MATE QUEEN EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "CLUB DE NUIT INTENSE LIMITED EDITION EDP H 105ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NICHE EMARATI DURRAH EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA HABANERA PINK EDP F 80 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA ILLICIT EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ATHEERI EDP F 100ML abelha 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HER CONFESSION EDP F 100ML branco 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA LAHDATH PRIDE EDP F 80ML rosa 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MAAHIR LEGACY SILVER EDP MAS 100ML 0 0",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KHADLAJ ISLAND VANILLA EXTRAIT U 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN FLORIANA FOR HER 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN DAHLIYA FOR HER EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN ADONIS ICARUS 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN AYKA FOR HER EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN IMPERIA FOR HIM EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN NOCTURNO POUR HOMME 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN PRETTY IN PINK FOR HER EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN CRIMSON EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN VALHALLA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN OCEAN RUSH FOR HIM EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN KIT SOUVENIR FLORAL BOUQUET 100ML -",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SHERIF EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA VIKING RIO 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA PHILOS ROSSO EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BHARARA VIKING DUBAI 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN AMBER OUD BLACK EDITION EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN L AVENTURE KNIGHT EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAWAL BASIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE FAKHAR PRETO 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AL SULTANA HIDRATANTE SABAH AL WARD 200ML",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "AURORA BLACK ROUGE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA EXPLORER GOLD EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA VOYAGER GOLD EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA DYNASTY EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON AL HAMBRA BAD HOMME EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA GLACIER GOLD H EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SO CANDID POUR FEMME EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA JEAN LOWE VIBE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT BLING EDP 75ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH AMEERI ADP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS KOBRA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SULTAN AL LAIL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER MARSHMALLOW BLUSH ED100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA SCENTS PHARAOH EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MUSAMAM BLACK INTENSE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH WATANI PINK EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ASAD ZANZIBAR LIMITED EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SABAH AL WARD DELILAH EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SABAH AL WARD SUGAR 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ANGHAM SECOND SONG EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA LAYAAN EAU 75 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA OPULENT DUBAI EAU 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA GIVE ME GOURMAND BERRY ON TOP EAU",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA GIVE ME GOURMAND VANILLA FREAK EAU",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA GIVE ME GOURMAND WHIPPED PLEASURE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA GIVE ME GOURMAND MALLOW MADNESS EAU",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA GIVE ME GOURMAND CHOCO OVERDOSE EAU",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA GIVE ME GOURMAND COOKIE CRAVE EAU",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA QIMMAH FOR MEN",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA RAGE RAVE EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER EMIR VOUX PATISSERIE EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER EMIR VOUX ZINGY EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA YOUR TOUCH FOR MEN EDP 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA FAKHAR GOLD EDP 100 ML SELO ANTIGO",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA YARA ROSE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KHAMARA EDP SELO ANTIGO",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA LUXURY COLLECTION PISTACHE ABSOLU",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ORIENTICA LUXURY COLLECTION CAFE ARABICA EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "KIT ORIENTICA LUXURY COLLECTION ROYAL AMBER",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA VICTORIOSO EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN SOUVENIR FLORAL BOUQUET EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN SUPREMACY COLLECTOR S EDITION",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN SUPREMACY NOT ONLY INTENSE EDP 150ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN SUPREMACY IN HEAVEN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL HARAMAIN LEIF EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "HAWAS FOR HIM FIRE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE ROYAL BLEND NERO 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN JUNGLE VIBE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH NAWAL BRONZITE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH HAYA",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH YARA ROSE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH NAWAL TANZANITE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "WATANIAH ATTAR AL WESAL GOLD EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "SHARQIYAT ZAYED EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN PACIFIC POUR HOMME EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN TERRA EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA HAYA EDP SELO ANTIGO",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SABAH AL WARD GARDEN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF CLUB DE NUIT URBAN MAN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ODYSSEY MANDARIN SKY ELIXIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA SCENTS CLEOPATRA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MAAHIR HONOR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH TIARA PINK EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARFUM ADDICTED MADAME 120ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARFUM ADDICTED DIVINE RED 120ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA HABANERA BLACK EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AFNAN 9PM NIGHT OUT EXTRAIT EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA NEBRAS ELIXIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN AQUATICA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN TONQUIN GIZA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN OBSIDIAN EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE MERINGUE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA WINNERS TROPHY EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA FORTNIGHT EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA MAN BLACK EDITION EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH AL DAIEM ELIXIR EDP 75ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KHAMRAH WAHA EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KIT ASAD COLLECTION EDP 4X25ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAAF AMEERAT AL ARAB SUGAR CROWN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA CHATEAU OTTOMAN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA LUMINOUS VIVID EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA RAVE NOW EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA RAVE NOW WHITE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA RAVE PURE DESIRE INTENSE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHMABRA SPRAY CORPORAL ATHENA 150ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL CORAL BLUSH",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL FORBIDDEN",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL GLACIER BELLA",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL JEAN LOWE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL MALACHITE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL N.2 MEN",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL PHILOS ROSSO",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL SUMMER",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL YEAH MAN",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS TROPICAL EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "QAED AL FURSAN UNTAMED EDP 90ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS PINK EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ASDAF RANEEN EDP F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA GALACTIC INTENSE EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA GALACTIC ELIXIR EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ODYSSEY MARSHMALLOW EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ODYSSEY BA HA MAS EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AURORA HABANERA WHITE EDP 80 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI JBEIL EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON SALEM LAYALI EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI MARYAM EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI MURADE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI NAJME EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA VICTORIOSO NERO EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KHAMRAH QAHWA SELO ANTIGO EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN PACIFIC AURA POUR HOMME 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA PINK SHIMMER SECRET INTENSE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS LONDON EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS VIPER EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA THE KINGDOM SELO ANTIGO EDP M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS ATLANTIS EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KIT KHAMRAH EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KIT TERIAQ EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KIT THE KINGDOM EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KIT FAKHAR BLACK EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA KIT YARA CANDY EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI LAYALI FOR WOMEN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN PHARAOH EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS FOR HER EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ASRAR REGENT ROYAL COLLECTION EDP 100",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA DREAM OF HAZE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN DIVINE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER FAYORA EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE ROYAL BLEND EXTRAIT 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "MAISON ALHAMBRA SPRAY CORPORAL SPECTRE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES DOHA SKY",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATE ABU DHABI SKY EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES AURA EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES NO ONE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES HANEET EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE MILANO 22 EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE ESTA ORO EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE COUTURE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES QUEEN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE ASGARDIAN II EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE VALERIO UOMO EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES VALERIO EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES DUBAI SKY EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES AL HILAL 9 EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "DKHOON EMIRATES KAHILAN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS DIVA EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN AZUL EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH ANGHAM",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BODY SPLASH BADEE AL OUD NOBLE BLUSH",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH ECLAIRE 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BODY SPLASH FAKHAR ROSE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BODY SPLASH HAYA",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BODY SPLASH LAYAAN",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "BODY SPLASH MAYAR CHERRY",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA BODY SPLASH TOUS",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE CHASTE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE DARLENE EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE MASTERS EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE DRUNK MASTERS EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE FORTE MAN EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE LA VIVA EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "FRENCH AVENUE AZZURE AOUD EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN NOCTURNO ELIXIR EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARMAF ODYSSEY MANDARIN SKY VINTAGE EDITION",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN CORDOVA FOR HIM EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RAYHAAN DARK LEATHER EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "RASASI HAWAS CHROME FOR HIM EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARABIYAT PRESTIGE NYLA EDP 80 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARABIYAT PRESTIGE AREEJ NECTAR EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "ARABIYAT PRESTIGE BAMBOO REFLECTION EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH APPLE MUSK 250ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH CANDY MUSK 250ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH CHERRY MUSK 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH COCONUT MUSK 250ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH DUBAI MUSK 250ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH LYCHEE MUSK 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH MARWA 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH NAJAH 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH OUD MYSTERY INTENSE 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH PISTACHIO MUSK 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH ROSE MUSK 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH ROSE MYSDT INTENSE 250ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH SHAGAF AL WARD 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH SPECIAL OUD 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH VANILLA MUSK 250ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH ZAHARA 250ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH BADE AL OUD NOBLE BLUSH 2",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH FAKHAR ROSE 250ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH MAYAR CHERRY INTENSE 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH MAYAR NATURAL INTENSE 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "AL WATANIAH SPLASH MARWA 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA SPLASH YARA TOUS 250 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE DARK DAY EDP",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE ROMANTIC ROSE VIP EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE SENATE ELIXIR EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE SERENE ROUGE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "VOLARE VALERIO UOMO INTENSE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA MAYAR NATURAL INTENSE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA YARA ROSE F 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA FAKHAR MZ 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "LATTAFA ASAD BLACK M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "PARIS CORNER VOUX ELEGANTE 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "000 DECANTE 5ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "088300162529 TESTER CALVIN KLEIN 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "701666411031 AMOUAGE LUSTRE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "701666411178 AMOUAGE EXISTENCE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3348901427067 TESTER DIOR JADORE EDT 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3349668555062 BLACK XS PACO RABANNE 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3349668628759 KIT RABANNE EDP F 80ML+20ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3614273905428 AZZARO WANTED 50ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3616302931897 BOOSTER LACOSTE 125ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3700578501981 DELINA EXCLUSIF",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3700578501998 DELINA EAU DE PERFUME",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3700578502216 LAYTON EXCLUSIF",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3700578503046 VALAYA EAU DE PERFUME",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3701415904347 VALERO EXTRAIT DE PARFUM",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "3701415904354 ERAGON EXTRAIT DE PARFUM",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "5055810029746 EAU DE PARFUM DAKOTA 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "5055810039264 SOPHIA",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "5055810057411 AL WATANIAH ROWAN ROSE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "5055810059408 SABAH AL WARD GARDEM",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6287035281336 DKHOON COUTURE EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290021000279 MINI BRAND NO 279",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290025852324 MINI BRAND NO 321",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6290171040637 AFNAN SOUVENIR DESERT ROSE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290171075844 AFNAN KIT 9PM MINI",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290171075875 AFNAN KIT SUPREMACY MINI",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290171077152 AFNAN KIT 9PM REBEL",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290171077459 9pm night oud mz",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360370187 FRENCH AVENUE ESSENCE BLANC 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360540184 AURORA SCENTS AROMA SENORA 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360541723 AURORA SCENTS AURA 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360541761 AURORA ELITE VIP EDP H 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360541976 AURORA SCENTS AZUL 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360541983 AURORA SCENTS SOLIS 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360542003 AURORA SCENTS VERDAZUR 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360542010 AURORA SCENTS VELOURA 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360542027 AURORA SCENTS SILVA 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360591513 LATTAFA JASOOR 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360598871 LATTAFA NASMAAT 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360598918 LATTAFA ATHEERI EDP F 100ML preto",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360598925 LATTAFA DALAL EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290360598956 LATTAFA MISHLAH 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362160748 MAISON ASRAR HUNTER 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362161011 MAISON ASRAR TIMELESS",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362163107 MAISON ASRAR LEGACY 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362163619 PARIS CORNER OH HONEY 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362164906 MAISON ASRAR VANGUARD 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362164944 MAISON ASRAR VANILA AURA",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362341222 LATTAFA KIT BADE AL OUD SUBLIME EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362346104 LATTAFA KING OF ARABIA",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362347095 LATTAFA PURE CRISTAL 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348870 MAISON BODY SPLASH PINK ECLIPSE 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348870 MAISON BODY SPLASH PINK ECLIPSE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348887 MAISON BODY SPLASH MIA DOLCEZA 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348894 MAISON BODY SPLASH LOVE SPARK 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348900 MAISON BODY SPLASH OPERA ROUGE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348924 MAISON BODY SPLASH CHANTS 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348931 MAISON BODY SPLASH B.A.D 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348931 MAISON BODY SPLASH BAD",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348948 MAISON BODY SPLASH LA VOIE 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348955 MAISON BODY SPLASH GLACIER 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362348993 MAISON BODY SPLASH SO CANDID 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362349006 MAISON BODY SPLASH DELILAH",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362349020 MAISON BODY SPLASH ALIVE NOW 200ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290362349334 LATTAFA ETERNAL VANILLE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6290474886192 paris corner eshal vanilla",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291106065060 KHALTAAT AL ARABIA ROYAL DELIGHT",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291106066715 LATTAFA RAMZE EDP 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291106817409 AL HARAMAIN OLAF 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291107451992 ARQUS BLACK SCENT",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291107459363 MAISON AL HAMBRA SALVO INTENSE M 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291107520278 MINI BRAND NO 278",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291108730157 MAISOM KINGSMAN 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291108735947 MAISON VICTORIOSO MYTH 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291108736999 MAISON OLIVIA BLOSSOM 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6291534659157 PARIS CORNER MANGO BLISS 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6295151503935 RIFFS SEASONS RISE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6295151965719 FERASSA BURKAN 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6295151965740 BY FERASSA NEMER",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6295156500014 PARIS CORNER FATAL EMBRACE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6295156500175 THE SHOW MAGNIFIQUE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6295156500267 VOUX ALMA VERDE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6295199796108 LATTAFA BODY CREAM YARA ROSE",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6295199796122 BODY CREAM LATTAFA KHAMARAH",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6295199796146 LATTAFA BODY CREAM MANAAL",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6295199796153 LATTAFA BODY CREAM SHAMS AL EMARAT",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6295199796177 LATTAFA BODY CREAM ASAD BLACK",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6295199796429 SHAMS AL EMARAT KHUSUSI",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6296228326136 PARIS CORNER AZM 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297000699127 MINI BRAND NO 333",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297000699318 MINI BRAND NO 318",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297000699356 MINI BRAND NO 350",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297000699448 MINI BRAND NO 316",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297001158340 Kit Orientica Luxury Collection",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297001158364 Kit Orientica Luxury Collection 2",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297001158432 ORIENTICA AZURE FANTASY EDP M 80ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297001571255 RAYHAAN TROPICAL VIBE 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297256401314 MINI BRAND NO 309",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6297564852303 MINI BRAND NO 303",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6298042001190 NECTARE EXTRADOSE 90ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6298043160803 MAISON BODY CREAM ATHENA",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6298043160810 MAISON BODY CREAM SALVO",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6298043160827 BODY CREAM DELILAH",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6298043160834 MAISON BODY CREAM LEONIE",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6298043160841 MAISON BODY CREAM SO CANDID",
+   "categoria": "Cosmético"
+  },
+  {
+   "nome": "6423080724040 ARD AL ZAAFARAN KIT HAREEM AL SULTAN EDP F",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6438585524743 LATTAFA LIWAN EDP 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555546 QAWAFI MYSTERIES CROWN-NIGHT",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555577 SHADOW LEAP SAVAGE 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555577 QAWAFI SHADOW LEAP SAVAGE",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555614 QAWAFI SHADOW LEAP BASILISK",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555621 QAWAFI ELYSIAN FIELDS BLUSH",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555652 QAWAFI ELYSIAN FIELDS SILK 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555669 QAWAFI ELYSIAN FIELDS KISS",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555706 QAWAFI ANDALUSIAN ORCHARD-BLOOM",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555751 QAWAFI GOLDEN REIGN 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555768 QAWAFI GOLDEN EBONY 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555775 QAWAFI GOLDEN PATINA 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555782 QAWAFI GOLDEN KISS 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555799 QWAFI GOLDEN CIRCLET GLACIER 100 ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "6944348555805 QAWAFI ELYSIAN FIELDS AQUA",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "7891513346678 DEAR BODY LONDON",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "8011003845132 MOSCHINO TOY BOY 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "8411061088173 212 SEXY EDP FEM 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "8411061865583 212 MEN SEXY H 100ML",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "8809700320812 CELIMAX RETINAL SHOT",
+   "categoria": "Perfume"
+  },
+  {
+   "nome": "8809971484503 CELIAX PORE+DARK SPOT 35ML",
+   "categoria": "Cosmético"
+  }
+ ]
+}

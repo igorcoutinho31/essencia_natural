@@ -114,12 +114,29 @@ function legacyMigrations(raw) {
   if (!cols('brands').includes('requires_product')) raw.exec('ALTER TABLE brands ADD COLUMN requires_product INTEGER NOT NULL DEFAULT 0');
 }
 
+// Registra as migrações já aplicadas (como o `wrangler d1 migrations` faz no
+// D1): a partir da 0005 há ALTER TABLE, que não pode rodar duas vezes.
+// Bancos de antes desse registro já tinham rodado 0001–0004 (idempotentes);
+// elas rodam de novo uma vez, sem efeito, e passam a ser registradas.
 export function applyMigrations(d1) {
+  d1.raw.exec('CREATE TABLE IF NOT EXISTS _migrations (name TEXT PRIMARY KEY, applied_at TEXT NOT NULL DEFAULT (datetime(\'now\')))');
+  const feitas = new Set(d1.raw.prepare('SELECT name FROM _migrations').all().map((r) => r.name));
   const files = fs.readdirSync(MIGRATIONS_DIR).filter((f) => f.endsWith('.sql')).sort();
   files.forEach((f, i) => {
-    d1.raw.exec(fs.readFileSync(path.join(MIGRATIONS_DIR, f), 'utf8'));
+    if (!feitas.has(f)) {
+      d1.raw.exec(fs.readFileSync(path.join(MIGRATIONS_DIR, f), 'utf8'));
+      d1.raw.prepare('INSERT INTO _migrations (name) VALUES (?)').run(f);
+    }
     if (i === 0) legacyMigrations(d1.raw);
   });
+}
+
+/** Saldo de abertura do histórico de estoque para produtos com estoque e
+ *  sem nenhuma movimentação (mesmo SQL da migração 0002). */
+export function openingBalances(d1) {
+  d1.raw.exec(`INSERT INTO stock_movements (product_id, kind, quantity, stock_before, stock_after, stock_source, reason, user_name)
+    SELECT p.id, 'inicial', p.stock, 0, p.stock, p.stock_source, 'Saldo de abertura do histórico de estoque', 'Sistema'
+      FROM products p WHERE p.stock > 0 AND NOT EXISTS (SELECT 1 FROM stock_movements m WHERE m.product_id = p.id)`);
 }
 
 export function openDatabase(file) {
