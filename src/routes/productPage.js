@@ -237,8 +237,8 @@ function render(siteUrl, product, related) {
 
 <script>window.__PRODUTO__ = ${jsonForScript(product)}; window.__RELACIONADOS__ = ${jsonForScript(related)};</script>
 <script src="/assets/js/menu.js?v=20261028-1"></script>
-<script src="/assets/js/atendimento.js?v=20261028-1"></script>
-<script src="/assets/js/sacola.js?v=20261028-1"></script>
+<script src="/assets/js/atendimento.js?v=20261028-2"></script>
+<script src="/assets/js/sacola.js?v=20261028-2"></script>
 <script src="/assets/js/vida.js?v=20261028-1"></script>
 <script>
   (function(){

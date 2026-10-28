@@ -1,6 +1,7 @@
 // Rotas públicas — só leitura, sem autenticação. Nunca expõem estoque
 // numérico nem chamam a OliSek.
 import * as catalog from '../services/catalog.js';
+import * as team from '../services/team.js';
 import { json } from '../http.js';
 
 export const WHATSAPP = '5511949614608';
@@ -25,6 +26,11 @@ export async function getProductBySlug(ctx, slug) {
   const page = await catalog.getPublicProductPage(ctx.db, slug, 4);
   if (!page) return json(404, { error: 'not_found' });
   return json(200, { whatsapp: WHATSAPP, product: page.product, related: page.related });
+}
+
+/** GET /api/team — primeiro nome e foto de quem está ativo, na ordem do painel. */
+export async function listTeam(ctx) {
+  return json(200, { team: await team.listPublic(ctx.db) }, { 'Cache-Control': 'public, max-age=60' });
 }
 
 /** GET /api/brands */

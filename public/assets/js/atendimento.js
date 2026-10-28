@@ -1,15 +1,12 @@
   /* ---- escolha de atendimento: etapa entre a sacola e o WhatsApp ----
-     Não cria uma lista de vendedores nova: lê os cards direto da seção
-     #equipe da home (mesmo nome e foto que já aparecem no site), pra
-     nunca ter duas listas de equipe pra manter atualizadas. Trocar foto,
-     remover ou adicionar alguém continua sendo só editar o
-     <li class="pessoa"> em #equipe (index.html) — este modal acompanha
-     sozinho, em qualquer página.
+     A equipe vem de /api/team (cuidada pela loja em /admin/equipe): a
+     mesma lista monta a seção #equipe da home e este modal, então trocar
+     nome, foto, ordem ou esconder alguém no painel muda os dois sozinhos.
+     Se a API falhar, vale a lista escrita em #equipe (index.html) ou, na
+     página de produto, a da home.
 
      Funciona em toda página que tem a sacola (home e /produto/:slug):
      - o próprio script monta o <dialog> se a página não tiver um;
-     - se a página não tiver a seção #equipe (ex.: página de produto),
-       busca a home ("/") e lê a lista de lá.
 
      sacola.js chama window.ENAtendimento.abrir(callback) quando o
      cliente clica em "Finalizar no WhatsApp"; o callback recebe o nome
@@ -56,9 +53,27 @@
       }).filter(function(p){ return p.nome; });
     }
 
+    /* monta a seção "Nossa equipe" da home com a lista do painel */
+    function montarSecao(pessoas){
+      var ul = document.querySelector('#equipe .equipe-grid');
+      if (!ul || !pessoas.length) return;
+      ul.textContent = '';
+      pessoas.forEach(function(p){
+        var li = document.createElement('li'); li.className = 'pessoa';
+        if (p.foto) {
+          var img = document.createElement('img');
+          img.src = p.foto; img.alt = p.nome + ', da equipe da Essência Natural';
+          img.width = 900; img.height = 1200; img.loading = 'lazy'; img.decoding = 'async';
+          li.appendChild(img);
+        }
+        var nome = document.createElement('p'); nome.className = 'pessoa-nome'; nome.textContent = p.nome;
+        li.appendChild(nome);
+        ul.appendChild(li);
+      });
+    }
+
     var equipePromessa = null;
-    function equipe(){
-      if (equipePromessa) return equipePromessa;
+    function equipeDaPagina(){
       if (document.querySelector('#equipe .pessoa')) {
         equipePromessa = Promise.resolve(lerEquipe(document));
       } else if (window.fetch && window.DOMParser) {
@@ -69,6 +84,21 @@
       } else {
         equipePromessa = Promise.resolve([]);
       }
+      return equipePromessa;
+    }
+    function equipe(){
+      if (equipePromessa) return equipePromessa;
+      if (!window.fetch) return equipeDaPagina();
+      equipePromessa = fetch('/api/team', { credentials:'same-origin' })
+        .then(function(r){ if (!r.ok) throw new Error(); return r.json(); })
+        .then(function(d){
+          var pessoas = (d.team || []).map(function(p){ return { nome: String(p.name || ''), foto: p.photo || '' }; })
+            .filter(function(p){ return p.nome; });
+          if (!pessoas.length) throw new Error();
+          montarSecao(pessoas);
+          return pessoas;
+        })
+        .catch(function(){ equipePromessa = null; return equipeDaPagina(); });
       return equipePromessa;
     }
     // já deixa a lista pronta: na página de produto evita esperar a rede no clique

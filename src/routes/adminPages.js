@@ -9,6 +9,42 @@ import { MIN_PASSWORD_LENGTH } from './adminApi.js';
 import { escapeHTML } from '../util.js';
 import { html } from '../http.js';
 
+// Funções de navegador usadas pelas telas do admin (pedido JSON, aviso,
+// redução de foto antes do envio).
+const JS_AJUDA = `
+    function post(url, method, data){
+      return fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: data != null ? JSON.stringify(data) : undefined })
+        .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw d; return d; }); });
+    }
+    function msg(el, texto, ok){
+      el.innerHTML = '';
+      var d = document.createElement('div');
+      d.className = 'a-msg ' + (ok ? 'a-msg-ok' : 'a-msg-err');
+      d.textContent = texto;
+      el.appendChild(d);
+      setTimeout(function(){ el.innerHTML=''; }, 5000);
+    }
+    // Reduz a foto no navegador (máx. 1600px, WEBP) antes do envio. Se o
+    // navegador não conseguir, manda o arquivo original.
+    function prepararFoto(file){
+      var MAX = 1600;
+      return new Promise(function(resolve){
+        var original = function(){ var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.readAsDataURL(file); };
+        if (!window.createImageBitmap || !document.createElement('canvas').toBlob) return original();
+        createImageBitmap(file).then(function(bmp){
+          var esc = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
+          var c = document.createElement('canvas');
+          c.width = Math.round(bmp.width * esc); c.height = Math.round(bmp.height * esc);
+          c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+          c.toBlob(function(blob){
+            if (!blob || blob.type !== 'image/webp' || (esc === 1 && blob.size >= file.size)) return original();
+            var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.readAsDataURL(blob);
+          }, 'image/webp', 0.85);
+        }).catch(original);
+      });
+    }
+`;
+
 function layout({ title, user, active, body }) {
   const nav = user ? `
     <header class="a-top">
@@ -17,6 +53,7 @@ function layout({ title, user, active, body }) {
         <span>${escapeHTML(user.name)} · ${user.role === 'admin' ? 'Administração' : 'Vendedora'}</span>
         <a href="/admin/produtos"${active === 'produtos' ? ' class="a-nav-ativo"' : ''}>Produtos</a>
         ${user.role === 'admin' ? `<a href="/admin/fotos"${active === 'fotos' ? ' class="a-nav-ativo"' : ''}>Fotos</a>` : ''}
+        ${user.role === 'admin' ? `<a href="/admin/equipe"${active === 'equipe' ? ' class="a-nav-ativo"' : ''}>Equipe</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/estoque"${active === 'estoque' ? ' class="a-nav-ativo"' : ''}>Estoque</a>` : ''}
         <a href="/admin/trocar-senha">Trocar senha</a>
         <a href="/" target="_blank" rel="noopener">Ver site</a>
@@ -276,6 +313,83 @@ export function productsListPage(user, view) {
   return html(200, layout({ title: 'Produtos', user, active: 'produtos', body }));
 }
 
+/** Equipe (/admin/equipe): quem aparece em "Nossa equipe" e na escolha de
+ *  atendimento da sacola. Só o primeiro nome e a foto vão para o site. */
+export function teamPage(user, { members }) {
+  const itens = members.map((m, i) => `
+      <li class="a-pessoa${m.active ? '' : ' a-pessoa--oculta'}" data-id="${m.id}">
+        <div class="a-pessoa-foto">${m.photo ? `<img src="${escapeHTML(m.photo)}" alt="" width="120" height="160">` : '<span>sem foto</span>'}</div>
+        <div class="a-pessoa-dados">
+          <label class="a-help" for="t-nome-${m.id}">Nome no site</label>
+          <input id="t-nome-${m.id}" type="text" maxlength="40" value="${escapeHTML(m.name)}" data-campo="nome">
+          <div class="a-row" style="gap:6px; flex-wrap:wrap; margin-top:8px">
+            <button class="btn btn-gold btn-sm" type="button" data-acao="salvar">Salvar nome</button>
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer">Trocar foto<input type="file" accept="image/jpeg,image/png,image/webp" data-acao="foto" hidden></label>
+            <button class="btn btn-ghost btn-sm" type="button" data-acao="ativo">${m.active ? 'Esconder do site' : 'Mostrar no site'}</button>
+            ${i > 0 ? '<button class="btn btn-ghost btn-sm" type="button" data-acao="subir" title="Mover para cima">↑</button>' : ''}
+            ${i < members.length - 1 ? '<button class="btn btn-ghost btn-sm" type="button" data-acao="descer" title="Mover para baixo">↓</button>' : ''}
+            <button class="btn btn-danger btn-sm" type="button" data-acao="remover">Remover</button>
+          </div>
+          ${m.active ? '' : '<p class="a-help">Escondida: não aparece no site nem na escolha de atendimento.</p>'}
+        </div>
+      </li>`).join('');
+  const body = `
+  <div class="a-wrap">
+    <h1>Equipe</h1>
+    <p class="a-sub">Quem aparece em "Nossa equipe" no site e na hora de escolher o atendimento pela sacola. Só o primeiro nome e a foto vão para o site. A foto fica melhor em pé (retrato), com o rosto no centro.</p>
+    <div id="a-msg-equipe"></div>
+    <div class="a-card">
+      <h2>Adicionar pessoa</h2>
+      <form class="a-row" id="t-novo" style="gap:8px; flex-wrap:wrap">
+        <input type="text" name="nome" maxlength="40" placeholder="Primeiro nome" required style="max-width:260px">
+        <button class="btn btn-gold btn-sm" type="submit">Adicionar</button>
+      </form>
+      <p class="a-help">Depois de adicionar, envie a foto pelo botão "Trocar foto".</p>
+    </div>
+    <ul class="a-equipe" id="t-lista">${itens || '<li class="a-help">Ninguém cadastrado ainda.</li>'}</ul>
+  </div>
+  <script>
+    (function(){
+      ${JS_AJUDA}
+      var aviso = document.getElementById('a-msg-equipe');
+      function erro(e){ msg(aviso, (e && e.message) || 'Não deu certo. Tente de novo.', false); }
+      function recarregar(){ location.reload(); }
+      document.getElementById('t-novo').addEventListener('submit', function(ev){
+        ev.preventDefault();
+        post('/api/admin/team', 'POST', { name: ev.target.nome.value }).then(recarregar).catch(erro);
+      });
+      var lista = document.getElementById('t-lista');
+      function ordemAtual(){ return [].map.call(lista.querySelectorAll('.a-pessoa'), function(li){ return Number(li.dataset.id); }); }
+      lista.addEventListener('click', function(ev){
+        var btn = ev.target.closest('button[data-acao]'); if (!btn) return;
+        var li = btn.closest('.a-pessoa'); var id = li.dataset.id; var acao = btn.dataset.acao;
+        if (acao === 'salvar') {
+          post('/api/admin/team/' + id, 'PUT', { name: li.querySelector('[data-campo="nome"]').value })
+            .then(function(){ msg(aviso, 'Nome salvo.', true); }).catch(erro);
+        } else if (acao === 'ativo') {
+          post('/api/admin/team/' + id, 'PUT', { active: li.classList.contains('a-pessoa--oculta') }).then(recarregar).catch(erro);
+        } else if (acao === 'subir' || acao === 'descer') {
+          var ids = ordemAtual(); var i = ids.indexOf(Number(id)); var j = acao === 'subir' ? i - 1 : i + 1;
+          var t = ids[i]; ids[i] = ids[j]; ids[j] = t;
+          post('/api/admin/team/order', 'PUT', { ids: ids }).then(recarregar).catch(erro);
+        } else if (acao === 'remover') {
+          if (!confirm('Remover esta pessoa da equipe? Para só tirar do site por um tempo, use "Esconder do site".')) return;
+          post('/api/admin/team/' + id, 'DELETE').then(recarregar).catch(erro);
+        }
+      });
+      lista.addEventListener('change', function(ev){
+        var input = ev.target; if (input.dataset.acao !== 'foto' || !input.files[0]) return;
+        var li = input.closest('.a-pessoa');
+        msg(aviso, 'Enviando foto…', true);
+        prepararFoto(input.files[0]).then(function(dataUrl){
+          return post('/api/admin/team/' + li.dataset.id + '/photo', 'POST', { dataUrl: dataUrl });
+        }).then(recarregar).catch(erro);
+      });
+    })();
+  </script>`;
+  return html(200, layout({ title: 'Equipe', user, active: 'equipe', body }));
+}
+
 /** Revisão de fotos em grade: bater o olho e tirar, com um toque, foto com
  *  logo ou marca d'água de outra empresa. O produto fica sem foto (aparece
  *  com a imagem padrão) até a loja enviar outra. */
@@ -496,37 +610,7 @@ export function productFormPage(user, product, { brands, categories = [], moveme
   </div>
   <script>
     var PRODUCT_ID = ${isNew ? 'null' : p.id};
-    function post(url, method, data){
-      return fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: data != null ? JSON.stringify(data) : undefined })
-        .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw d; return d; }); });
-    }
-    function msg(el, texto, ok){
-      el.innerHTML = '';
-      var d = document.createElement('div');
-      d.className = 'a-msg ' + (ok ? 'a-msg-ok' : 'a-msg-err');
-      d.textContent = texto;
-      el.appendChild(d);
-      setTimeout(function(){ el.innerHTML=''; }, 5000);
-    }
-    // Reduz a foto no navegador (máx. 1600px, WEBP) antes do envio. Se o
-    // navegador não conseguir, manda o arquivo original.
-    function prepararFoto(file){
-      var MAX = 1600;
-      return new Promise(function(resolve){
-        var original = function(){ var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.readAsDataURL(file); };
-        if (!window.createImageBitmap || !document.createElement('canvas').toBlob) return original();
-        createImageBitmap(file).then(function(bmp){
-          var esc = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
-          var c = document.createElement('canvas');
-          c.width = Math.round(bmp.width * esc); c.height = Math.round(bmp.height * esc);
-          c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
-          c.toBlob(function(blob){
-            if (!blob || blob.type !== 'image/webp' || (esc === 1 && blob.size >= file.size)) return original();
-            var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.readAsDataURL(blob);
-          }, 'image/webp', 0.85);
-        }).catch(original);
-      });
-    }
+    ${JS_AJUDA}
     ${isAdmin ? `
     var salvarCadastro = document.getElementById('f-salvar-cadastro');
     if (salvarCadastro) salvarCadastro.addEventListener('click', function(){

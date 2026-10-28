@@ -113,3 +113,13 @@ tr:hover td{background:#fbf9f2}
 .a-foto figcaption{font-size:13px; line-height:1.3}
 .a-foto figcaption .a-help{display:block}
 .a-foto--removida img{opacity:.25}
+
+/* Equipe (/admin/equipe) */
+.a-equipe{list-style:none; margin:16px 0 0; padding:0; display:grid; gap:12px}
+.a-pessoa{display:flex; gap:14px; align-items:flex-start; background:#fff; border:1px solid var(--a-line); border-radius:8px; padding:12px}
+.a-pessoa--oculta{opacity:.6}
+.a-pessoa-foto{width:90px; flex:none}
+.a-pessoa-foto img{width:90px; height:120px; object-fit:cover; border-radius:6px; display:block}
+.a-pessoa-foto span{display:flex; width:90px; height:120px; align-items:center; justify-content:center; background:#f6f3ec; border-radius:6px; font-size:12px; color:#8a7f6a}
+.a-pessoa-dados{flex:1; min-width:0}
+.a-pessoa-dados input[type=text]{width:100%; max-width:320px}

@@ -6,6 +6,7 @@ import * as auth from '../auth.js';
 import * as catalog from '../services/catalog.js';
 import * as inventory from '../services/inventory.js';
 import * as olisek from '../services/olisek.js';
+import * as team from '../services/team.js';
 import { exportDataJSON, readSnapshotJSON, trashUpload } from '../services/autoBackup.js';
 import { optimizeImage } from '../images.js';
 import { json, readJson, HttpError } from '../http.js';
@@ -287,6 +288,65 @@ export async function uploadImage(ctx, id) {
   const filePath = `/uploads/${key}`;
   const imageId = await catalog.addImage(ctx.db, productId, filePath, { isMain: !!body.isMain });
   return json(201, { image: { id: imageId, path: filePath, optimized: img.optimized, bytes: img.bytes.length } });
+}
+
+// ---- equipe (/admin/equipe) — só administração ----
+
+async function lixeiraSeUpload(ctx, photoPath) {
+  if (photoPath && photoPath.startsWith('/uploads/')) await trashUpload(ctx.db, photoPath.slice('/uploads/'.length));
+}
+
+export async function createTeamMember(ctx) {
+  requireAdmin(ctx);
+  const body = await readJson(ctx.request, 16 * 1024);
+  const name = team.cleanName(body.name);
+  if (!name) return json(400, { error: 'invalid_name', message: `Informe o nome (até ${team.MAX_NAME} letras).` });
+  return json(201, { id: await team.create(ctx.db, name) });
+}
+
+export async function updateTeamMember(ctx, id) {
+  requireAdmin(ctx);
+  const body = await readJson(ctx.request, 16 * 1024);
+  let name;
+  if (body.name !== undefined) {
+    name = team.cleanName(body.name);
+    if (!name) return json(400, { error: 'invalid_name', message: `Informe o nome (até ${team.MAX_NAME} letras).` });
+  }
+  const ok = await team.update(ctx.db, Number(id), { name, active: body.active === undefined ? undefined : !!body.active });
+  return ok ? json(200, { ok: true }) : json(404, { error: 'not_found' });
+}
+
+export async function uploadTeamPhoto(ctx, id) {
+  requireAdmin(ctx);
+  const body = await readJson(ctx.request, 12 * 1024 * 1024);
+  const decoded = decodeImageDataUrl(body.dataUrl);
+  if (!decoded) return json(400, { error: 'invalid_image', message: 'Envie um arquivo JPG, PNG ou WEBP.' });
+  if (decoded.bytes.length > MAX_UPLOAD_BYTES) return json(413, { error: 'too_large', message: 'Imagem maior que 8MB.' });
+  const existe = await ctx.db.prepare('SELECT id FROM team_members WHERE id = ?').bind(Number(id)).first();
+  if (!existe) return json(404, { error: 'not_found' });
+  const img = await optimizeImage(ctx.images, decoded.bytes, decoded.ext);
+  const key = `equipe/${Number(id)}-${randomId(6)}.${img.ext}`;
+  await ctx.storage.put(key, img.bytes, img.contentType);
+  const antiga = await team.setPhoto(ctx.db, Number(id), `/uploads/${key}`);
+  await lixeiraSeUpload(ctx, antiga);
+  return json(200, { photo: `/uploads/${key}` });
+}
+
+export async function reorderTeam(ctx) {
+  requireAdmin(ctx);
+  const body = await readJson(ctx.request, 16 * 1024);
+  const ids = Array.isArray(body.ids) ? body.ids.map(Number).filter((n) => Number.isInteger(n) && n > 0) : [];
+  if (!ids.length || ids.length > 100) return json(400, { error: 'invalid_order' });
+  await team.reorder(ctx.db, ids);
+  return json(200, { ok: true });
+}
+
+export async function deleteTeamMember(ctx, id) {
+  requireAdmin(ctx);
+  const foto = await team.remove(ctx.db, Number(id));
+  if (foto === false) return json(404, { error: 'not_found' });
+  await lixeiraSeUpload(ctx, foto);
+  return json(200, { ok: true });
 }
 
 export async function deleteImage(ctx, id, imageId) {
