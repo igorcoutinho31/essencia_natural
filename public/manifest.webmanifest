@@ -1,0 +1,22 @@
+{
+  "name": "Essência Natural — Perfumes árabes e importados",
+  "short_name": "Essência Natural",
+  "description": "Catálogo da Essência Natural: perfumes árabes e importados, varejo e atacado, atendimento pelo WhatsApp.",
+  "lang": "pt-BR",
+  "id": "/",
+  "start_url": "/?origem=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0906",
+  "theme_color": "#0b0906",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Catálogo", "url": "/#catalogo", "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Falar no WhatsApp", "url": "/links", "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

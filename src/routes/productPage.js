@@ -236,6 +236,7 @@ function render(siteUrl, product, related) {
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-t"></span><button type="button" id="toast-ver">Ver sacola</button></div>
 
 <script>window.__PRODUTO__ = ${jsonForScript(product)}; window.__RELACIONADOS__ = ${jsonForScript(related)};</script>
+<script src="/assets/js/app.js?v=20261028-1"></script>
 <script src="/assets/js/menu.js?v=20261028-1"></script>
 <script src="/assets/js/atendimento.js?v=20261028-2"></script>
 <script src="/assets/js/sacola.js?v=20261028-2"></script>
@@ -271,6 +272,11 @@ function render(siteUrl, product, related) {
 <link rel="canonical" href="${escapeHTML(canonical)}">
 <link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Essência Natural">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script type="application/ld+json">${jsonForScript(schema)}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

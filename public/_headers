@@ -23,3 +23,10 @@
   Cache-Control: public, max-age=86400
 /assets/team/*
   Cache-Control: public, max-age=86400
+
+# App (PWA): o service worker precisa ser conferido a cada abertura para as
+# atualizações chegarem; o manifesto muda pouco.
+/sw.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: public, max-age=3600

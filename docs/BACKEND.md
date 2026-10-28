@@ -91,7 +91,8 @@ upload/otimização de foto, backup → importação e o servidor Node.
 
 Esquema em `migrations/` (0001 = tabelas da V2; 0002 = estoque e
 segurança; 0003 = fotos guardadas no D1; 0004 = backups automáticos;
-0005 = biblioteca de fornecedores). Na Cloudflare: aplicado pelo deploy
+0005 = biblioteca de fornecedores; 0006 = fotos da biblioteca liberadas;
+0007 = equipe no banco). Na Cloudflare: aplicado pelo deploy
 automático (ou `npm run cf:migrar`). No Node: aplicado ao abrir o banco,
 com registro na tabela `_migrations` (cada arquivo roda uma vez).
 
