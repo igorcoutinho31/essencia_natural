@@ -12,6 +12,9 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé — Sobreloja 215
 
 ## Equipe
+- PENDENTE (28/10/2026): nomes e fotos das vendedoras novas; foto do Ali a
+  enviar pelo painel (`/admin/equipe`). Só o Bassam continua da formação de
+  23/09/2026 (ver `docs/TEAM.md`).
 - **Atualizado 23/09/2026 (fechamento final):** formação atual, nesta
   ordem: Bassam, Nicolly, Larissa, Livia (ver `docs/TEAM.md`). A Tamires
   saiu e foi removida do site. Fotos novas dos quatro entregues pelo

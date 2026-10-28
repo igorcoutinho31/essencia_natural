@@ -5,7 +5,7 @@
     var btn = document.getElementById('nav-toggle');
     var nav = document.getElementById('nav');
     if (!btn || !nav) return;
-    var desktop = window.matchMedia('(min-width: 861px)');
+    var desktop = window.matchMedia('(min-width: 980px)');
 
     function set(aberto){
       btn.setAttribute('aria-expanded', String(aberto));

@@ -1,5 +1,46 @@
 # Arquitetura do site
 
+## V4 — home nova (proposta "D · Essência", aprovada em 28/10/2026)
+Visual: base escura (`#0e0c0a`) com dourado champanhe (`#c8a46a`), e o
+branco-pérola e o lilás do logo só em toques (faixa do topo, card "Doces",
+etiquetas de família, quiz, inicial de quem está sem foto e o rodapé
+pérola). Letras: Cormorant Garamond (títulos), Jost (texto) e Pinyon
+Script (uma palavra por título, como o "natural" do logo). Assinatura: ◆
+entre dois traços dourados (vem do logo). Cores e componentes em
+`public/assets/css/site.css`.
+
+Ordem da home (`public/index.html`), pensada para o celular:
+1. faixa lilás · cabeçalho fixo com logo, menu, busca e sacola;
+2. abertura com vídeo curto das prateleiras reais da loja
+   (`assets/store/prateleiras.mp4`, trecho sem pessoas do vídeo enviado em
+   28/10/2026; foto parada se o aparelho pedir menos movimento ou economia
+   de dados). Não é animação de frames: a regra do hero de 240 frames
+   continua valendo;
+3. busca rápida + atalhos por gênero;
+4. "Escolha pelo cheiro" (4 famílias, agrupadas pelo campo família e pelas
+   notas do cadastro — família vazia nunca é inventada);
+5. "Destaques da loja" (produtos com ★ no painel; sem nenhum, as
+   novidades com foto);
+6. "Mais vendidos" (posição de vendas que a API dá — `salesRank`, nunca a
+   quantidade) + faixa de marcas em dourado que filtra o catálogo;
+7. quiz "Descubra o seu perfume em 4 perguntas" (`assets/js/quiz.js`);
+8. catálogo completo; varejo e atacado (atacado em bloco dourado); loja
+   física com status "aberto agora"; equipe (de `/api/team`); envios e
+   redes; perguntas; chamada final; rodapé pérola;
+9. no celular, barra fixa: Início · Catálogo · Sacola · WhatsApp.
+
+Scripts: `inicio.js` (head), `catalogo.js` (cartão e filtros, expõe
+`window.ENCatalogo`), `home.js` (vídeo, busca, famílias, destaques, mais
+vendidos, barra), `quiz.js`, `marcas.js`, `atendimento.js`, `sacola.js`,
+`vida.js` (rolagem e aparecer ao rolar), `menu.js`, `app.js`. A página de
+produto (`src/routes/productPage.js` + `product.css`) usa o mesmo
+cabeçalho, rodapé e barra.
+
+Localização: na sobreloja 215 da Galeria Pagé, a Essência Natural é o
+lado direito do espaço; a fachada diz "Shopping Club" (informado pelo
+responsável pelo site em 28/10/2026).
+
+
 ## Ativos confirmados
 
 ### Sequência de 240 frames — REMOVIDA

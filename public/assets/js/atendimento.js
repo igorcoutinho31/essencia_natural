@@ -53,6 +53,14 @@
       }).filter(function(p){ return p.nome; });
     }
 
+    /* sem foto ainda: a inicial do nome, em dourado */
+    function inicial(nome){
+      var s = document.createElement('span');
+      s.className = 'pessoa-inicial'; s.setAttribute('aria-hidden', 'true');
+      s.textContent = String(nome || '?').trim().charAt(0).toUpperCase();
+      return s;
+    }
+
     /* monta a seção "Nossa equipe" da home com a lista do painel */
     function montarSecao(pessoas){
       var ul = document.querySelector('#equipe .equipe-grid');
@@ -65,7 +73,7 @@
           img.src = p.foto; img.alt = p.nome + ', da equipe da Essência Natural';
           img.width = 900; img.height = 1200; img.loading = 'lazy'; img.decoding = 'async';
           li.appendChild(img);
-        }
+        } else li.appendChild(inicial(p.nome));
         var nome = document.createElement('p'); nome.className = 'pessoa-nome'; nome.textContent = p.nome;
         li.appendChild(nome);
         ul.appendChild(li);
@@ -114,7 +122,7 @@
           var img = document.createElement('img');
           img.src = p.foto; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
           li.appendChild(img);
-        }
+        } else li.appendChild(inicial(p.nome));
 
         var nome = document.createElement('p');
         nome.className = 'at-nome'; nome.textContent = p.nome;

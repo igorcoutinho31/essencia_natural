@@ -30,3 +30,5 @@
   Cache-Control: no-cache
 /manifest.webmanifest
   Cache-Control: public, max-age=3600
+/assets/store/*
+  Cache-Control: public, max-age=604800

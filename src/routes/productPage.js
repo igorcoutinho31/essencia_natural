@@ -80,6 +80,7 @@ function render(siteUrl, product, related) {
   const title = `${nomeCompleto} | ${SITE_NAME}`;
   const descBase = descricaoUtil(product) ||
     `${product.name}${product.brand ? ', ' + product.brand : ''} — perfumaria árabe e importada na Galeria Pagé, São Paulo. Consulte disponibilidade pelo WhatsApp.`;
+  const meta = [product.concentration, product.volume, product.family].filter(Boolean).join(' · ');
   const priceHTML = product.price != null
     ? `<p class="pd-preco">${product.comparePrice > product.price ? `<span class="pd-preco-de">R$ ${Number(product.comparePrice).toFixed(2).replace('.', ',')}</span>` : ''}R$ ${Number(product.price).toFixed(2).replace('.', ',')}</p>`
     : '<p class="pd-preco pd-preco--consulte">Consulte o valor</p>';
@@ -111,26 +112,30 @@ function render(siteUrl, product, related) {
   const galeria = `<div class="pd-galeria">${images.map((src, i) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(product.name)}" ${i === 0 ? '' : 'loading="lazy"'} width="480" height="620" ${IMG_FALLBACK_ATTR}>`).join('')}</div>`;
 
   const body = `
+<p class="faixa">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé<span class="faixa-x"> <i aria-hidden="true">◆</i> Envios para todo o Brasil</span></p>
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="/#hero" aria-label="Essência Natural — início">
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+    <a class="brand" href="/" aria-label="Essência Natural — início">
+      <img src="/assets/images/logo-essencia-natural.webp" alt="" width="44" height="44">
       <span class="name">Essência Natural</span>
-      <span class="ar" lang="ar" dir="rtl">العطور</span>
     </a>
     <nav class="nav" id="nav" aria-label="Navegação principal">
+      <a href="/#destaques">Destaques</a>
       <a href="/#catalogo">Catálogo</a>
-      <a href="/#marcas">Marcas</a>
+      <a href="/#mais-vendidos">Mais vendidos</a>
       <a href="/#canais">Atacado</a>
-      <a href="/#envios">Envios</a>
-      <a href="/#loja">Loja</a>
-      <a class="header-cta" href="${waLink('Olá! Vim pelo site da Essência Natural.')}" target="_blank" rel="noopener">Falar no WhatsApp</a>
+      <a href="/#loja">A loja</a>
+      <a href="/#faq">Dúvidas</a>
+      <a class="btn btn-primary header-cta" href="${waLink('Olá! Vim pelo site da Essência Natural.')}" target="_blank" rel="noopener">Falar no WhatsApp</a>
     </nav>
     <div class="header-acoes">
+      <a class="icon-btn" href="/#catalogo" aria-label="Buscar no catálogo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></a>
       <button class="bag-btn" id="bag-btn" type="button" aria-haspopup="dialog" aria-label="Abrir sacola">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8.5h13l1 11.5h-15l1-11.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
         <span class="bag-n" id="bag-n" hidden>0</span>
       </button>
-      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+      <a class="btn btn-primary btn-sm" href="${waLink('Olá! Vim pelo site da Essência Natural.')}" target="_blank" rel="noopener">WhatsApp</a>
     </div>
   </div>
   <div class="progresso" id="progresso" aria-hidden="true"></div>
@@ -144,6 +149,7 @@ function render(siteUrl, product, related) {
       <div class="pd-info">
         ${product.brand ? `<p class="pd-marca">${escapeHTML(product.brand)}</p>` : ''}
         <h1 class="pd-nome">${escapeHTML(product.name)}</h1>
+        ${meta ? `<p class="pd-meta">${escapeHTML(meta)}</p>` : ''}
         <span class="pd-selo ${stockBadgeClass(product.stockStatus)}">${escapeHTML(product.stockLabel)}</span>
         ${priceHTML}
         ${notesList(product.notes)}
@@ -158,6 +164,11 @@ function render(siteUrl, product, related) {
               : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + nomeCompleto + '.'
           )}" target="_blank" rel="noopener">Consultar no WhatsApp</a>
         </div>
+        <ul class="pd-garantias" role="list">
+          <li>A equipe confirma valor e disponibilidade pelo WhatsApp</li>
+          <li>Retire na Galeria Pagé ou receba em casa</li>
+          <li>Loja aberta todos os dias da semana</li>
+        </ul>
       </div>
     </div>
 
@@ -169,20 +180,20 @@ function render(siteUrl, product, related) {
   </div>
 </main>
 
-<section class="rodape" id="rodape">
-  <div class="container">
-    <footer class="foot">
-      <div>
-        <span class="brand"><span class="name">Essência Natural</span></span>
+<footer class="rodape" id="rodape">
+  <div class="wrap">
+    <div class="foot">
+      <div class="foot-marca">
+        <img src="/assets/images/logo-essencia-natural.webp" alt="Essência Natural — Perfumaria, perfumes árabes" width="96" height="96" loading="lazy">
+        <p class="slogan">Sua essência. <span class="script">Sua identidade.</span></p>
         <address>Rua Comendador Afonso Kherlakian, 79<br>Galeria Pagé — Sobreloja 215<br>Centro — São Paulo, SP</address>
       </div>
       <div>
         <h3>Navegue</h3>
         <ul>
           <li><a href="/#catalogo">Catálogo</a></li>
-          <li><a href="/#marcas">Marcas</a></li>
+          <li><a href="/#mais-vendidos">Mais vendidos</a></li>
           <li><a href="/#canais">Varejo e atacado</a></li>
-          <li><a href="/#envios">Envios</a></li>
           <li><a href="/#loja">Loja física</a></li>
           <li><a href="/#faq">Perguntas frequentes</a></li>
         </ul>
@@ -195,7 +206,7 @@ function render(siteUrl, product, related) {
           <li><a href="https://www.tiktok.com/@essencia.natura" target="_blank" rel="noopener">TikTok @essencia.natura</a></li>
         </ul>
       </div>
-    </footer>
+    </div>
     <div class="foot-base">
       <span>&copy; 2026 Essência Natural — Perfumaria.</span>
       <span>Perfumes árabes e importados — São Paulo, SP</span>
@@ -203,7 +214,14 @@ function render(siteUrl, product, related) {
     </div>
     <p class="foot-credito">Desenvolvido por <a href="https://www.instagram.com/itechsolutionsofc?stkn=M2NnazJrd2Z4MDdy&amp;utm_source=qr" target="_blank" rel="noopener noreferrer">ITech Solutions</a></p>
   </div>
-</section>
+</footer>
+
+<nav class="barra-app" aria-label="Atalhos">
+  <a href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg>Início</a>
+  <a href="/#catalogo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Catálogo</a>
+  <button type="button" data-abrir-sacola><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8.5h13l1 11.5h-15l1-11.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>Sacola<span class="bag-n" data-bag-n hidden>0</span></button>
+  <a class="wa" href="${waLink('Olá! Vim pelo site da Essência Natural.')}" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.65 4.56 1.78 6.45L4 29l7.72-1.72a11.94 11.94 0 0 0 4.3.8h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.64 3 16.02 3Z"/></svg>WhatsApp</a>
+</nav>
 
 <dialog class="bag" id="sacola" aria-labelledby="sac-titulo">
   <div class="bag-topo"><h2 id="sac-titulo">Sua sacola</h2><button class="bag-fechar" id="sac-fechar" type="button" aria-label="Fechar sacola">&times;</button></div>
@@ -237,10 +255,11 @@ function render(siteUrl, product, related) {
 
 <script>window.__PRODUTO__ = ${jsonForScript(product)}; window.__RELACIONADOS__ = ${jsonForScript(related)};</script>
 <script src="/assets/js/app.js?v=20261028-1"></script>
-<script src="/assets/js/menu.js?v=20261028-1"></script>
-<script src="/assets/js/atendimento.js?v=20261028-2"></script>
-<script src="/assets/js/sacola.js?v=20261028-2"></script>
-<script src="/assets/js/vida.js?v=20261028-1"></script>
+<script src="/assets/js/menu.js?v=20261029-1"></script>
+<script src="/assets/js/atendimento.js?v=20261029-1"></script>
+<script src="/assets/js/sacola.js?v=20261029-1"></script>
+<script src="/assets/js/vida.js?v=20261029-1"></script>
+<script src="/assets/js/home.js?v=20261029-1"></script>
 <script>
   (function(){
     if (window.ENSacola) window.ENSacola.catalogo([window.__PRODUTO__].concat(window.__RELACIONADOS__));
@@ -280,9 +299,9 @@ function render(siteUrl, product, related) {
 <script type="application/ld+json">${jsonForScript(schema)}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/css/site.css?v=20261028-1">
-<link rel="stylesheet" href="/assets/css/product.css?v=20261028-1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="/assets/css/site.css?v=20261029-1">
+<link rel="stylesheet" href="/assets/css/product.css?v=20261029-1">
 </head>
 <body>
 ${body}
@@ -300,7 +319,7 @@ function jsonForScript(value) {
 export async function productPage(ctx, slug) {
   const data = await catalog.getPublicProductPage(ctx.db, slug, 4);
   if (!data) {
-    return html(404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20261028-1"></head><body style="padding:80px 24px;text-align:center;background:#0b0906;color:#f4ecd8;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
+    return html(404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20261029-1"></head><body style="padding:80px 24px;text-align:center;background:#0e0c0a;color:#f3ede4;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
   }
   return render(ctx.config.siteUrl, data.product, data.related);
 }

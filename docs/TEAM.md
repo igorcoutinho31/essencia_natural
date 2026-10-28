@@ -3,7 +3,19 @@
 A equipe da loja é real e deve aparecer no site — a seção NÃO deve ser
 reduzida a uma única pessoa.
 
-## Integrantes confirmados (formação final, 23/09/2026)
+## Mudança de equipe (informada em 28/10/2026)
+Da formação abaixo, **só o Bassam continua**. Entrou o **Ali** (irmão do
+Bassam; há foto dele com o responsável pelo site). Entraram também
+vendedoras novas, ainda **sem nome confirmado e sem foto** (pendente em
+`docs/TODO-VERIFY.md`). A loja ajusta tudo em `/admin/equipe`: esconder ou
+remover Nicolly, Larissa e Livia, adicionar o Ali com a foto e as novas
+integrantes quando os nomes chegarem. Sem foto, o site mostra a inicial
+do nome em dourado.
+
+A lista de reserva escrita em `public/index.html` (usada só se a API
+falhar) já traz apenas o Bassam.
+
+## Integrantes confirmados (formação de 23/09/2026 — desatualizada, ver acima)
 Ordem de exibição no site (seção "Nossa equipe" e etapa "Escolher
 atendimento" da sacola):
 

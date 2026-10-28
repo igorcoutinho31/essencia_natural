@@ -1,9 +1,9 @@
-  /* ---- catálogo real: agora vem da API (/api/products), não mais de um
-     arquivo estático. O servidor já decide o que é público (só produtos
-     ativos), calcula o status de estoque ("Em estoque" / "Últimas
-     unidades" / "Indisponível" — nunca o número exato) e resolve a marca.
-     Preço nunca é inventado aqui: se `price` vier vazio, mostramos
-     "Consulte" em vez de um valor. */
+  /* ---- catálogo: vem da API (/api/products) ----
+     O servidor decide o que é público (só produtos publicados) e o site
+     mostra sempre "Consulte disponibilidade". Preço nunca é inventado: sem
+     `price`, aparece "Consulte". Este arquivo também empresta o cartão de
+     produto e os filtros para o resto da home (window.ENCatalogo), usados
+     pela vitrine, pelo "Mais vendidos", pelas famílias e pelo quiz. */
   (function catalogo(){
     var grid    = document.getElementById('cat-grid');
     var status  = document.getElementById('cat-status');
@@ -14,9 +14,9 @@
     var ordemEl = document.getElementById('cat-ordem');
     var marcaEl = document.getElementById('cat-marca');
     var generoEl= document.getElementById('cat-genero');
-    // Filtro "Só em estoque" saiu da página na regra de 28/10/2026 (site sempre
-    // mostra "Consulte disponibilidade"); o código segue tolerando a ausência.
-    var estoqueEl = document.getElementById('cat-so-estoque');
+    var famBox  = document.getElementById('cat-familia');
+    var famTxt  = document.getElementById('cat-familia-t');
+    var famX    = document.getElementById('cat-familia-x');
     var moreWrap= document.getElementById('cat-more');
     var moreBtn = document.getElementById('cat-mais');
     var pd      = document.getElementById('pd');
@@ -28,12 +28,23 @@
     var WA_PADRAO = '5511949614608';
     var PLACEHOLDER = '/assets/images/placeholder-produto.svg';
     var WA_SVG = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.65 4.56 1.78 6.45L4 29l7.72-1.72a11.94 11.94 0 0 0 4.3.8h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.64 3 16.02 3Zm0 21.86h-.01a9.9 9.9 0 0 1-5.05-1.39l-.36-.21-4.58 1.02 1.04-4.47-.24-.37a9.86 9.86 0 0 1-1.5-5.42c0-5.46 4.44-9.9 9.9-9.9 5.45 0 9.88 4.44 9.88 9.9 0 5.46-4.43 9.84-9.08 9.84Zm5.42-7.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.36-1.46-.87-.78-1.46-1.74-1.63-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.47 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.22 5.1 4.5.71.3 1.27.49 1.7.63.72.23 1.36.2 1.88.12.57-.08 1.76-.72 2-1.42.24-.7.24-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>';
-    var ICON_MAIS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
-    var ICON_OK   = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var ICON_SACOLA = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8.5h13l1 11.5h-15l1-11.5Z"/><path d="M12 11.5v5M9.5 14h5"/></svg>';
+    var ICON_OK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-    var produtos = [], wa = WA_PADRAO, marcas = [];
+    /* Famílias olfativas da home. A família vem do cadastro (campo
+       "família" e notas); o site só agrupa por palavras-chave — nunca
+       inventa a família de um produto que não tem esses dados. */
+    var FAMILIAS = {
+      amadeirado: { nome:'Oud e amadeirados', tag:'Amadeirado', chaves:['oud','amadeir','madeira','wood','couro','leather','especiad','spic','oriental','ambar','amber','incenso','tabaco','sandalo','patchouli','vetiver','resin'] },
+      doce:       { nome:'Doces e gourmand',  tag:'Doce',       chaves:['gourmand','doce','baunilha','vanil','caramel','chocolat','praline','tamara','frutad','frut','cafe','coco','mel','acucar'], lilas:true },
+      fresco:     { nome:'Frescos e cítricos',tag:'Fresco',     chaves:['citric','fresc','aquat','marin','aromat','verde','limao','bergamot','menta','lavanda','oceanic'] },
+      floral:     { nome:'Florais',           tag:'Floral',     chaves:['floral','flor','rosa','jasmim','jasmin','orquidea','peonia','lirio','tuberosa','violeta'], lilas:true }
+    };
+
+    var produtos = [], wa = WA_PADRAO;
     var filtro = 'todos', termo = '', ordem = 'catalogo', mostrados = 0, jaPintados = 0;
-    var fMarca = '', fGenero = '', soEstoque = false;
+    var fMarca = '', fGenero = '', fFamilia = '';
+    var prontos = [];
 
     function el(tag, cls, txt){
       var e = document.createElement(tag);
@@ -42,46 +53,52 @@
       return e;
     }
     function norm(t){ return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
-    /* Sem preço: mensagem exata pedida (fechamento V2) — pergunta pelo
-       VALOR, porque é isso que falta. Com preço: mensagem genérica de
-       interesse, que serve tanto pra quem quer comprar quanto pra quem só
-       quer confirmar disponibilidade. "produto", não "perfume": o catálogo
-       tem itens que não são perfume (ex.: body cream). */
+
+    function familiaDe(p){
+      if (p.__fam !== undefined) return p.__fam;
+      var base = norm(p.family);
+      var notas = norm([p.notes && p.notes.topo, p.notes && p.notes.coracao, p.notes && p.notes.fundo].join(' '));
+      var melhor = null, pontos = 0;
+      Object.keys(FAMILIAS).forEach(function(k){
+        var n = 0;
+        FAMILIAS[k].chaves.forEach(function(c){ if (base.indexOf(c) > -1) n += 3; if (notas.indexOf(c) > -1) n += 1; });
+        if (n > pontos) { pontos = n; melhor = k; }
+      });
+      p.__fam = melhor;
+      return melhor;
+    }
+
+    function nomeCompleto(p){ return [p.brand, p.name, p.volume].filter(Boolean).join(' '); }
     function linkWhatsApp(p){
-      var nome = p ? [p.brand, p.name, p.volume].filter(Boolean).join(' ') : '';
       var msg = p && !p.price
-        ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + nome + '.'
-        : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + nome + '.';
+        ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + nomeCompleto(p) + '.'
+        : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + nomeCompleto(p) + '.';
       return 'https://wa.me/' + wa + '?text=' + encodeURIComponent(msg);
     }
-    function botaoWhatsApp(p){
+    function botaoWhatsApp(p, texto){
       var a = el('a','prod-wa');
       a.href = linkWhatsApp(p); a.target = '_blank'; a.rel = 'noopener';
-      a.setAttribute('aria-label','Consultar ' + p.name + ' no WhatsApp');
+      a.setAttribute('aria-label','Consultar ' + nomeCompleto(p) + ' no WhatsApp');
       a.innerHTML = WA_SVG;
-      a.appendChild(document.createTextNode('Consultar no WhatsApp'));
+      a.appendChild(document.createTextNode(texto || (p.price ? 'Comprar no WhatsApp' : 'Consultar valor')));
       return a;
     }
-    /* Todo produto publicado pode ir para a sacola de orçamento: o site
-       mostra "Consulte disponibilidade" e a equipe confirma preço e
-       disponibilidade pelo WhatsApp (regra de 28/10/2026, ver
-       docs/CATALOGO.md). "indisponivel" segue bloqueado por segurança. */
     function podeComprar(p){ return p.active !== false && p.stockStatus !== 'indisponivel'; }
     function botaoAdd(p){
       var b = el('button','prod-add');
       b.type = 'button';
       b.setAttribute('aria-label','Adicionar ' + p.name + ' à sacola');
-      b.innerHTML = ICON_MAIS;
+      b.innerHTML = ICON_SACOLA;
       b.addEventListener('click', function(ev){
         ev.stopPropagation();
         if (!window.ENSacola) return;
         window.ENSacola.add(p);
         b.classList.add('ok'); b.innerHTML = ICON_OK;
-        setTimeout(function(){ b.classList.remove('ok'); b.innerHTML = ICON_MAIS; }, 1300);
+        setTimeout(function(){ b.classList.remove('ok'); b.innerHTML = ICON_SACOLA; }, 1300);
       });
       return b;
     }
-    function precoTexto(p){ return p.price ? window.ENbrl(p.price) : 'Consulte'; }
+    function precoTexto(p){ return p.price ? window.ENbrl(p.price) : 'Consulte disponibilidade'; }
 
     function descricaoUtil(p){
       var linhas = String(p.description || '').split('\n').filter(function(l){ return !/^\s*notas\s+de\s/i.test(l); });
@@ -94,13 +111,12 @@
     }
 
     /* ---- filtros ---- */
-    /* chave da categoria: ignora maiúsculas, acentos, espaços extras e o
-       "s" do plural — mesma regra do servidor (catalogService). O servidor
-       já grava tudo unificado; isto é só a rede de segurança pra nunca
-       aparecer "Perfume" duas vezes nos filtros. */
     function catKey(c){
-      return String(c || '').replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      return String(c || '').replace(/[​-‍⁠﻿­]/g, '').normalize('NFD').replace(/[̀-ͯ]/g, '')
         .toLowerCase().replace(/\s+/g, ' ').trim().replace(/s$/, '');
+    }
+    function marcarChips(){
+      [].forEach.call(chipsEl.children, function(c){ c.setAttribute('aria-pressed', String(c.dataset.cat === filtro)); });
     }
     function montarChips(){
       var contagens = {}, rotulo = {}, ordemCats = [];
@@ -109,21 +125,18 @@
         if (!(k in contagens)) { contagens[k]=0; rotulo[k]=String(p.category).replace(/\s+/g,' ').trim(); ordemCats.push(k); }
         contagens[k]++;
       });
+      ordemCats.sort(function(a,b){ return contagens[b] - contagens[a]; });
       var lista = [['todos','Todos',produtos.length]];
       ordemCats.forEach(function(k){ if (contagens[k] > 0) lista.push([k, rotulo[k], contagens[k]]); });
       chipsEl.textContent = '';
       lista.forEach(function(item){
         var b = el('button','chip'); b.type = 'button'; b.dataset.cat = item[0];
-        b.setAttribute('aria-pressed', String(item[0] === filtro));
         b.appendChild(document.createTextNode(item[1]));
         b.appendChild(el('span','n', String(item[2])));
-        b.addEventListener('click', function(){
-          filtro = item[0];
-          [].forEach.call(chipsEl.children, function(c){ c.setAttribute('aria-pressed', String(c.dataset.cat === filtro)); });
-          reset();
-        });
+        b.addEventListener('click', function(){ filtro = item[0]; marcarChips(); reset(); });
         chipsEl.appendChild(b);
       });
+      marcarChips();
     }
     function montarMarcas(){
       if (!marcaEl) return;
@@ -133,6 +146,12 @@
       marcaEl.textContent = '';
       marcaEl.appendChild(el('option', null, 'Todas as marcas')).value = '';
       lista.forEach(function(par){ var o = el('option', null, par[1]); o.value = par[0]; marcaEl.appendChild(o); });
+      marcaEl.value = fMarca;
+    }
+    function mostrarFamilia(){
+      if (!famBox) return;
+      famBox.classList.toggle('on', !!fFamilia);
+      if (fFamilia) famTxt.textContent = FAMILIAS[fFamilia].nome;
     }
 
     function listaAtual(){
@@ -141,9 +160,9 @@
         if (filtro !== 'todos' && catKey(p.category) !== filtro) return false;
         if (fMarca && p.brandSlug !== fMarca) return false;
         if (fGenero && p.gender !== fGenero) return false;
-        if (soEstoque && !podeComprar(p)) return false;
+        if (fFamilia && familiaDe(p) !== fFamilia) return false;
         if (!t) return true;
-        return norm(p.name).indexOf(t) > -1 || norm(p.brand).indexOf(t) > -1;
+        return norm(p.name).indexOf(t) > -1 || norm(p.brand).indexOf(t) > -1 || norm(p.family).indexOf(t) > -1;
       });
       if (ordem === 'az') out = out.slice().sort(function(x,y){ return String(x.name).localeCompare(String(y.name),'pt-BR',{sensitivity:'base'}); });
       else if (ordem === 'preco_asc' || ordem === 'preco_desc') {
@@ -153,22 +172,18 @@
         out = comPreco.concat(semPreco);
       } else if (ordem === 'destaques') {
         out = out.slice().sort(function(a,b){ return (b.featured?1:0) - (a.featured?1:0); });
+      } else if (ordem === 'vendidos') {
+        out = out.slice().sort(function(a,b){ return (a.salesRank || 1e9) - (b.salesRank || 1e9); });
       }
       return out;
     }
 
-    function card(p){
-      var art = el('article','prod');
-      if (p.stockStatus === 'indisponivel') art.classList.add('prod-indisponivel');
-
-      var media = el('div','prod-media');
+    function imagem(p, cls){
       var img = new Image();
-      img.alt = p.name; img.loading = 'lazy'; img.decoding = 'async';
-      img.width = 700; img.height = 933;
+      img.alt = nomeCompleto(p); img.loading = 'lazy'; img.decoding = 'async';
+      img.width = 600; img.height = 750;
+      if (cls) img.className = cls;
       var ok = function(){ img.classList.add('ok'); };
-      // Nunca deixa imagem quebrada: se o arquivo real falhar (apagado do
-      // disco, path errado etc.), troca pro placeholder oficial em vez de
-      // mostrar o ícone de imagem quebrada do navegador.
       img.addEventListener('error', function(){
         if (img.src.indexOf(PLACEHOLDER) === -1) { img.src = PLACEHOLDER; return; }
         ok();
@@ -176,17 +191,27 @@
       img.addEventListener('load', ok);
       img.src = p.image || PLACEHOLDER;
       if (img.complete) ok();
-      media.appendChild(img);
+      return img;
+    }
+
+    function card(p){
+      var art = el('article','prod');
+      if (p.stockStatus === 'indisponivel') art.classList.add('prod-indisponivel');
+
+      var media = el('div','prod-media');
+      var link = el('a','prod-link');
+      link.href = '/produto/' + p.slug;
+      link.setAttribute('aria-label', 'Ver ' + nomeCompleto(p));
+      link.appendChild(imagem(p));
+      media.appendChild(link);
       if (p.featured) media.appendChild(el('span','prod-destaque','Destaque'));
-      var selo = el('span','prod-selo prod-selo--' + p.stockStatus, p.stockLabel);
-      media.appendChild(selo);
       if (podeComprar(p)) media.appendChild(botaoAdd(p));
       art.appendChild(media);
 
       var body = el('div','prod-body');
-      // Sempre reserva a linha da marca — sem marca confirmada ela fica
-      // vazia (nunca deduzida), mas o nome continua alinhado com os vizinhos.
-      var marca = el('p','prod-marca', p.brand || '\u00a0');
+      var fam = familiaDe(p);
+      if (fam) body.appendChild(el('span','prod-tag' + (FAMILIAS[fam].lilas ? ' prod-tag--lilas' : ''), FAMILIAS[fam].tag));
+      var marca = el('p','prod-marca', p.brand || ' ');
       if (!p.brand) marca.setAttribute('aria-hidden','true');
       body.appendChild(marca);
 
@@ -197,43 +222,31 @@
       h3.appendChild(trig);
       body.appendChild(h3);
 
-      var meta = [p.volume, p.category].filter(Boolean).join(' · ');
+      var meta = [p.concentration, p.volume].filter(Boolean).join(' · ') || p.category || '';
       if (meta) body.appendChild(el('p','prod-cat', meta));
-
       body.appendChild(el('p','prod-preco' + (p.price ? '' : ' prod-preco--consulte'), precoTexto(p)));
-
-      var acoes = el('div','prod-acoes');
-      var ver = el('a','prod-ver','Ver produto'); ver.href = '/produto/' + p.slug;
-      acoes.appendChild(ver);
-      body.appendChild(acoes);
 
       var cta = el('div','prod-cta');
       cta.appendChild(botaoWhatsApp(p));
       body.appendChild(cta);
-
       art.appendChild(body);
       return art;
     }
 
     function abrirDetalhes(p){
-      if (!pd || typeof pd.showModal !== 'function') return;
+      if (!pd || typeof pd.showModal !== 'function') { location.href = '/produto/' + p.slug; return; }
       pdGrid.textContent = '';
       var media = el('div','pd-media');
-      var img = new Image(); img.alt = p.name; img.decoding = 'async';
-      img.addEventListener('error', function(){
-        if (img.src.indexOf(PLACEHOLDER) === -1) img.src = PLACEHOLDER;
-      });
-      img.src = p.image || PLACEHOLDER;
+      var img = imagem(p); img.loading = 'eager';
       media.appendChild(img);
       pdGrid.appendChild(media);
 
       var body = el('div','pd-body');
       if (p.brand) body.appendChild(el('p','pd-marca', p.brand));
       body.appendChild(el('h3','pd-nome', p.name));
-      var meta = [p.volume, p.gender, p.category].filter(Boolean).join(' · ');
+      var meta = [p.concentration, p.volume, p.gender, p.category].filter(Boolean).join(' · ');
       if (meta) body.appendChild(el('p','pd-cat', meta));
       body.appendChild(el('p','pd-preco', precoTexto(p)));
-      body.appendChild(el('p','pd-selo pd-selo--' + p.stockStatus, p.stockLabel));
       var desc = descricaoUtil(p);
       if (desc) body.appendChild(el('p','pd-desc', desc));
       var notas = paresDeNotas(p);
@@ -244,13 +257,13 @@
       }
       var cta = el('div','pd-cta');
       if (podeComprar(p)) {
-        var addBtn = el('button','btn btn-primary pd-add','Adicionar à sacola');
+        var addBtn = el('button','btn btn-primary btn-lg pd-add','Adicionar à sacola');
         addBtn.type = 'button';
         addBtn.addEventListener('click', function(){ if (window.ENSacola) window.ENSacola.add(p); pd.close(); });
         cta.appendChild(addBtn);
       }
-      cta.appendChild(botaoWhatsApp(p));
-      var verLink = el('a','pd-ver','Ver página do produto'); verLink.href = '/produto/' + p.slug;
+      cta.appendChild(botaoWhatsApp(p, 'Falar no WhatsApp'));
+      var verLink = el('a','pd-ver','Ver página completa do produto'); verLink.href = '/produto/' + p.slug;
       cta.appendChild(verLink);
       body.appendChild(cta);
       pdGrid.appendChild(body);
@@ -258,6 +271,12 @@
     }
     if (pdFechar) pdFechar.addEventListener('click', function(){ pd.close(); });
     if (pd) pd.addEventListener('click', function(ev){ if (ev.target === pd) pd.close(); });
+
+    function limparTudo(){
+      termo=''; busca.value=''; limpar.hidden=true; filtro='todos'; fMarca=''; fGenero=''; fFamilia='';
+      if (marcaEl) marcaEl.value=''; if (generoEl) generoEl.value='';
+      marcarChips(); mostrarFamilia();
+    }
 
     function pintar(){
       var lista = listaAtual();
@@ -267,12 +286,7 @@
         var vazio = el('p','cat-vazio');
         vazio.appendChild(document.createTextNode('Nenhum produto encontrado. '));
         var b = el('button', null, 'Limpar filtros'); b.type = 'button';
-        b.addEventListener('click', function(){
-          termo=''; busca.value=''; limpar.hidden=true; filtro='todos'; fMarca=''; fGenero=''; soEstoque=false;
-          if (marcaEl) marcaEl.value=''; if (generoEl) generoEl.value=''; if (estoqueEl) estoqueEl.checked=false;
-          [].forEach.call(chipsEl.children, function(c){ c.setAttribute('aria-pressed', String(c.dataset.cat === 'todos')); });
-          reset();
-        });
+        b.addEventListener('click', function(){ limparTudo(); reset(); });
         vazio.appendChild(b);
         grid.appendChild(vazio);
         contagem.textContent = 'Nenhum produto encontrado.';
@@ -282,7 +296,7 @@
       var fim = Math.min(mostrados, lista.length);
       for (var i = 0; i < fim; i++) {
         var c = card(lista[i]);
-        if (i >= jaPintados) c.style.setProperty('--d', ((i - jaPintados) % 12) * 0.04 + 's');
+        if (i >= jaPintados) c.style.setProperty('--d', ((i - jaPintados) % 12) * 0.05 + 's');
         else c.style.animation = 'none';
         frag.appendChild(c);
       }
@@ -301,7 +315,33 @@
     ordemEl.addEventListener('change', function(){ ordem = ordemEl.value; reset(); });
     if (marcaEl) marcaEl.addEventListener('change', function(){ fMarca = marcaEl.value; reset(); });
     if (generoEl) generoEl.addEventListener('change', function(){ fGenero = generoEl.value; reset(); });
-    if (estoqueEl) estoqueEl.addEventListener('change', function(){ soEstoque = estoqueEl.checked; reset(); });
+    if (famX) famX.addEventListener('click', function(){ fFamilia = ''; mostrarFamilia(); reset(); });
+
+    // esqueletos enquanto a API responde
+    for (var s = 0; s < 4; s++) grid.appendChild(el('div','esqueleto'));
+
+    window.ENCatalogo = {
+      card: card,
+      familias: FAMILIAS,
+      familiaDe: familiaDe,
+      abrirDetalhes: abrirDetalhes,
+      whatsapp: function(){ return wa; },
+      produtos: function(){ return produtos; },
+      /* aplica filtros vindos da home e leva o cliente ao catálogo */
+      filtrar: function(f){
+        f = f || {};
+        limparTudo();
+        if (f.termo) { termo = String(f.termo); busca.value = termo; limpar.hidden = false; }
+        if (f.genero) { fGenero = f.genero; if (generoEl) generoEl.value = f.genero; }
+        if (f.marca) { fMarca = f.marca; if (marcaEl) marcaEl.value = f.marca; }
+        if (f.familia && FAMILIAS[f.familia]) { fFamilia = f.familia; }
+        mostrarFamilia();
+        reset();
+        var alvo = document.getElementById('catalogo');
+        if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      },
+      pronto: function(cb){ if (produtos.length) cb(produtos); else prontos.push(cb); }
+    };
 
     fetch('/api/products')
       .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -314,8 +354,11 @@
         montarMarcas();
         if (window.ENSacola) window.ENSacola.catalogo(produtos);
         reset();
+        prontos.splice(0).forEach(function(cb){ try { cb(produtos); } catch (e) {} });
       })
       .catch(function(err){
-        status.innerHTML = 'Não foi possível carregar o catálogo (' + String(err && err.message || err) + ').<br>Tente recarregar a página em alguns instantes.';
+        grid.textContent = '';
+        status.innerHTML = 'Não foi possível carregar o catálogo agora.<br>Tente recarregar a página em alguns instantes.';
+        if (window.console) console.warn('catálogo:', err);
       });
   })();
