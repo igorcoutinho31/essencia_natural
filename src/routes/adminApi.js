@@ -6,7 +6,7 @@ import * as auth from '../auth.js';
 import * as catalog from '../services/catalog.js';
 import * as inventory from '../services/inventory.js';
 import * as olisek from '../services/olisek.js';
-import { exportBackup } from '../services/backup.js';
+import { exportDataJSON, readSnapshotJSON, trashUpload } from '../services/autoBackup.js';
 import { optimizeImage } from '../images.js';
 import { json, readJson, HttpError } from '../http.js';
 import { decodeImageDataUrl, randomId } from '../util.js';
@@ -207,18 +207,30 @@ export async function syncAllOlisek(ctx) {
   return json(200, { report });
 }
 
-export async function backup(ctx) {
-  requireAdmin(ctx);
-  const data = await exportBackup(ctx.db, ctx.storage);
-  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-  return new Response(JSON.stringify(data), {
+function jsonDownload(text, filename) {
+  return new Response(text, {
     status: 200,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Content-Disposition': `attachment; filename="essencia-natural-backup-${stamp}.json"`,
+      'Content-Disposition': `attachment; filename="${filename}"`,
       'Cache-Control': 'no-store',
     },
   });
+}
+
+/** Cópia dos dados de agora (sem as fotos — ver docs/BACKEND.md, "Backup"). */
+export async function backup(ctx) {
+  requireAdmin(ctx);
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  return jsonDownload(await exportDataJSON(ctx.db), `essencia-natural-backup-${stamp}.json`);
+}
+
+/** Uma das cópias automáticas semanais. */
+export async function autoBackupDownload(ctx, id) {
+  requireAdmin(ctx);
+  const text = await readSnapshotJSON(ctx.db, Number(id));
+  if (!text) return json(404, { error: 'not_found' });
+  return jsonDownload(text, `essencia-natural-backup-automatico-${Number(id)}.json`);
 }
 
 // ---------- marcas ----------
@@ -262,11 +274,10 @@ export async function uploadImage(ctx, id) {
 export async function deleteImage(ctx, id, imageId) {
   const filePath = await catalog.removeImage(ctx.db, Number(id), Number(imageId));
   if (!filePath) return json(404, { error: 'image_not_found' });
-  // Só apaga o arquivo se nenhuma outra linha usa o mesmo caminho.
-  const outro = await ctx.db.prepare('SELECT 1 AS x FROM product_images WHERE file_path = ?').bind(filePath).first();
-  if (!outro && filePath.startsWith('/uploads/')) {
-    try { await ctx.storage.delete(filePath.slice('/uploads/'.length)); } catch (e) { console.warn('[uploads] falha ao apagar', filePath, e && e.message); }
-  }
+  // O arquivo não é apagado na hora: vai para a fila de remoção e só some
+  // depois de 90 dias (as cópias automáticas ainda podem citá-lo). Ver
+  // src/services/autoBackup.js.
+  if (filePath.startsWith('/uploads/')) await trashUpload(ctx.db, filePath.slice('/uploads/'.length));
   return json(200, { ok: true });
 }
 

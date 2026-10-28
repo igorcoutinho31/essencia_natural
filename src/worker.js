@@ -12,6 +12,7 @@ import { r2Storage, d1Storage } from './storage.js';
 import { purgeExpired } from './auth.js';
 import { normalizarCategoriasGravadas, syncAllFromOlisek } from './services/catalog.js';
 import { apiConfigured } from './services/olisek.js';
+import { weeklySnapshotIfDue, purgeTrash } from './services/autoBackup.js';
 
 function deps(env, request) {
   return {
@@ -29,12 +30,16 @@ export default {
     return handle(request, deps(env, request));
   },
 
-  /** Cron (wrangler.toml, a cada 30 min): limpeza de sessões vencidas,
-   *  unificação de categorias e — só se OLISEK_AUTO_SYNC=1 — atualização do
-   *  estoque dos produtos com vínculo CONFIRMADO na OliSek. */
+  /** Cron (wrangler.toml, a cada 30 min): cópia semanal automática dos
+   *  dados, remoção definitiva de fotos apagadas há 90+ dias, limpeza de
+   *  sessões vencidas, unificação de categorias e — só se
+   *  OLISEK_AUTO_SYNC=1 — estoque dos vínculos CONFIRMADOS na OliSek. */
   async scheduled(event, env, ctx) {
     const d = deps(env);
     ctx.waitUntil((async () => {
+      const copia = await weeklySnapshotIfDue(d.db);
+      if (copia) console.log('[cron] cópia automática dos dados criada:', copia);
+      await purgeTrash(d.db, d.storage);
       await purgeExpired(d.db);
       await normalizarCategoriasGravadas(d.db);
       if (d.config.olisekAutoSync && apiConfigured(d.config)) {
