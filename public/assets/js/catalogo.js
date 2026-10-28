@@ -14,6 +14,8 @@
     var ordemEl = document.getElementById('cat-ordem');
     var marcaEl = document.getElementById('cat-marca');
     var generoEl= document.getElementById('cat-genero');
+    // Filtro "Só em estoque" saiu da página na regra de 28/10/2026 (site sempre
+    // mostra "Consulte disponibilidade"); o código segue tolerando a ausência.
     var estoqueEl = document.getElementById('cat-so-estoque');
     var moreWrap= document.getElementById('cat-more');
     var moreBtn = document.getElementById('cat-mais');
@@ -60,12 +62,11 @@
       a.appendChild(document.createTextNode('Consultar no WhatsApp'));
       return a;
     }
-    /* Só deixa adicionar à sacola quando o estoque é um número em que a
-       gente confia (em_estoque/ultimas). "Indisponível" (zerado confirmado)
-       e "consulte" (sem vínculo/sem estoque confiável) nunca viram botão de
-       compra direta — ver regras 4 e 5 do fechamento da V2: nunca inventar
-       disponibilidade, e produto zerado nunca some, só bloqueia o carrinho. */
-    function podeComprar(p){ return p.stockStatus === 'em_estoque' || p.stockStatus === 'ultimas'; }
+    /* Todo produto publicado pode ir para a sacola de orçamento: o site
+       mostra "Consulte disponibilidade" e a equipe confirma preço e
+       disponibilidade pelo WhatsApp (regra de 28/10/2026, ver
+       docs/CATALOGO.md). "indisponivel" segue bloqueado por segurança. */
+    function podeComprar(p){ return p.active !== false && p.stockStatus !== 'indisponivel'; }
     function botaoAdd(p){
       var b = el('button','prod-add');
       b.type = 'button';

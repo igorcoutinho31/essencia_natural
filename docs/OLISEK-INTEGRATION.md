@@ -127,6 +127,8 @@ do que foi importado e quando):
   de 0, digite um número à mão em `/admin`, ou eles acumulem vendas reais
   suficientes. **Nenhum dos 7 é apagado do banco** — continuam existindo
   normalmente em `/admin`, no filtro "Ocultos do catálogo".
+  *(Regra substituída em 28/10/2026: hoje aparece no site só o que está
+  publicado, independente de estoque — ver `docs/CATALOGO.md`.)*
 
 - `src/services/olisek.js` já tem uma função `parseReport(texto)`
   que lê um relatório colado (exportado/copiado manualmente da OliSek, em
