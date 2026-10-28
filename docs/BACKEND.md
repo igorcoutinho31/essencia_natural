@@ -117,7 +117,8 @@ do banco grava o saldo no produto. Tipos: `inicial`, `entrada`, `saida`,
 - `/admin/estoque`: saldos, filtros (baixo, zerado, origem não
   confirmada), últimas movimentações, CSV de saldos e de movimentações,
   sincronização em lote com a OliSek e backup completo.
-- O cliente continua vendo só os três selos (ver `docs/CATALOGO.md`).
+- O cliente não vê estoque: o site mostra sempre "Consulte disponibilidade"
+  e só os produtos publicados (ver `docs/CATALOGO.md`).
 
 ## Segurança
 
@@ -191,27 +192,21 @@ imagens ficam 24h em cache. Ao mexer em qualquer `.js` ou `.css`, suba o
 ## Teste final antes de publicar (desktop + mobile)
 
 Roteiro mínimo do **segundo fechamento da V2** (23/09/2026), que trocou o
-antigo modelo de 4 estados/"Consulte disponibilidade" pela regra atual —
-estoque com 3 selos simples + visibilidade separada por `stock`/`sales`
-(ver `docs/CATALOGO.md`). Pensado pra cobrir exatamente essa mudança sem
-virar uma suíte pesada:
+antigo modelo de 4 estados pela regra do fechamento da V2 — atualizado
+para a regra de 28/10/2026: publicado/oculto + "Consulte disponibilidade"
+(ver `docs/CATALOGO.md`):
 
-1. Home carrega, catálogo lista os produtos publicamente visíveis
-   (`stock > 0 || sales >= 10` — hoje só os com estoque, já que não existe
-   dado real de vendas ainda) e nenhum produto oculto do catálogo aparece
-   na busca nem na navegação por marca/categoria.
-2. Produto **com estoque**: abre `/produto/:slug` com o selo certo ("Em
-   estoque" ou "Últimas unidades"), botão "Adicionar à sacola" habilitado,
+1. Home carrega, catálogo lista só os produtos **publicados** e nenhum
+   produto oculto aparece na busca nem na navegação por marca/categoria.
+2. Produto **publicado** (com ou sem estoque): abre `/produto/:slug` com o
+   selo "Consulte disponibilidade", botão "Adicionar à sacola" habilitado,
    botão do WhatsApp com a mensagem "...gostaria de consultar o valor do
    produto [NOME]" quando não há preço, ou a mensagem padrão quando há.
-3. Produto **zerado com 10+ vendas** (hoje não existe nenhum de verdade —
-   simular só numa cópia de teste do banco, nunca em produção): continua
-   aparecendo no catálogo e na página própria, selo "Indisponível no
-   momento", botão de comprar desabilitado, botão de WhatsApp funcionando
-   normalmente pra consulta.
-4. Produto **oculto** (zerado, menos de 10 vendas): não aparece na
+3. Nenhum lugar do site mostra "Em estoque", "Últimas unidades",
+   "Indisponível" nem número de estoque.
+4. Produto **oculto** (desmarcado "Publicado no site"): não aparece na
    listagem pública nem na busca; `/produto/:slug` dele devolve 404;
-   continua existindo em `/admin`, aba "Ocultos do catálogo".
+   continua existindo em `/admin`, aba "Ocultos".
 5. Produto **sem preço**: mostra "Consulte" (nunca "R$ 0,00" nem um valor
    calculado) e o botão de WhatsApp pede o valor, com "produto" no texto
    da mensagem (não mais "perfume").
@@ -224,8 +219,8 @@ virar uma suíte pesada:
 7. Sacola: adicionar um produto disponível, tentar adicionar um
    indisponível (não deve entrar), finalizar pelo WhatsApp e conferir a
    mensagem gerada.
-8. `/admin`: os 10 filtros da lista de produtos (Todos, Em estoque,
-   Estoque baixo, Vendidos, Indisponíveis, Ocultos do catálogo, Sem preço,
+8. `/admin`: os 11 filtros da lista de produtos (Todos, Em estoque,
+   Estoque baixo, Vendidos, Publicados, Ocultos, Estoque zerado, Sem preço,
    Sem imagem, Sem vínculo OliSek, Precisa revisão) mostram contagens condizentes
    entre si e com "Todos"; a vendedora só vê/edita preço, promoção, fotos
    e destaque; a administração vê e edita tudo, incluindo as movimentações de

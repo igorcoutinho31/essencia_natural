@@ -65,8 +65,8 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
   qualquer momento depois disso.
 - `/admin/produtos` — lista com busca (nome, marca ou ID da OliSek) e uma
   barra de abas com contador, na ordem definida no segundo fechamento da
-  V2: `Todos`, `Em estoque`, `Estoque baixo`, `Vendidos`, `Indisponíveis`, `Ocultos do
-  catálogo`, `Sem preço`, `Sem imagem`, `Sem vínculo OliSek`, `Precisa
+  V2 (atualizada em 28/10/2026): `Todos`, `Em estoque`, `Estoque baixo`,
+  `Vendidos`, `Publicados`, `Ocultos`, `Estoque zerado`, `Sem preço`, `Sem imagem`, `Sem vínculo OliSek`, `Precisa
   revisão` (ver `ADMIN_FILTERS` em `src/services/catalog.js`),
   mostrando de cada produto: o vínculo com a OliSek (`confirmado` /
   `provável` / `precisa revisão` / `sem vínculo` — ver

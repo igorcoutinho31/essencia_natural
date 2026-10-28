@@ -48,54 +48,39 @@ vínculo está certo, sem depender de decorar qual produto é qual.
   e para o schema.org `Product` (`offers` só ganha o campo `price` quando
   ele existe de verdade).
 
-## Estoque: nunca o número exato pro cliente, nunca um número inventado
+## Publicado/oculto e "Consulte disponibilidade" (regra vigente)
 
-**Atualizado no segundo fechamento da V2 (23/09/2026):** o selo de
-estoque e a regra de "esse produto aparece no catálogo ou não" viraram
-duas perguntas separadas — antes eram uma coisa só (o antigo estado
-"Consulte disponibilidade"), agora cada uma tem sua própria função em
-`src/services/catalog.js`.
+**Decisão de 28/10/2026 (confirmada pelo responsável pelo site):** o
+catálogo é **independente da OliSek** e funciona como vitrine + sacola de
+orçamento pelo WhatsApp. Por isso:
 
-### 1. Qual selo mostrar (`computeAvailability(row)`)
+1. **Aparece no site só o que a loja publicou** (`active = 1`, checkbox
+   "Publicado no site" no admin, ou em lote). Estoque e vendas **não**
+   decidem mais nada na vitrine — `isPubliclyVisible(row)` em
+   `src/services/catalog.js` olha só o `active`.
+2. **O cliente vê sempre "Consulte disponibilidade"** (`PUBLIC_AVAILABILITY`)
+   — nunca "Em estoque"/"Últimas unidades"/"Indisponível" e nunca o número.
+   O número do sistema pode estar desatualizado; quem confirma é a equipe,
+   no WhatsApp. O JSON-LD da página de produto também não afirma
+   disponibilidade (`InStock`/`OutOfStock`) ao Google.
+3. **Todo produto publicado pode ir para a sacola de orçamento.** O filtro
+   "Só em estoque" saiu da vitrine.
+4. **O estoque continua existindo no `/admin`** — histórico de movimentações,
+   filtros "Estoque baixo" e "Estoque zerado", selo interno pelo número real
+   (`computeAvailability`, limite `STOCK_THRESHOLD.ultimas = 10`). Serve à
+   equipe; não aparece para o cliente.
 
-Olha só o número de `stock` — três estados, nunca o número exato:
+Cuidado combinado com a loja: produto que saiu de linha continua no site
+até alguém **ocultar** — o sistema não esconde sozinho.
 
-| `stock`      | Selo                     |
-|--------------|--------------------------|
-| `0`          | Indisponível no momento  |
-| `1` a `10`   | Últimas unidades         |
-| `11` ou mais | Em estoque               |
+Para voltar a mostrar selos de estoque no futuro (por exemplo, com a OliSek
+sincronizada ou venda direta no site), basta `rowToPublic` voltar a usar
+`computeAvailability(row)` e `isPubliclyVisible` voltar a considerar o
+estoque — o restante já está pronto.
 
-O limite "10" é o único número mágico do sistema e está isolado em uma
-constante (`STOCK_THRESHOLD.ultimas`, topo de `src/services/catalog.js`) —
-mudar o limite é editar um número, não reescrever lógica.
-
-### 2. Se o produto aparece no catálogo público (`isPubliclyVisible(row)`)
-
-```js
-function isPubliclyVisible(row) {
-  return row.stock > 0 || row.sales >= 10;
-}
-```
-
-Um produto só aparece na listagem pública, na página de produto e nos
-relacionados se **tiver estoque OU já tiver vendido 10 ou mais vezes**
-(`sales`, coluna nova — vendas acumuladas, dado real vindo da OliSek,
-nunca estimado, começa em `0` até existir uma importação real de vendas;
-ver `docs/OLISEK-INTEGRATION.md`). Isso dá três casos possíveis:
-
-- **Estoque > 0** → aparece normalmente, com o selo da tabela acima.
-- **Estoque zerado e `sales >= 10`** → continua aparecendo (é um produto
-  que já provou ter saída), mas com o selo "Indisponível no momento", sem
-  botão de comprar — só o link de consultar no WhatsApp.
-- **Estoque zerado e `sales < 10`** → some do catálogo público (a página
-  de produto devolve 404, como se estivesse despublicado) mas **nunca é
-  apagado do banco** — continua existindo normalmente em `/admin`, com o
-  filtro "Ocultos do catálogo" pra achar esses produtos rápido.
-
-`isStockReliable(row)` (vínculo OliSek confirmado/provável ou número
-digitado à mão) continua existindo no código, mas hoje é só informação
-pro admin — não decide mais nada da vitrine pública.
+> **Histórico:** de 23/09 a 28/10/2026 valia a regra do fechamento da V2 —
+> três selos pelo número de estoque e produto oculto quando `stock = 0` e
+> `sales < 10`. Substituída pela regra acima.
 
 ## Foto ausente: sempre um placeholder oficial, nunca uma imagem quebrada
 

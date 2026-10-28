@@ -45,8 +45,10 @@ Instruções para agentes (Claude Code ou outros) trabalhando neste repositório
 - Preço nunca é inventado em lugar nenhum (banco, API, admin, schema.org).
   Sem preço confirmado, o campo fica `null` e a interface mostra
   "Consulte" — nunca um número calculado.
-- Estoque numérico exato nunca é mostrado ao cliente — só os três selos
-  (Em estoque / Últimas unidades / Indisponível), ver `docs/CATALOGO.md`.
+- Estoque nunca é mostrado ao cliente — nem número, nem selo: o site
+  mostra sempre "Consulte disponibilidade". Aparece no site só o que está
+  **publicado** (`active`); estoque/vendas não escondem produto. Ver
+  `docs/CATALOGO.md` (regra de 28/10/2026).
 - Nenhum produto da OliSek é publicado no catálogo sem confirmação humana
   (ver "Curadoria" em `docs/CATALOGO.md`) — nunca automatizar isso sem
   esse passo.

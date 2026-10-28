@@ -20,13 +20,20 @@ export function isStockReliable(row) {
   return false;
 }
 
-/** Visibilidade no catálogo público: estoque > 0 OU 10+ vendas. Nunca
- *  exclui o produto do banco/admin. */
+/** Visibilidade no catálogo público (regra nova, 28/10/2026): aparece só o
+ *  que a loja PUBLICOU (`active = 1`). Estoque e vendas não decidem mais
+ *  nada no site — o catálogo é independente da OliSek e a equipe confirma
+ *  a disponibilidade pelo WhatsApp. Ver docs/CATALOGO.md. */
 export function isPubliclyVisible(row) {
-  return row.stock > 0 || row.sales >= 10;
+  return row.active === 1 || row.active === true;
 }
 
-/** Os 3 selos públicos — só o número real de estoque decide. */
+/** O que o cliente vê sobre disponibilidade: sempre "Consulte" — nunca um
+ *  selo de estoque, porque o número do sistema pode estar desatualizado. */
+export const PUBLIC_AVAILABILITY = { code: 'consulte', label: 'Consulte disponibilidade' };
+
+/** Selo de estoque pelo número real — só para o /admin (ajuda a equipe a
+ *  ver o que está acabando). */
 export function computeAvailability(row) {
   if (row.stock <= 0) return { code: 'indisponivel', label: 'Indisponível no momento' };
   if (row.stock <= STOCK_THRESHOLD.ultimas) return { code: 'ultimas', label: 'Últimas unidades' };
@@ -34,7 +41,7 @@ export function computeAvailability(row) {
 }
 
 function rowToPublic(row) {
-  const status = computeAvailability(row);
+  const status = PUBLIC_AVAILABILITY;
   return {
     id: row.slug,
     slug: row.slug,
@@ -132,7 +139,7 @@ export async function getPublicProducts(db, { q, brand, gender, category, availa
   if (gender) rows = rows.filter((r) => r.gender === gender);
   if (category) rows = rows.filter((r) => r.category === category);
   if (featured === 'true') rows = rows.filter((r) => r.featured);
-  if (availability) rows = rows.filter((r) => computeAvailability(r).code === availability);
+  if (availability) rows = rows.filter(() => PUBLIC_AVAILABILITY.code === availability);
 
   const comPreco = (cmp) => rows.filter((r) => r.price != null).sort(cmp).concat(rows.filter((r) => r.price == null));
   if (sort === 'price_asc') rows = comPreco((a, b) => a.price - b.price);
@@ -164,18 +171,15 @@ export async function getPublicProductPage(db, slug, relatedLimit = 4) {
 }
 
 /** Marcas em `/#marcas`: toda marca aparece, exceto as com
- *  `requires_product = 1` sem nenhum produto ativo e publicamente visível. */
+ *  `requires_product = 1` sem nenhum produto publicado. */
 export async function getBrandsPublic(db) {
   const brands = await all(db.prepare('SELECT id, name, slug, logo_path AS logoPath, requires_product AS requiresProduct FROM brands ORDER BY name ASC'));
-  const active = await all(db.prepare('SELECT brand_id, stock, sales FROM products WHERE active = 1 AND brand_id IS NOT NULL'));
+  // Publicado = visível no site (ver isPubliclyVisible).
+  const publicados = await all(db.prepare('SELECT brand_id FROM products WHERE active = 1 AND brand_id IS NOT NULL'));
   const count = new Map();
-  const visible = new Set();
-  for (const p of active) {
-    count.set(p.brand_id, (count.get(p.brand_id) || 0) + 1);
-    if (isPubliclyVisible(p)) visible.add(p.brand_id);
-  }
+  for (const p of publicados) count.set(p.brand_id, (count.get(p.brand_id) || 0) + 1);
   return brands
-    .filter((b) => !b.requiresProduct || visible.has(b.id))
+    .filter((b) => !b.requiresProduct || count.has(b.id))
     .map((b) => ({ id: b.id, name: b.name, slug: b.slug, logoPath: b.logoPath, productCount: count.get(b.id) || 0 }));
 }
 
@@ -186,8 +190,9 @@ export const ADMIN_FILTERS = {
   em_estoque: (r) => r.stock > 0,
   estoque_baixo: (r) => r.stock > 0 && r.stock <= STOCK_THRESHOLD.ultimas,
   vendidos: (r) => r.sales > 0,
-  indisponiveis: (r) => r.stock <= 0 && isPubliclyVisible(r),
-  oculto_catalogo: (r) => r.active === 1 && !isPubliclyVisible(r),
+  publicados: (r) => r.active === 1,
+  ocultos: (r) => r.active !== 1,
+  zerados: (r) => r.stock <= 0,
   sem_preco: (r) => r.price == null,
   sem_imagem: (r) => !r.main_image,
   sem_vinculo: (r) => r.olisek_link_status === 'unlinked',

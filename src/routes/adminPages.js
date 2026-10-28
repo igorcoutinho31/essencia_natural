@@ -138,8 +138,9 @@ const FILTER_TABS = [
   ['em_estoque', 'Em estoque'],
   ['estoque_baixo', 'Estoque baixo'],
   ['vendidos', 'Vendidos'],
-  ['indisponiveis', 'Indisponíveis'],
-  ['oculto_catalogo', 'Ocultos do catálogo'],
+  ['publicados', 'Publicados'],
+  ['ocultos', 'Ocultos'],
+  ['zerados', 'Estoque zerado'],
   ['sem_preco', 'Sem preço'],
   ['sem_imagem', 'Sem imagem'],
   ['sem_vinculo', 'Sem vínculo OliSek'],
@@ -154,7 +155,7 @@ export function productsListPage(user, { q, filtroAtivo, products, counts }) {
       <td>${p.hasImage ? '' : '<span class="badge badge-warn">sem foto</span>'}</td>
       <td>${p.price != null ? 'R$ ' + Number(p.price).toFixed(2).replace('.', ',') : '<span class="a-help">Consulte</span>'}</td>
       <td>${stockBadge(p)}${p.sales > 0 ? `<div class="a-help">${p.sales} venda${p.sales === 1 ? '' : 's'}</div>` : ''}</td>
-      <td>${!p.active ? '<span class="badge badge-muted">Despublicado</span>' : p.publiclyVisible ? '<span class="badge badge-ok">Publicado</span>' : '<span class="badge badge-warn">Oculto do catálogo</span>'}</td>
+      <td>${p.active ? '<span class="badge badge-ok">Publicado</span>' : '<span class="badge badge-muted">Oculto</span>'}</td>
       <td>${p.featured ? '★' : ''}</td>
       <td><a class="btn btn-ghost btn-sm" href="/admin/produtos/${p.id}">Editar</a></td>
     </tr>`).join('');
@@ -322,10 +323,10 @@ export function productFormPage(user, product, { brands, categories = [], moveme
         </div>
       </div>
       <button class="btn btn-gold btn-sm" id="f-mov-salvar" type="button">Registrar movimentação</button>
-      <p class="a-help">O cliente nunca vê esse número — só o selo (Em estoque / Últimas unidades / Indisponível no momento). O estoque nunca fica negativo: uma saída maior que o saldo é recusada.</p>
-      <p class="a-help">${p.publiclyVisible
-        ? 'Este produto aparece no catálogo público agora.'
-        : `<b>Este produto está oculto do catálogo público</b> — estoque zerado e ${p.sales} venda${p.sales === 1 ? '' : 's'} registrada${p.sales === 1 ? '' : 's'} (é preciso estoque &gt; 0 ou 10+ vendas pra aparecer). Continua aqui no admin normalmente.`}</p>
+      <p class="a-help">Uso interno: o cliente não vê esse número nem selo de estoque — no site aparece sempre "Consulte disponibilidade" e a equipe confirma pelo WhatsApp. O estoque nunca fica negativo: uma saída maior que o saldo é recusada.</p>
+      <p class="a-help">${p.active
+        ? 'Este produto está <b>publicado</b> no site.'
+        : 'Este produto está <b>oculto</b> — não aparece no site. Marque "Publicado no site" abaixo para mostrar.'}</p>
       <h2 style="margin-top:18px">Histórico de estoque <span class="a-help">(últimas ${movements.length})</span></h2>
       ${historico}
       <div class="a-row" style="margin-top:14px">
