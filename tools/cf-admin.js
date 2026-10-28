@@ -1,5 +1,5 @@
-// Contas do /admin direto no D1 da Cloudflare (substitui, lá, o
-// `npm run reset-admin-password` e as variáveis CREATE_ADMIN_* do Railway).
+// Contas do /admin direto no D1 da Cloudflare (no Node local, o equivalente
+// é `npm run reset-admin-password`).
 // A senha é gerada e o hash é calculado AQUI, no seu computador — só o hash
 // vai para a Cloudflare. A senha temporária aparece uma vez no terminal e o
 // primeiro login obriga a trocar.

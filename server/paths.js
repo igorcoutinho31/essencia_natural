@@ -3,7 +3,7 @@
 // (Na Cloudflare isso fica no D1 e no R2 — este arquivo só vale para o Node.)
 //
 // Sem configurar nada: .local/essencia.sqlite e .local/uploads/ (fora do git).
-// Com STORAGE_DIR (ex.: o volume do Railway em /data):
+// Com STORAGE_DIR (ex.: um disco separado em /data):
 //   $STORAGE_DIR/essencia.sqlite  e  $STORAGE_DIR/uploads/
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

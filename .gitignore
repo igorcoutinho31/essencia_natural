@@ -18,9 +18,8 @@ node_modules/
 *.sqlite
 *.sqlite-*
 
-# Arquivos que o Claude entrega pelo chat (bundles, patches, zips) e o
-# usuário salva localmente pra referência — nunca fazem parte do site.
-Claude outputs/
+# Pacotes e entregas salvos localmente para referência (bundles, patches)
+# — nunca fazem parte do site.
 *.bundle
 
 # Originais em PNG das fotos da equipe (ficam só na máquina de quem enviou;

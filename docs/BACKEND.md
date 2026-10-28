@@ -64,7 +64,6 @@ node scripts/base-inicial.js
 npm run dev
 ```
 
-(`npm start` faz as duas coisas sozinho — é o que o Railway roda.)
 Admin em `http://localhost:3000/admin/login`. Perdeu a senha local?
 `npm run reset-admin-password`.
 
@@ -258,4 +257,4 @@ para a regra de 28/10/2026: publicado/oculto + "Consulte disponibilidade"
   — ver `docs/CATALOGO.md`). Nenhum produto foi criado só por causa
   delas.
 - Apagar o projeto antigo no painel do Railway (o serviço já está parado
-  desde o fim do período de teste; ver `docs/CLOUDFLARE.md`, passo 8).
+  desde o fim do período de teste; ver `docs/CLOUDFLARE.md`, "Histórico").

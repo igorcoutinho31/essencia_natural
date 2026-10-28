@@ -1,7 +1,7 @@
 // Servidor Node local — roda o MESMO roteador do Worker da Cloudflare
 // (src/app.js) usando SQLite embutido (server/sqlite-d1.js) e a pasta
-// uploads/ no lugar do D1 e do R2. Serve para desenvolver sem conta na
-// Cloudflare, para os testes, e para manter o Railway no ar até a troca.
+// uploads/ no lugar do D1. Serve para desenvolver sem conta na Cloudflare
+// e para os testes.
 //
 //   node server/app.js            (ou: npm run dev)
 //   PORT=3000 node server/app.js
@@ -27,7 +27,7 @@ export function createNodeDeps(env = process.env, { db } = {}) {
 }
 
 // Só confia em X-Forwarded-* com TRUST_PROXY=1 (proxy reverso de verdade na
-// frente, como no Railway) — sem proxy, esses cabeçalhos são fáceis de forjar.
+// frente, como um Nginx) — sem proxy, esses cabeçalhos são fáceis de forjar.
 function requestInfo(req, trustProxy) {
   const fwd = (name) => String(req.headers[name] || '').split(',')[0].trim();
   const proto = req.socket.encrypted ? 'https' : (trustProxy && fwd('x-forwarded-proto') === 'https' ? 'https' : 'http');

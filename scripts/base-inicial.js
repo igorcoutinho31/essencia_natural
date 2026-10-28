@@ -1,7 +1,7 @@
 // Monta a base inicial do site num banco vazio, na ordem certa: marcas e os
 // 34 produtos (seed.js), fotos (migrate-images.js), vínculos OliSek, logos
 // e marcas novas, mais a conta `admin` com senha temporária (impressa uma
-// vez no terminal). Usado por server/start.js (Node/Railway) e por
+// vez no terminal). Usado no Node local e por
 // `npm run cf:importar -- --do-zero` (Cloudflare).
 //
 //   node scripts/base-inicial.js        (banco local em .local/)

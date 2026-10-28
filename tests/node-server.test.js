@@ -1,4 +1,4 @@
-// O servidor Node (usado no Railway até a troca e no desenvolvimento) monta
+// O servidor Node (usado no desenvolvimento e nos testes) monta
 // a base inicial sozinho, abre o histórico de estoque e responde igual ao
 // Worker — inclusive Set-Cookie e corpo de POST.
 import test from 'node:test';

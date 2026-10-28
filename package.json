@@ -3,22 +3,22 @@
   "version": "3.0.0",
   "private": true,
   "type": "module",
-  "description": "Site da Essência Natural — catálogo, página de produto e painel /admin. Roda na Cloudflare (Worker + D1 + R2) e localmente no Node, sem dependências de runtime.",
+  "description": "Site da Essência Natural: catálogo, página de produto e painel /admin. Roda na Cloudflare (Worker + D1) e localmente no Node.",
   "engines": {
     "node": "22.x"
   },
   "scripts": {
-    "start": "node server/start.js",
     "dev": "node server/app.js",
+    "base-inicial": "node scripts/base-inicial.js",
     "test": "node --test --test-concurrency=1 \"tests/*.test.js\"",
-    "reset-admin-password": "node server/reset-admin-password.js",
+    "reset-admin-password": "node scripts/reset-admin-password.js",
     "cf:dev": "wrangler dev",
     "cf:deploy": "wrangler deploy",
     "cf:migrar": "wrangler d1 migrations apply essencia-natural --remote",
     "cf:importar": "node tools/cf-importar.js",
+    "cf:biblioteca": "node tools/cf-biblioteca.js",
     "cf:admin": "node tools/cf-admin.js",
-    "cf:smoke": "node tools/cf-smoke.js",
-    "cf:biblioteca": "node tools/cf-biblioteca.js"
+    "cf:smoke": "node tools/cf-smoke.js"
   },
   "devDependencies": {
     "sharp": "^0.35.5",
