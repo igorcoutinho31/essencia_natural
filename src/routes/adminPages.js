@@ -135,62 +135,150 @@ function olisekBadge(p) {
 // bate exatamente com as chaves de ADMIN_FILTERS em src/services/catalog.js.
 const FILTER_TABS = [
   ['todos', 'Todos'],
-  ['em_estoque', 'Em estoque'],
-  ['estoque_baixo', 'Estoque baixo'],
-  ['vendidos', 'Vendidos'],
   ['publicados', 'Publicados'],
   ['ocultos', 'Ocultos'],
-  ['zerados', 'Estoque zerado'],
+  ['no_relatorio', 'No relatório da loja'],
+  ['foto_pendente', 'Foto a liberar'],
+  ['da_loja', 'Cadastros da loja'],
+  ['biblioteca', 'Biblioteca'],
   ['sem_preco', 'Sem preço'],
   ['sem_imagem', 'Sem imagem'],
+  ['em_estoque', 'Em estoque'],
+  ['estoque_baixo', 'Estoque baixo'],
+  ['zerados', 'Estoque zerado'],
+  ['vendidos', 'Vendidos'],
   ['sem_vinculo', 'Sem vínculo OliSek'],
   ['precisa_revisao', 'Precisa revisão'],
 ];
 
-export function productsListPage(user, { q, filtroAtivo, products, counts }) {
+const SOURCE_NAMES = { atlantico: 'Atlântico', onuh: 'ONUH' };
+
+function origemBadge(p) {
+  if (!p.source) return '<span class="badge badge-ok">Loja</span>';
+  return `<span class="badge badge-muted" title="Cadastro da biblioteca de fornecedores">${escapeHTML(SOURCE_NAMES[p.source] || p.source)}</span>`;
+}
+
+/** Lista do /admin (paginada no banco). `view` = { q, filtroAtivo, brandId,
+ *  category, source, page, perPage, total, products, counts, brands, categories }. */
+export function productsListPage(user, view) {
+  const { q, filtroAtivo, brandId, category, source, page, perPage, total, products, counts, brands = [], categories = [] } = view;
+  const isAdmin = user.role === 'admin';
+  const paginas = Math.max(1, Math.ceil(total / perPage));
+  const link = (mudancas) => {
+    const qs = new URLSearchParams();
+    const atual = { q, filtro: filtroAtivo === 'todos' ? '' : filtroAtivo, marca: brandId || '', categoria: category || '', origem: source || '', pagina: '' };
+    for (const [k, v] of Object.entries({ ...atual, ...mudancas })) if (v) qs.set(k, v);
+    return '/admin/produtos' + (qs.toString() ? '?' + qs.toString() : '');
+  };
+
   const rows = products.map((p) => `
     <tr>
-      <td>${olisekBadge(p)}</td>
-      <td>${escapeHTML(p.name)}<div class="a-help">${escapeHTML(p.brand || '—')}</div></td>
-      <td>${p.hasImage ? '' : '<span class="badge badge-warn">sem foto</span>'}</td>
+      ${isAdmin ? `<td><input type="checkbox" class="a-sel" value="${p.id}" aria-label="Selecionar ${escapeHTML(p.name)}"></td>` : ''}
+      <td>${p.hasImage ? `<img class="a-thumb" src="${escapeHTML(p.image)}" alt="" loading="lazy" width="48" height="48">` : '<span class="badge badge-warn">sem foto</span>'}</td>
+      <td>${escapeHTML(p.name)}<div class="a-help">${escapeHTML(p.brand || '—')}${p.volume ? ' · ' + escapeHTML(p.volume) : ''}${p.category ? ' · ' + escapeHTML(p.category) : ''}</div>
+        ${p.inStoreReport ? `<span class="badge badge-ok" title="${escapeHTML(p.storeReportName || '')}">no relatório da loja</span>` : ''}
+        ${p.pendingImages ? '<span class="badge badge-warn" title="Só aparece no site depois que a loja liberar o uso da foto">foto a liberar</span>' : ''}</td>
+      <td>${origemBadge(p)}</td>
       <td>${p.price != null ? 'R$ ' + Number(p.price).toFixed(2).replace('.', ',') : '<span class="a-help">Consulte</span>'}</td>
-      <td>${stockBadge(p)}${p.sales > 0 ? `<div class="a-help">${p.sales} venda${p.sales === 1 ? '' : 's'}</div>` : ''}</td>
-      <td>${p.active ? '<span class="badge badge-ok">Publicado</span>' : '<span class="badge badge-muted">Oculto</span>'}</td>
-      <td>${p.featured ? '★' : ''}</td>
+      <td>${p.active ? '<span class="badge badge-ok">Publicado</span>' : '<span class="badge badge-muted">Oculto</span>'}${p.featured ? ' ★' : ''}</td>
       <td><a class="btn btn-ghost btn-sm" href="/admin/produtos/${p.id}">Editar</a></td>
     </tr>`).join('');
 
-  const tabsHTML = FILTER_TABS.map(([key, label]) => {
-    var qs = new URLSearchParams();
-    if (q) qs.set('q', q);
-    if (key !== 'todos') qs.set('filtro', key);
-    var href = '/admin/produtos' + (qs.toString() ? '?' + qs.toString() : '');
-    var ativo = key === filtroAtivo;
-    return `<a class="a-tab${ativo ? ' a-tab--ativo' : ''}" href="${href}">${escapeHTML(label)} (${counts[key] ?? 0})</a>`;
-  }).join('');
+  const tabsHTML = FILTER_TABS.map(([key, label]) =>
+    `<a class="a-tab${key === filtroAtivo ? ' a-tab--ativo' : ''}" href="${link({ filtro: key === 'todos' ? '' : key })}">${escapeHTML(label)} (${counts[key] ?? 0})</a>`).join('');
+
+  const opt = (v, label, sel) => `<option value="${escapeHTML(String(v))}"${sel ? ' selected' : ''}>${escapeHTML(label)}</option>`;
+  const filtros = `
+      <form method="get" class="a-row a-filtros" style="margin-bottom:14px; gap:8px; flex-wrap:wrap">
+        ${filtroAtivo !== 'todos' ? `<input type="hidden" name="filtro" value="${escapeHTML(filtroAtivo)}">` : ''}
+        <input class="a-search" type="search" name="q" placeholder="Buscar por nome, marca ou ID OliSek" value="${escapeHTML(q || '')}">
+        <select name="marca"><option value="">Todas as marcas</option>${brands.map((b) => opt(b.id, b.name, String(b.id) === String(brandId))).join('')}</select>
+        <select name="categoria"><option value="">Todas as categorias</option>${categories.map((c) => opt(c, c, c === category)).join('')}</select>
+        <select name="origem"><option value="">Todas as origens</option>${opt('loja', 'Cadastros da loja', source === 'loja')}${opt('atlantico', 'Atlântico', source === 'atlantico')}${opt('onuh', 'ONUH', source === 'onuh')}</select>
+        <button class="btn btn-ghost btn-sm" type="submit">Filtrar</button>
+        ${(q || brandId || category || source) ? `<a class="btn btn-ghost btn-sm" href="${link({ q: '', marca: '', categoria: '', origem: '' })}">Limpar</a>` : ''}
+      </form>`;
+
+  const lote = isAdmin ? `
+      <div class="a-lote" id="a-lote">
+        <label><input type="checkbox" id="a-sel-todos"> Selecionar a página</label>
+        <span id="a-sel-n" class="a-help">0 selecionado(s)</span>
+        <select id="a-lote-acao">
+          <option value="publicar">Publicar no site</option>
+          <option value="ocultar">Ocultar do site</option>
+          <option value="liberar_fotos">Liberar fotos (fornecedor autorizou)</option>
+          <option value="bloquear_fotos">Bloquear fotos da biblioteca</option>
+        </select>
+        <button class="btn btn-gold btn-sm" type="button" id="a-lote-sel">Aplicar nos selecionados</button>
+        <button class="btn btn-ghost btn-sm" type="button" id="a-lote-filtro">Aplicar nos ${total} resultado${total === 1 ? '' : 's'} deste filtro</button>
+        <div id="a-msg-lote"></div>
+      </div>` : '';
+
+  const paginacao = paginas > 1 ? `
+      <div class="a-row a-paginas" style="justify-content:center; gap:8px; margin-top:14px">
+        ${page > 1 ? `<a class="btn btn-ghost btn-sm" href="${link({ pagina: page - 1 })}">&larr; Anterior</a>` : ''}
+        <span class="a-help">Página ${page} de ${paginas}</span>
+        ${page < paginas ? `<a class="btn btn-ghost btn-sm" href="${link({ pagina: page + 1 })}">Próxima &rarr;</a>` : ''}
+      </div>` : '';
+
+  const criterios = { q: q || '', filter: filtroAtivo === 'todos' ? '' : filtroAtivo, brandId: brandId || '', category: category || '', source: source || '' };
+  const script = isAdmin ? `
+  <script>
+    (function(){
+      var CRITERIOS = ${JSON.stringify(criterios).replace(/</g, '\\u003c')};
+      var TOTAL = ${Number(total)};
+      var NOMES = { publicar: 'publicar', ocultar: 'ocultar', liberar_fotos: 'liberar as fotos de', bloquear_fotos: 'bloquear as fotos de' };
+      var sels = function(){ return Array.prototype.slice.call(document.querySelectorAll('.a-sel')); };
+      function conta(){ document.getElementById('a-sel-n').textContent = sels().filter(function(c){ return c.checked; }).length + ' selecionado(s)'; }
+      sels().forEach(function(c){ c.addEventListener('change', conta); });
+      document.getElementById('a-sel-todos').addEventListener('change', function(ev){ sels().forEach(function(c){ c.checked = ev.target.checked; }); conta(); });
+      function msg(texto, ok){ var el = document.getElementById('a-msg-lote'); el.innerHTML = ''; var d = document.createElement('div'); d.className = 'a-msg ' + (ok ? 'a-msg-ok' : 'a-msg-err'); d.textContent = texto; el.appendChild(d); }
+      function enviar(corpo, n){
+        var acao = document.getElementById('a-lote-acao').value;
+        if (!confirm('Confirmar: ' + NOMES[acao] + ' ' + n + ' produto(s)?')) return;
+        corpo.action = acao;
+        fetch('/api/admin/products/bulk', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(corpo) })
+          .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
+          .then(function(res){
+            if (!res.ok) { msg(res.d.message || res.d.error || 'Erro.', false); return; }
+            msg(res.d.affected + ' produto(s) atualizado(s).', true);
+            setTimeout(function(){ location.reload(); }, 900);
+          })
+          .catch(function(){ msg('Erro de conexão.', false); });
+      }
+      document.getElementById('a-lote-sel').addEventListener('click', function(){
+        var ids = sels().filter(function(c){ return c.checked; }).map(function(c){ return Number(c.value); });
+        if (!ids.length) { msg('Selecione pelo menos um produto.', false); return; }
+        enviar({ ids: ids }, ids.length);
+      });
+      document.getElementById('a-lote-filtro').addEventListener('click', function(){
+        if (!TOTAL) { msg('Nenhum produto neste filtro.', false); return; }
+        enviar({ criteria: CRITERIOS }, TOTAL);
+      });
+    })();
+  </script>` : '';
 
   const body = `
   <div class="a-wrap">
     <div class="a-row" style="justify-content:space-between; margin-bottom:16px">
       <div>
         <h1>Produtos</h1>
-        <p class="a-sub">${products.length} produto${products.length === 1 ? '' : 's'} ${filtroAtivo === 'todos' ? 'no catálogo' : 'neste filtro'}.</p>
+        <p class="a-sub">${total} produto${total === 1 ? '' : 's'} ${filtroAtivo === 'todos' && !q && !brandId && !category && !source ? 'no total' : 'neste filtro'}.</p>
       </div>
-      ${user.role === 'admin' ? '<a class="btn btn-gold" href="/admin/produtos/novo">+ Novo produto</a>' : ''}
+      ${isAdmin ? '<a class="btn btn-gold" href="/admin/produtos/novo">+ Novo produto</a>' : ''}
     </div>
     <div class="a-tabs">${tabsHTML}</div>
     <div class="a-card">
-      <form method="get" class="a-row" style="margin-bottom:14px">
-        ${filtroAtivo !== 'todos' ? `<input type="hidden" name="filtro" value="${escapeHTML(filtroAtivo)}">` : ''}
-        <input class="a-search" type="search" name="q" placeholder="Buscar por nome, marca ou ID OliSek" value="${escapeHTML(q || '')}">
-        <button class="btn btn-ghost btn-sm" type="submit">Buscar</button>
-      </form>
+      ${filtros}
+      ${lote}
       <table>
-        <thead><tr><th>Vínculo</th><th>Produto</th><th>Foto</th><th>Preço</th><th>Estoque</th><th>Site</th><th>Destaque</th><th></th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="8" class="a-help">Nenhum produto encontrado.</td></tr>'}</tbody>
+        <thead><tr>${isAdmin ? '<th></th>' : ''}<th>Foto</th><th>Produto</th><th>Origem</th><th>Preço</th><th>Site</th><th></th></tr></thead>
+        <tbody>${rows || `<tr><td colspan="${isAdmin ? 7 : 6}" class="a-help">Nenhum produto encontrado.</td></tr>`}</tbody>
       </table>
+      ${paginacao}
     </div>
-  </div>`;
+  </div>
+  ${script}`;
   return html(200, layout({ title: 'Produtos', user, active: 'produtos', body }));
 }
 
@@ -342,7 +430,8 @@ export function productFormPage(user, product, { brands, categories = [], moveme
       <div class="a-imgs" id="a-imgs">
         ${p.images.map((img) => `
           <div class="a-img ${img.isMain ? 'main' : ''}" data-id="${img.id}">
-            <img src="${img.path}" alt="">
+            <img src="${escapeHTML(img.path)}" alt="">
+            ${img.licensed ? '' : '<span class="badge badge-warn a-img-pend" title="Foto de fornecedor: só aparece no site depois de liberada">a liberar</span>'}
             <div class="a-img-actions">
               <button type="button" data-action="main" title="Definir como principal">★</button>
               <button type="button" data-action="del" title="Excluir">🗑</button>
@@ -352,12 +441,16 @@ export function productFormPage(user, product, { brands, categories = [], moveme
       <label class="a-drop" for="a-file-input" id="a-drop">Clique para escolher uma foto (JPG, PNG ou WEBP)</label>
       <input type="file" id="a-file-input" accept="image/jpeg,image/png,image/webp" style="display:none">
       <p class="a-help">A foto é reduzida automaticamente (até 1600px, formato WEBP) antes de ir para o site — pode mandar direto da câmera do celular.</p>
+      ${isAdmin && p.pendingImages ? `<p class="a-help"><b>${p.pendingImages} foto(s) de fornecedor ainda não liberada(s)</b> — só aparecem aqui no admin. Libere quando a loja confirmar que o fornecedor autoriza o uso, ou envie uma foto própria.</p>
+        <button class="btn btn-ghost btn-sm" type="button" id="f-liberar-fotos">Liberar fotos deste produto</button>` : ''}
     </div>`;
 
   const body = `
   <div class="a-wrap">
     <p><a href="/admin/produtos">&larr; Voltar para produtos</a></p>
     <h1>${isNew ? 'Novo produto' : escapeHTML(p.name)}</h1>
+    ${!isNew && p.source ? `<p class="a-help">Cadastro da biblioteca de fornecedores: <b>${escapeHTML(SOURCE_NAMES[p.source] || p.source)}</b>${p.sourceUrl ? ` · <a href="${escapeHTML(p.sourceUrl)}" target="_blank" rel="noopener noreferrer">ver página de origem</a>` : ''}${p.concentration ? ` · ${escapeHTML(p.concentration)}` : ''}</p>` : ''}
+    ${!isNew && p.inStoreReport ? `<p class="a-help"><span class="badge badge-ok">no relatório da loja</span> como "${escapeHTML(p.storeReportName || '')}"</p>` : ''}
     <div id="a-msg-topo"></div>
     <div class="a-card">${camposBase}</div>
     ${olisekBox}
@@ -473,6 +566,12 @@ export function productFormPage(user, product, { brands, categories = [], moveme
           syncOlisek.disabled = false; syncOlisek.textContent = 'Sincronizar agora com a OliSek';
           msg(document.getElementById('a-msg-olisek'), (e && e.error) || (e && e.message) || 'Erro ao sincronizar.', false);
         });
+    });
+    var liberar = document.getElementById('f-liberar-fotos');
+    if (liberar) liberar.addEventListener('click', function(){
+      if (!confirm('A loja confirmou que o fornecedor autoriza usar estas fotos no site?')) return;
+      post('/api/admin/products/bulk', 'POST', { action: 'liberar_fotos', ids: [PRODUCT_ID] }).then(function(){ location.reload(); })
+        .catch(function(e){ msg(document.getElementById('a-msg-topo'), (e && e.message) || 'Erro.', false); });
     });
     var despub = document.getElementById('f-despublicar');
     if (despub) despub.addEventListener('click', function(){

@@ -59,6 +59,18 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 - `Aurora` está classificado como `Marca / Coleção` e pode não ser um
   produto avulso — confirmar se deve sair do catálogo.
 
+## Biblioteca de fornecedores — direitos de uso (28/10/2026)
+- PENDENTE: confirmar com **Atlântico** e com **ONUH** se a loja pode usar
+  as fotos de produto deles no site. Até lá, as fotos importadas ficam
+  "a liberar" (só no admin). Ao confirmar, registrar aqui e liberar em lote
+  no admin (filtro de origem → "Liberar fotos").
+- O texto de venda da ONUH NÃO foi importado (regra do projeto: não copiar
+  texto de benchmark). Descrições próprias, se a loja quiser, precisam ser
+  escritas — nunca copiadas.
+- Nomes da biblioteca vêm como o fornecedor escreve (às vezes com a marca
+  repetida, ex.: "Wataniah Al Wataniah ..."). Revisar o nome antes de
+  publicar quando estiver estranho.
+
 ## Envios
 - Rede social menciona "Envios para todo o Brasil" — usar como informação
   válida, mas confirmar se há custo, prazo, transportadora antes de detalhar

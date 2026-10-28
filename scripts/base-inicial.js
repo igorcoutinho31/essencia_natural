@@ -5,7 +5,7 @@
 // `npm run cf:importar -- --do-zero` (Cloudflare).
 //
 //   node scripts/base-inicial.js        (banco local em .local/)
-import { applyMigrations } from '../server/sqlite-d1.js';
+import { openingBalances } from '../server/sqlite-d1.js';
 import { storagePaths } from '../server/paths.js';
 import { runAsScript } from './script-db.js';
 
@@ -26,7 +26,7 @@ export async function run(db, uploadsDir = storagePaths().UPLOADS_DIR) {
     const mod = await import(`./${script}`);
     await (script === 'migrate-images.js' ? mod.run(db, uploadsDir) : mod.run(db));
   }
-  applyMigrations(db); // abre o histórico de estoque com o saldo importado
+  openingBalances(db); // abre o histórico de estoque com o saldo importado
   return true;
 }
 

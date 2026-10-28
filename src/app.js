@@ -58,8 +58,26 @@ function requireSession(ctx) {
   return redirect('/admin/login');
 }
 
+/** Fotos da biblioteca de fornecedores (`biblioteca/...`) só saem para o
+ *  público quando a loja liberou o uso e o produto está publicado; antes
+ *  disso, só quem está logado no /admin vê (ver migrations/0005). */
+async function libraryPhotoAccess(ctx, key) {
+  const liberada = await ctx.db.prepare(
+    `SELECT 1 AS x FROM product_images pi JOIN products p ON p.id = pi.product_id
+      WHERE pi.file_path = ? AND pi.licensed = 1 AND p.active = 1 LIMIT 1`
+  ).bind('/uploads/' + key).first();
+  if (liberada) return 'public';
+  const sid = auth.parseCookies(ctx.request.headers.get('cookie'))[auth.SESSION_COOKIE];
+  return sid && (await auth.getUserBySession(ctx.db, sid)) ? 'private' : null;
+}
+
 async function serveUpload(ctx, key) {
   if (!key || key.includes('..') || key.startsWith('/')) return notFoundPage();
+  let acesso = 'public';
+  if (key.startsWith('biblioteca/')) {
+    acesso = await libraryPhotoAccess(ctx, key);
+    if (!acesso) return notFoundPage();
+  }
   const obj = await ctx.storage.get(key);
   if (!obj) return notFoundPage();
   const headers = {
@@ -67,7 +85,7 @@ async function serveUpload(ctx, key) {
     // Cada foto enviada ganha um nome novo e nunca é sobrescrita: o
     // navegador guarda por 1 ano e não pede de novo (economiza pedidos ao
     // Worker — o plano grátis tem 100 mil por dia).
-    'Cache-Control': 'public, max-age=31536000, immutable',
+    'Cache-Control': acesso === 'private' ? 'private, no-store' : 'public, max-age=31536000, immutable',
   };
   if (obj.etag) {
     headers.ETag = obj.etag;
@@ -104,6 +122,7 @@ async function adminRoutes(ctx) {
     if (ctx.user.must_change_password) return json(403, { error: 'must_change_password', message: 'Troque a senha temporária primeiro.' });
     if (pathname === '/api/admin/products' && method === 'GET') return adminApi.listProducts(ctx);
     if (pathname === '/api/admin/products' && method === 'POST') return adminApi.createProduct(ctx);
+    if (pathname === '/api/admin/products/bulk' && method === 'POST') return adminApi.bulk(ctx);
     if (pathname === '/api/admin/brands' && method === 'GET') return adminApi.listBrands(ctx);
     if (pathname === '/api/admin/brands' && method === 'POST') return adminApi.createBrand(ctx);
     if (pathname === '/api/admin/olisek/parse' && method === 'POST') return adminApi.parseOlisekReport(ctx);
@@ -155,11 +174,20 @@ async function adminRoutes(ctx) {
   if (user.must_change_password && pathname !== '/admin/trocar-senha') return redirect('/admin/trocar-senha');
   if (pathname === '/admin/trocar-senha') return adminPages.changePasswordPage(user);
   if (pathname === '/admin/produtos') {
-    const q = ctx.url.searchParams.get('q') || '';
-    const filter = ctx.url.searchParams.get('filtro') || '';
+    const sp = ctx.url.searchParams;
+    const q = (sp.get('q') || '').slice(0, 100);
+    const filter = sp.get('filtro') || '';
     const filtroAtivo = filter in catalog.ADMIN_FILTERS ? filter : 'todos';
-    const { products, counts } = await catalog.getAdminProducts(db, { q, filter: filtroAtivo === 'todos' ? undefined : filtroAtivo });
-    return adminPages.productsListPage(user, { q, filtroAtivo, products, counts });
+    const brandId = /^\d+$/.test(sp.get('marca') || '') ? sp.get('marca') : '';
+    const category = (sp.get('categoria') || '').slice(0, 100);
+    const source = ['loja', 'atlantico', 'onuh'].includes(sp.get('origem')) ? sp.get('origem') : '';
+    const pagina = await catalog.getAdminProductsPage(db, {
+      q, filter: filtroAtivo, brandId, category, source, page: sp.get('pagina'),
+    });
+    return adminPages.productsListPage(user, {
+      ...pagina, q, filtroAtivo, brandId, category, source,
+      brands: await catalog.listBrandsAdmin(db), categories: await catalog.listCategories(db),
+    });
   }
   if (pathname === '/admin/produtos/novo') {
     if (user.role !== 'admin') return redirect('/admin/produtos');

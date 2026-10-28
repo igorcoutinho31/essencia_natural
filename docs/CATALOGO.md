@@ -82,6 +82,49 @@ estoque — o restante já está pronto.
 > três selos pelo número de estoque e produto oculto quando `stock = 0` e
 > `sales < 10`. Substituída pela regra acima.
 
+## Biblioteca de cadastros (fornecedores) — 28/10/2026
+
+Um pacote coletado de sites de fornecedores (**Atlântico**, 997 itens, e
+**ONUH**, 1.913 — `catalog.json` + pasta `images/`, ~610 MB) entra no
+admin como **biblioteca**: tudo **oculto**, para a loja escolher o que
+publicar. Importação: `npm run cf:biblioteca` (`tools/cf-biblioteca.js`;
+regras em `tools/biblioteca-regras.js` e `tools/biblioteca-plano.js`).
+
+**Decisões (confirmadas pelo responsável pelo site em 28/10/2026):**
+
+- **Só fatos do fornecedor:** nome, marca, volume, concentração, notas
+  olfativas e família (extraídas da descrição da ONUH). O **texto de venda
+  da ONUH não é copiado** — o campo descrição fica vazio. Preço e estoque
+  não vêm do pacote.
+- **Fotos de fornecedor entram "a liberar"** (`product_images.licensed = 0`):
+  aparecem só dentro do `/admin` (o endereço `/uploads/biblioteca/...` dá
+  404 para o público). Um produto publicado com foto ainda não liberada
+  aparece no site com a imagem padrão. A loja libera as fotos quando o
+  fornecedor confirmar que autoriza o uso (por produto, ou em lote:
+  filtro de origem → "Liberar fotos") — ou envia foto própria.
+- **Uma foto por produto**, reduzida no PC para 800 px/WEBP (~30–60 KB).
+  As fotos ficam no D1; o importador para antes de passar de ~380 MB
+  (o banco grátis vai até 500 MB) e aceita `--lado 600` para caber mais.
+- **Marcas:** grafias diferentes da mesma marca são unificadas
+  ("Maison Al Hambra" = "Maison Alhambra", "Wataniah" = "Al Wataniah");
+  marcas novas entram com `requires_product = 1` (só aparecem em
+  `/#marcas` quando tiverem produto publicado). "OPENBOX", "Miniaturas"
+  etc. não viram marca.
+- **Categorias** limpas: Perfume, Body Splash, Kit, Miniatura, Skincare,
+  Cuidados corporais, Óleo perfumado, Cabelos, Casa e ambiente, Outros.
+- **Relatório da loja:** cada item é comparado com os nomes do relatório de
+  estoque da OliSek de 22/09/2026 (`seed/relatorio-loja-2026-09-22.json` —
+  só nomes, sem quantidades). Quem bate ganha o selo "no relatório da loja"
+  (filtro próprio no admin) — é o mix real da loja, bom ponto de partida
+  para publicar. ~325 dos 2.910 batem.
+- **Repetidos:** item igual a um cadastro que a loja já tem (mesma marca e
+  mesmo nome, ignorando volume/EDP) é pulado.
+- `olisek_id` continua vazio: os códigos do fornecedor (`source_id`) não são
+  da OliSek.
+
+Rodar o importador de novo é seguro: o que já entrou é pulado e, se cair a
+conexão no meio, continua de onde parou.
+
 ## Foto ausente: sempre um placeholder oficial, nunca uma imagem quebrada
 
 Quando um produto não tem nenhuma foto em `product_images`, a API pública e
