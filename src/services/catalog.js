@@ -98,17 +98,29 @@ function rowToAdmin(row) {
     featured: !!row.featured,
     hasImage: !!row.main_image,
     image: row.main_image || PLACEHOLDER_IMAGE,
+    pendingImages: row.pending_images || 0,
+    source: row.source || null,
+    sourceUrl: row.source_url || null,
+    concentration: row.concentration || null,
+    inStoreReport: !!row.in_store_report,
+    storeReportName: row.store_report_name || null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
 }
 
-const BASE_SELECT = `
+// Foto principal. No site só contam fotos com direito de uso liberado
+// (`licensed = 1`); no admin aparecem todas, inclusive as de fornecedor
+// ainda pendentes (ver migrations/0005_biblioteca.sql).
+const selectWithImage = (publicOnly) => `
   SELECT p.*, b.name AS brand_name, b.slug AS brand_slug,
-    (SELECT file_path FROM product_images pi WHERE pi.product_id = p.id
-       ORDER BY pi.is_main DESC, pi.sort_order ASC LIMIT 1) AS main_image
+    (SELECT file_path FROM product_images pi WHERE pi.product_id = p.id${publicOnly ? ' AND pi.licensed = 1' : ''}
+       ORDER BY pi.is_main DESC, pi.sort_order ASC LIMIT 1) AS main_image,
+    (SELECT COUNT(*) FROM product_images pi WHERE pi.product_id = p.id AND pi.licensed = 0) AS pending_images
   FROM products p LEFT JOIN brands b ON b.id = p.brand_id
 `;
+const BASE_SELECT = selectWithImage(false);
+const PUBLIC_SELECT = selectWithImage(true);
 
 async function all(stmt) { return (await stmt.all()).results; }
 
@@ -116,17 +128,18 @@ async function getRawProduct(db, id) {
   return db.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
 }
 
-export async function getImages(db, productId) {
+export async function getImages(db, productId, { publicOnly = false } = {}) {
   const rows = await all(db.prepare(
-    'SELECT id, file_path AS path, sort_order AS sortOrder, is_main AS isMain FROM product_images WHERE product_id = ? ORDER BY sort_order ASC'
+    `SELECT id, file_path AS path, sort_order AS sortOrder, is_main AS isMain, licensed FROM product_images
+      WHERE product_id = ?${publicOnly ? ' AND licensed = 1' : ''} ORDER BY sort_order ASC`
   ).bind(productId));
-  return rows.map((r) => ({ ...r, isMain: !!r.isMain }));
+  return rows.map((r) => ({ ...r, isMain: !!r.isMain, licensed: !!r.licensed }));
 }
 
 // ---------- catálogo público ----------
 
 async function publicRows(db) {
-  return (await all(db.prepare(`${BASE_SELECT} WHERE p.active = 1 ORDER BY p.id ASC`))).filter(isPubliclyVisible);
+  return (await all(db.prepare(`${PUBLIC_SELECT} WHERE p.active = 1 ORDER BY p.id ASC`))).filter(isPubliclyVisible);
 }
 
 export async function getPublicProducts(db, { q, brand, gender, category, availability, featured, sort } = {}) {
@@ -155,10 +168,10 @@ export async function getPublicProducts(db, { q, brand, gender, category, availa
 export async function getPublicProductPage(db, slug, relatedLimit = 4) {
   const rows = await publicRows(db);
   const row = rows.find((r) => r.slug === slug);
-  // Produto oculto (estoque 0 e menos de 10 vendas) não tem página pública.
+  // Produto oculto não tem página pública.
   if (!row) return null;
   const product = rowToPublic(row);
-  product.images = (await getImages(db, row.id)).map((i) => i.path);
+  product.images = (await getImages(db, row.id, { publicOnly: true })).map((i) => i.path);
   const outros = rows.filter((r) => r.id !== row.id);
   const sameBrand = outros.filter((r) => row.brand_id && r.brand_id === row.brand_id);
   const sameCat = outros.filter((r) => r.category === row.category && !(row.brand_id && r.brand_id === row.brand_id));
@@ -185,32 +198,100 @@ export async function getBrandsPublic(db) {
 
 // ---------- admin ----------
 
+// Filtros da lista do /admin, em SQL (a lista é paginada no banco — com a
+// biblioteca são ~3.000 produtos, e o plano grátis dá 10 ms de CPU ao Worker).
 export const ADMIN_FILTERS = {
-  todos: () => true,
-  em_estoque: (r) => r.stock > 0,
-  estoque_baixo: (r) => r.stock > 0 && r.stock <= STOCK_THRESHOLD.ultimas,
-  vendidos: (r) => r.sales > 0,
-  publicados: (r) => r.active === 1,
-  ocultos: (r) => r.active !== 1,
-  zerados: (r) => r.stock <= 0,
-  sem_preco: (r) => r.price == null,
-  sem_imagem: (r) => !r.main_image,
-  sem_vinculo: (r) => r.olisek_link_status === 'unlinked',
-  precisa_revisao: (r) => r.olisek_link_status === 'probable' || r.olisek_link_status === 'needs_review',
+  todos: '1 = 1',
+  publicados: 'p.active = 1',
+  ocultos: 'p.active <> 1',
+  no_relatorio: 'p.in_store_report = 1',
+  biblioteca: 'p.source IS NOT NULL',
+  da_loja: 'p.source IS NULL',
+  foto_pendente: 'EXISTS (SELECT 1 FROM product_images pi WHERE pi.product_id = p.id AND pi.licensed = 0)',
+  em_estoque: 'p.stock > 0',
+  estoque_baixo: `p.stock > 0 AND p.stock <= ${STOCK_THRESHOLD.ultimas}`,
+  zerados: 'p.stock <= 0',
+  vendidos: 'p.sales > 0',
+  sem_preco: 'p.price IS NULL',
+  sem_imagem: 'NOT EXISTS (SELECT 1 FROM product_images pi WHERE pi.product_id = p.id)',
+  sem_vinculo: "p.olisek_link_status = 'unlinked'",
+  precisa_revisao: "p.olisek_link_status IN ('probable', 'needs_review')",
 };
 
-/** Lista + contagem de cada filtro com uma consulta só. */
-export async function getAdminProducts(db, { q, filter } = {}) {
-  const allRows = await all(db.prepare(`${BASE_SELECT} ORDER BY p.id ASC`));
-  const counts = {};
-  for (const key of Object.keys(ADMIN_FILTERS)) counts[key] = allRows.filter(ADMIN_FILTERS[key]).length;
-  let rows = allRows;
-  if (q) {
-    const t = normalizeText(q);
-    rows = rows.filter((r) => normalizeText(r.name).includes(t) || normalizeText(r.brand_name).includes(t) || String(r.olisek_id || '').includes(t));
+export const ADMIN_PAGE_SIZE = 50;
+
+/** Monta o WHERE da lista do admin (filtro + busca + marca + categoria +
+ *  origem). Devolve { sql, params }. Usado também pelas ações em lote "em
+ *  todos os resultados". */
+export function adminWhere({ q, filter, brandId, category, source } = {}) {
+  const parts = [ADMIN_FILTERS[filter] || ADMIN_FILTERS.todos];
+  const params = [];
+  if (q && String(q).trim()) {
+    const termos = [...new Set([String(q).trim(), normalizeText(q).trim()])];
+    parts.push('(' + termos.map(() => "(p.name LIKE ? OR b.name LIKE ? OR CAST(p.olisek_id AS TEXT) LIKE ? OR p.store_report_name LIKE ?)").join(' OR ') + ')');
+    for (const t of termos) { const like = `%${t}%`; params.push(like, like, like, like); }
   }
-  if (filter && ADMIN_FILTERS[filter]) rows = rows.filter(ADMIN_FILTERS[filter]);
-  return { products: rows.map(rowToAdmin), counts };
+  if (brandId) { parts.push('p.brand_id = ?'); params.push(Number(brandId)); }
+  if (category) { parts.push('p.category = ?'); params.push(String(category)); }
+  if (source === 'loja') parts.push('p.source IS NULL');
+  else if (source) { parts.push('p.source = ?'); params.push(String(source)); }
+  return { sql: parts.join(' AND '), params };
+}
+
+/** Uma página da lista do admin + total + contagem de cada filtro. */
+export async function getAdminProductsPage(db, { q, filter, brandId, category, source, page = 1, perPage = ADMIN_PAGE_SIZE } = {}) {
+  const pg = Math.max(1, parseInt(page, 10) || 1);
+  const where = adminWhere({ q, filter, brandId, category, source });
+  const countsSql = `SELECT ${Object.entries(ADMIN_FILTERS).map(([k, f]) => `SUM(CASE WHEN ${f} THEN 1 ELSE 0 END) AS ${k}`).join(', ')} FROM products p`;
+  const [lista, total, counts] = await db.batch([
+    db.prepare(`${BASE_SELECT} WHERE ${where.sql} ORDER BY p.in_store_report DESC, p.id ASC LIMIT ? OFFSET ?`)
+      .bind(...where.params, perPage, (pg - 1) * perPage),
+    db.prepare(`SELECT COUNT(*) AS n FROM products p LEFT JOIN brands b ON b.id = p.brand_id WHERE ${where.sql}`).bind(...where.params),
+    db.prepare(countsSql),
+  ]);
+  const c = counts.results[0] || {};
+  return {
+    products: lista.results.map(rowToAdmin),
+    total: total.results[0].n,
+    page: pg,
+    perPage,
+    counts: Object.fromEntries(Object.keys(ADMIN_FILTERS).map((k) => [k, Number(c[k] || 0)])),
+  };
+}
+
+/** Compatibilidade: lista completa (API JSON antiga do admin). */
+export async function getAdminProducts(db, opts = {}) {
+  const r = await getAdminProductsPage(db, { ...opts, perPage: 100000 });
+  return { products: r.products, counts: r.counts };
+}
+
+export const BULK_ACTIONS = {
+  publicar: (db, ids) => db.prepare(`UPDATE products SET active = 1, updated_at = datetime('now') WHERE id IN (${ids})`),
+  ocultar: (db, ids) => db.prepare(`UPDATE products SET active = 0, updated_at = datetime('now') WHERE id IN (${ids})`),
+  liberar_fotos: (db, ids) => db.prepare(`UPDATE product_images SET licensed = 1 WHERE product_id IN (${ids})`),
+  bloquear_fotos: (db, ids) => db.prepare(`UPDATE product_images SET licensed = 0 WHERE product_id IN (${ids}) AND file_path LIKE '/uploads/biblioteca/%'`),
+};
+
+/** Ação em lote: nos `ids` escolhidos ou em todos os resultados de um
+ *  filtro. Devolve quantos produtos foram afetados. */
+export async function bulkAction(db, action, { ids, criteria } = {}) {
+  const fn = BULK_ACTIONS[action];
+  if (!fn) throw new HttpError(400, 'invalid_action');
+  let alvo;
+  if (Array.isArray(ids)) {
+    const lista = [...new Set(ids.map(Number).filter((n) => Number.isInteger(n) && n > 0))].slice(0, 5000);
+    if (!lista.length) throw new HttpError(400, 'no_products', 'Nenhum produto selecionado.');
+    alvo = { sql: lista.join(','), n: lista.length };
+  } else if (criteria) {
+    const where = adminWhere(criteria);
+    const { results } = await db.prepare(`SELECT p.id FROM products p LEFT JOIN brands b ON b.id = p.brand_id WHERE ${where.sql}`).bind(...where.params).all();
+    if (!results.length) return 0;
+    alvo = { sql: results.map((r) => r.id).join(','), n: results.length };
+  } else {
+    throw new HttpError(400, 'no_products', 'Nenhum produto selecionado.');
+  }
+  await fn(db, alvo.sql).run();
+  return alvo.n;
 }
 
 export async function getAdminProductById(db, id) {

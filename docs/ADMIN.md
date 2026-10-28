@@ -63,11 +63,19 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
 - `/admin/login` — usuário e senha.
 - `/admin/trocar-senha` — obrigatória no primeiro acesso; disponível a
   qualquer momento depois disso.
-- `/admin/produtos` — lista com busca (nome, marca ou ID da OliSek) e uma
-  barra de abas com contador, na ordem definida no segundo fechamento da
-  V2 (atualizada em 28/10/2026): `Todos`, `Em estoque`, `Estoque baixo`,
-  `Vendidos`, `Publicados`, `Ocultos`, `Estoque zerado`, `Sem preço`, `Sem imagem`, `Sem vínculo OliSek`, `Precisa
-  revisão` (ver `ADMIN_FILTERS` em `src/services/catalog.js`),
+- `/admin/produtos` — lista **paginada (50 por página)** com busca (nome,
+  marca, ID da OliSek ou nome no relatório), filtros de **marca**,
+  **categoria** e **origem** (loja / Atlântico / ONUH) e abas com contador:
+  `Todos`, `Publicados`, `Ocultos`, `No relatório da loja`, `Foto a
+  liberar`, `Cadastros da loja`, `Biblioteca`, `Sem preço`, `Sem imagem`,
+  `Em estoque`, `Estoque baixo`, `Estoque zerado`, `Vendidos`, `Sem vínculo
+  OliSek`, `Precisa revisão` (ver `ADMIN_FILTERS` em
+  `src/services/catalog.js`). **Ações em lote** (só administração): marcar
+  produtos (ou "Selecionar a página") e escolher **Publicar**, **Ocultar**,
+  **Liberar fotos** ou **Bloquear fotos da biblioteca** — nos selecionados
+  ou em **todos os resultados do filtro atual** (ex.: origem Atlântico →
+  Liberar fotos, quando o fornecedor autorizar). Ver "Biblioteca" em
+  `docs/CATALOGO.md`.
   mostrando de cada produto: o vínculo com a OliSek (`confirmado` /
   `provável` / `precisa revisão` / `sem vínculo` — ver
   `docs/OLISEK-INTEGRATION.md`, hoje só informativo pro admin, não muda

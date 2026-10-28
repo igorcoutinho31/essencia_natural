@@ -30,6 +30,7 @@ npm run dev                    # site local em http://localhost:3000
 npm test                       # testes automáticos
 npm run cf:dev                 # roda no runtime da Cloudflare, local
 npm run cf:deploy              # publica na Cloudflare
+npm run cf:biblioteca -- <pasta> --remote   # importa a biblioteca de fornecedores (ver docs/CATALOGO.md)
 ```
 
 ## Leia antes de mexer
