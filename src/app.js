@@ -11,6 +11,7 @@ import * as auth from './auth.js';
 import * as catalog from './services/catalog.js';
 import * as inventory from './services/inventory.js';
 import * as olisek from './services/olisek.js';
+import * as team from './services/team.js';
 import { listSnapshots } from './services/autoBackup.js';
 import * as publicRoutes from './routes/public.js';
 import { productPage } from './routes/productPage.js';
@@ -131,6 +132,13 @@ async function adminRoutes(ctx) {
     if (pathname === '/api/admin/stock/movements' && method === 'GET') return adminApi.listMovements(ctx);
     if (pathname === '/api/admin/stock/olisek-sync' && method === 'POST') return adminApi.syncAllOlisek(ctx);
     if (pathname === '/api/admin/backup' && method === 'GET') return adminApi.backup(ctx);
+    if (pathname === '/api/admin/team' && method === 'POST') return adminApi.createTeamMember(ctx);
+    if (pathname === '/api/admin/team/order' && method === 'PUT') return adminApi.reorderTeam(ctx);
+    m = pathname.match(/^\/api\/admin\/team\/(\d+)$/);
+    if (m && method === 'PUT') return adminApi.updateTeamMember(ctx, m[1]);
+    if (m && method === 'DELETE') return adminApi.deleteTeamMember(ctx, m[1]);
+    m = pathname.match(/^\/api\/admin\/team\/(\d+)\/photo$/);
+    if (m && method === 'POST') return adminApi.uploadTeamPhoto(ctx, m[1]);
     m = pathname.match(/^\/api\/admin\/backups\/(\d+)$/);
     if (m && method === 'GET') return adminApi.autoBackupDownload(ctx, m[1]);
 
@@ -180,7 +188,7 @@ async function adminRoutes(ctx) {
     const filtroAtivo = filter in catalog.ADMIN_FILTERS ? filter : 'todos';
     const brandId = /^\d+$/.test(sp.get('marca') || '') ? sp.get('marca') : '';
     const category = (sp.get('categoria') || '').slice(0, 100);
-    const source = ['loja', 'atlantico', 'onuh'].includes(sp.get('origem')) ? sp.get('origem') : '';
+    const source = ['loja', 'importado'].includes(sp.get('origem')) ? sp.get('origem') : '';
     const pagina = await catalog.getAdminProductsPage(db, {
       q, filter: filtroAtivo, brandId, category, source, page: sp.get('pagina'),
     });
@@ -188,6 +196,16 @@ async function adminRoutes(ctx) {
       ...pagina, q, filtroAtivo, brandId, category, source,
       brands: await catalog.listBrandsAdmin(db), categories: await catalog.listCategories(db),
     });
+  }
+  if (pathname === '/admin/equipe') {
+    if (user.role !== 'admin') return redirect('/admin/produtos');
+    return adminPages.teamPage(user, { members: await team.listAdmin(db) });
+  }
+  if (pathname === '/admin/fotos') {
+    if (user.role !== 'admin') return redirect('/admin/produtos');
+    const sp = ctx.url.searchParams;
+    const source = ['loja', 'importado'].includes(sp.get('origem')) ? sp.get('origem') : '';
+    return adminPages.photoReviewPage(user, { ...(await catalog.getPhotoReviewPage(db, { source, page: sp.get('pagina') })), source });
   }
   if (pathname === '/admin/produtos/novo') {
     if (user.role !== 'admin') return redirect('/admin/produtos');
@@ -248,6 +266,7 @@ async function route(ctx) {
   let m = pathname.match(/^\/api\/products\/slug\/([^/]+)$/);
   if (m && method === 'GET') return publicRoutes.getProductBySlug(ctx, m[1]);
   if (pathname === '/api/brands' && method === 'GET') return publicRoutes.listBrands(ctx);
+  if (pathname === '/api/team' && method === 'GET') return publicRoutes.listTeam(ctx);
 
   if (pathname.startsWith('/api/admin/') || pathname === '/admin' || pathname.startsWith('/admin/')) {
     const res = await adminRoutes(ctx);

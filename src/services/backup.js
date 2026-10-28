@@ -7,7 +7,9 @@
 // senhas: guarde em lugar privado e apague depois de usar.
 import { Buffer } from 'node:buffer';
 
-export const BACKUP_TABLES = ['users', 'brands', 'products', 'product_images', 'price_history', 'settings', 'stock_movements'];
+export const BACKUP_TABLES = ['users', 'brands', 'products', 'product_images', 'price_history', 'settings', 'stock_movements', 'team_members'];
+// Tabelas que backups antigos não têm: nesse caso ficam como estão no destino.
+const TABELAS_NOVAS = new Set(['team_members']);
 
 export async function exportBackup(db, storage, { includeUploads = true } = {}) {
   const tables = {};
@@ -43,7 +45,10 @@ function sqlValue(v) {
 export function backupToSQL(backup, columnsByTable) {
   if (backup?.format !== 'essencia-natural-backup') throw new Error('Arquivo não é um backup da Essência Natural.');
   const out = ['PRAGMA defer_foreign_keys = true;', 'DROP TRIGGER IF EXISTS trg_stock_movements_apply;'];
-  for (const t of [...BACKUP_TABLES].reverse()) out.push(`DELETE FROM ${t};`);
+  for (const t of [...BACKUP_TABLES].reverse()) {
+    if (TABELAS_NOVAS.has(t) && !(columnsByTable[t] && backup.tables && t in backup.tables)) continue;
+    out.push(`DELETE FROM ${t};`);
+  }
   out.push('DELETE FROM sessions;', 'DELETE FROM login_attempts;');
   for (const t of BACKUP_TABLES) {
     const cols = columnsByTable[t];

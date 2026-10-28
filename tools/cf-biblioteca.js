@@ -1,5 +1,5 @@
 // Importa a biblioteca de cadastros (pacote Atlântico + ONUH) para o site.
-// Tudo entra OCULTO e com as fotos "a liberar" — a loja revisa e publica em
+// Tudo entra OCULTO (fotos já liberadas pelos fornecedores) — a loja revisa e publica em
 // lote no /admin (ver docs/CATALOGO.md, "Biblioteca").
 //
 // Antes: extraia o zip do catálogo numa pasta (precisa ter catalog.json e a
@@ -139,7 +139,7 @@ async function main() {
       enviados += ok.length;
       console.log(`  ${enviados}/${pendentes.length} fotos enviadas (${mb(total)} até agora)`);
     }
-    console.log(`\nPronto. ${r.novos} produto(s) entraram OCULTOS no /admin; ${enviados} foto(s) enviadas (${mb(total)}), todas "a liberar".`);
+    console.log(`\nPronto. ${r.novos} produto(s) entraram OCULTOS no /admin; ${enviados} foto(s) enviadas (${mb(total)}).`);
     if (falhas) console.log(`${falhas} foto(s) não puderam ser lidas e ficaram de fora (o produto entra sem foto).`);
     console.log('Próximo passo: /admin/produtos → filtros "Biblioteca" / "No relatório da loja" → selecionar → Publicar.');
   } finally {

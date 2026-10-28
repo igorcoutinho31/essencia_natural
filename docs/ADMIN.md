@@ -65,17 +65,23 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
   qualquer momento depois disso.
 - `/admin/produtos` — lista **paginada (50 por página)** com busca (nome,
   marca, ID da OliSek ou nome no relatório), filtros de **marca**,
-  **categoria** e **origem** (loja / Atlântico / ONUH) e abas com contador:
-  `Todos`, `Publicados`, `Ocultos`, `No relatório da loja`, `Foto a
-  liberar`, `Cadastros da loja`, `Biblioteca`, `Sem preço`, `Sem imagem`,
+  **categoria** e **origem** (cadastros da loja / catálogo importado) e abas
+  com contador: `Todos`, `Publicados`, `Ocultos`, `No relatório da loja`,
+  `Cadastros da loja`, `Catálogo importado`, `Sem preço`, `Sem imagem`,
   `Em estoque`, `Estoque baixo`, `Estoque zerado`, `Vendidos`, `Sem vínculo
   OliSek`, `Precisa revisão` (ver `ADMIN_FILTERS` em
   `src/services/catalog.js`). **Ações em lote** (só administração): marcar
-  produtos (ou "Selecionar a página") e escolher **Publicar**, **Ocultar**,
-  **Liberar fotos** ou **Bloquear fotos da biblioteca** — nos selecionados
-  ou em **todos os resultados do filtro atual** (ex.: origem Atlântico →
-  Liberar fotos, quando o fornecedor autorizar). Ver "Biblioteca" em
+  produtos (ou "Selecionar a página") e escolher **Publicar** ou **Ocultar**
+  — nos selecionados ou em **todos os resultados do filtro atual**. O
+  painel não mostra nome de fornecedor em lugar nenhum. Ver "Biblioteca" em
   `docs/CATALOGO.md`.
+- `/admin/fotos` (só administração) — a foto principal de cada produto em
+  grade, 120 por página, para bater o olho e tocar em **Tirar foto** nas
+  que tiverem logo, nome de loja ou marca d'água de outra empresa. O
+  produto fica com a imagem padrão até a loja enviar outra.
+- `/admin/equipe` (só administração) — quem aparece em "Nossa equipe" e na
+  escolha de atendimento da sacola: adicionar, renomear, trocar a foto,
+  esconder do site, mudar a ordem e remover. Ver `docs/TEAM.md`.
   mostrando de cada produto: o vínculo com a OliSek (`confirmado` /
   `provável` / `precisa revisão` / `sem vínculo` — ver
   `docs/OLISEK-INTEGRATION.md`, hoje só informativo pro admin, não muda

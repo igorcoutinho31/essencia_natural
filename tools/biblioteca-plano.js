@@ -4,7 +4,7 @@
 // (tools/cf-biblioteca.js) busca o estado atual do banco, chama isto e
 // executa o SQL; os testes chamam isto direto contra um banco em memória.
 import { slugify } from '../src/util.js';
-import { chave, chaveMarca, limparNome, categoria, extrairNotas, tokens, indiceRelatorio, casarRelatorio } from './biblioteca-regras.js';
+import { chave, chaveMarca, limparNome, tituloProduto, categoria, extrairNotas, tokens, indiceRelatorio, casarRelatorio } from './biblioteca-regras.js';
 
 const q = (v) => (v === null || v === undefined ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`);
 
@@ -67,14 +67,18 @@ export function planejar(catalogo, estado, relatorio = []) {
   const produtos = [];
   const fotos = new Map(); // key -> { key, localPath, existe }
   for (const { it, nome } of entram) {
-    let slug = slugify(nome); let i = 2;
-    while (slugs.has(slug)) slug = `${slugify(nome)}-${i++}`;
+    const marca = marcaPorChave.get(chaveMarca(it.brand)) || null;
+    // Nome de vitrine sem marca/volume/concentração (cada um tem seu campo);
+    // o endereço da página leva tudo, que é como o cliente procura no Google.
+    const t = tituloProduto(nome, { marca: marca ? marca.name : it.brand, volume: it.volume, concentracao: it.concentration });
+    const base = slugify([marca ? marca.name : '', t.nome, t.volume || ''].join(' ')) || slugify(nome);
+    let slug = base; let i = 2;
+    while (slugs.has(slug)) slug = `${base}-${i++}`;
     slugs.add(slug);
 
     const notas = it.source === 'onuh' ? extrairNotas(it.description) : {};
     const cat = categoria(it);
     const rel = casarRelatorio(idx, nome, it.brand);
-    const marca = marcaPorChave.get(chaveMarca(it.brand)) || null;
     const img = (it.images || []).find((x) => x && x.localPath && x.sha256);
     const foto = img ? { key: `biblioteca/${img.sha256}.webp`, localPath: img.localPath } : null;
     if (foto && !fotos.has(foto.key)) fotos.set(foto.key, { ...foto, existe: fotosExistentes.has(foto.key) });
@@ -85,9 +89,8 @@ export function planejar(catalogo, estado, relatorio = []) {
     resumo.porOrigem[it.source] = (resumo.porOrigem[it.source] || 0) + 1;
 
     produtos.push({
-      slug, name: nome, brandSlug: marca ? marca.slug : null, category: cat,
-      volume: it.volume ? String(it.volume).trim() : null,
-      concentration: it.concentration ? String(it.concentration).trim() : null,
+      slug, name: t.nome, brandSlug: marca ? marca.slug : null, category: cat,
+      volume: t.volume, concentration: t.concentracao,
       family: notas.familia || null, notesTop: notas.topo || null, notesHeart: notas.coracao || null, notesBase: notas.fundo || null,
       source: it.source, sourceId: it.sourceId, sourceUrl: it.sourceUrl || null,
       inStoreReport: rel ? 1 : 0, storeReportName: rel,
@@ -109,18 +112,18 @@ export function sqlCadastros(plano) {
     out.push(`INSERT OR IGNORE INTO products (slug, name, brand_id, category, volume, concentration, family, notes_top, notes_heart, notes_base,
   description, price, compare_price, stock, stock_source, active, featured, olisek_link_status, source, source_id, source_url, in_store_report, store_report_name)
 VALUES (${q(p.slug)}, ${q(p.name)}, ${p.brandSlug ? `(SELECT id FROM brands WHERE slug = ${q(p.brandSlug)})` : 'NULL'}, ${q(p.category)}, ${q(p.volume)}, ${q(p.concentration)}, ${q(p.family)}, ${q(p.notesTop)}, ${q(p.notesHeart)}, ${q(p.notesBase)},
-  NULL, NULL, NULL, 0, 'none', 0, 0, 'unlinked', ${q(p.source)}, ${q(p.sourceId)}, ${q(p.sourceUrl)}, ${p.inStoreReport}, ${q(p.storeReportName)});`);
+  NULL, NULL, NULL, 0, 'none', 0, 0, 'unlinked', ${q(p.source)}, ${q(p.sourceId)}, NULL, ${p.inStoreReport}, ${q(p.storeReportName)});`);
   }
   return out.join('\n') + '\n';
 }
 
-/** SQL que liga a foto principal (ainda "a liberar") a cada produto que usa
+/** SQL que liga a foto principal (já liberada) a cada produto que usa
  *  uma das `keys` — só se o produto ainda não tem nenhuma foto. */
 export function sqlLigarFotos(plano, keys) {
   const set = new Set(keys);
   return plano.produtos.filter((p) => p.foto && set.has(p.foto)).map((p) =>
     `INSERT INTO product_images (product_id, file_path, sort_order, is_main, licensed)
-SELECT p.id, ${q('/uploads/' + p.foto)}, 0, 1, 0 FROM products p
+SELECT p.id, ${q('/uploads/' + p.foto)}, 0, 1, 1 FROM products p
  WHERE p.source_id = ${q(p.sourceId)} AND NOT EXISTS (SELECT 1 FROM product_images pi WHERE pi.product_id = p.id);`).join('\n') + '\n';
 }
 

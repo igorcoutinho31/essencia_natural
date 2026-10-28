@@ -48,7 +48,7 @@
        quer confirmar disponibilidade. "produto", não "perfume": o catálogo
        tem itens que não são perfume (ex.: body cream). */
     function linkWhatsApp(p){
-      var nome = p && p.name || '';
+      var nome = p ? [p.brand, p.name, p.volume].filter(Boolean).join(' ') : '';
       var msg = p && !p.price
         ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + nome + '.'
         : 'Olá! Vim pelo site da Essência Natural e gostaria de saber mais sobre o produto ' + nome + '.';

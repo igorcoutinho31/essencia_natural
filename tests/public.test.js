@@ -121,3 +121,20 @@ test('arquivos estáticos e rotas internas', async (t) => {
   }
   assert.equal((await app.call('/api/nao-existe')).status, 404);
 });
+
+test('app (PWA): manifesto, service worker e página offline', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  const man = await app.call('/manifest.webmanifest');
+  assert.equal(man.status, 200);
+  assert.match(man.headers.get('content-type'), /manifest\+json/);
+  const m = JSON.parse(await man.text());
+  assert.equal(m.display, 'standalone');
+  assert.deepEqual(m.icons.map((i) => i.sizes), ['192x192', '512x512']);
+  for (const i of m.icons) assert.equal((await app.call(i.src)).status, 200, i.src);
+  assert.equal((await app.call('/sw.js')).status, 200);
+  assert.equal((await app.call('/offline.html')).status, 200);
+  const home = await (await app.call('/')).text();
+  assert.match(home, /<link rel="manifest" href="\/manifest\.webmanifest">/);
+  assert.match(home, /assets\/js\/app\.js/);
+});

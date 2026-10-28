@@ -57,15 +57,14 @@ cliente — não deduzir de novo a partir das imagens.
 - Nenhum nome, cargo ou história deve ser inventado — usar apenas o que for
   confirmado pelo cliente.
 
-## Também usada no checkout (23/09/2026)
-O modal "Escolher atendimento" da sacola (`assets/js/atendimento.js`) lê os
-nomes e fotos direto dos `<li class="pessoa">` da seção `#equipe` em
-`index.html` — não existe uma segunda lista de equipe em lugar nenhum.
-Nas páginas sem `#equipe` (ex.: `/produto/:slug`) o script busca a home e
-lê a mesma lista de lá; o próprio script também monta o `<dialog>`, então
-qualquer página que carregue a sacola ganha a etapa de atendimento só
-incluindo `atendimento.js` antes de `sacola.js`.
-Ou seja: trocar uma foto, remover ou adicionar alguém é
-editar só a seção `#equipe` (como já descrito acima); o passo de
-atendimento no WhatsApp acompanha sozinho, sem precisar mexer em mais
-nada. Ver `docs/CATALOGO.md` para o resto do fluxo da sacola.
+## Cuidada pelo painel (28/10/2026)
+A equipe agora fica no banco (`team_members`, `migrations/0007_equipe.sql`)
+e a loja cuida dela em **`/admin/equipe`**: adicionar, renomear, trocar a
+foto, esconder do site, reordenar e remover, sem mexer em código. A
+formação acima entrou como lista inicial, com as fotos oficiais.
+
+A seção `#equipe` da home e o modal "Escolher atendimento" da sacola
+(`assets/js/atendimento.js`) leem a mesma lista de `GET /api/team` (só
+primeiro nome e foto). A lista escrita em `index.html` ficou só de reserva,
+para o caso de a API falhar. Fotos enviadas pelo painel ficam em
+`/uploads/equipe/` e a foto trocada vai para a lixeira de 90 dias.

@@ -9,6 +9,42 @@ import { MIN_PASSWORD_LENGTH } from './adminApi.js';
 import { escapeHTML } from '../util.js';
 import { html } from '../http.js';
 
+// Funções de navegador usadas pelas telas do admin (pedido JSON, aviso,
+// redução de foto antes do envio).
+const JS_AJUDA = `
+    function post(url, method, data){
+      return fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: data != null ? JSON.stringify(data) : undefined })
+        .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw d; return d; }); });
+    }
+    function msg(el, texto, ok){
+      el.innerHTML = '';
+      var d = document.createElement('div');
+      d.className = 'a-msg ' + (ok ? 'a-msg-ok' : 'a-msg-err');
+      d.textContent = texto;
+      el.appendChild(d);
+      setTimeout(function(){ el.innerHTML=''; }, 5000);
+    }
+    // Reduz a foto no navegador (máx. 1600px, WEBP) antes do envio. Se o
+    // navegador não conseguir, manda o arquivo original.
+    function prepararFoto(file){
+      var MAX = 1600;
+      return new Promise(function(resolve){
+        var original = function(){ var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.readAsDataURL(file); };
+        if (!window.createImageBitmap || !document.createElement('canvas').toBlob) return original();
+        createImageBitmap(file).then(function(bmp){
+          var esc = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
+          var c = document.createElement('canvas');
+          c.width = Math.round(bmp.width * esc); c.height = Math.round(bmp.height * esc);
+          c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+          c.toBlob(function(blob){
+            if (!blob || blob.type !== 'image/webp' || (esc === 1 && blob.size >= file.size)) return original();
+            var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.readAsDataURL(blob);
+          }, 'image/webp', 0.85);
+        }).catch(original);
+      });
+    }
+`;
+
 function layout({ title, user, active, body }) {
   const nav = user ? `
     <header class="a-top">
@@ -16,6 +52,8 @@ function layout({ title, user, active, body }) {
       <div class="a-user">
         <span>${escapeHTML(user.name)} · ${user.role === 'admin' ? 'Administração' : 'Vendedora'}</span>
         <a href="/admin/produtos"${active === 'produtos' ? ' class="a-nav-ativo"' : ''}>Produtos</a>
+        ${user.role === 'admin' ? `<a href="/admin/fotos"${active === 'fotos' ? ' class="a-nav-ativo"' : ''}>Fotos</a>` : ''}
+        ${user.role === 'admin' ? `<a href="/admin/equipe"${active === 'equipe' ? ' class="a-nav-ativo"' : ''}>Equipe</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/estoque"${active === 'estoque' ? ' class="a-nav-ativo"' : ''}>Estoque</a>` : ''}
         <a href="/admin/trocar-senha">Trocar senha</a>
         <a href="/" target="_blank" rel="noopener">Ver site</a>
@@ -138,9 +176,8 @@ const FILTER_TABS = [
   ['publicados', 'Publicados'],
   ['ocultos', 'Ocultos'],
   ['no_relatorio', 'No relatório da loja'],
-  ['foto_pendente', 'Foto a liberar'],
   ['da_loja', 'Cadastros da loja'],
-  ['biblioteca', 'Biblioteca'],
+  ['biblioteca', 'Catálogo importado'],
   ['sem_preco', 'Sem preço'],
   ['sem_imagem', 'Sem imagem'],
   ['em_estoque', 'Em estoque'],
@@ -151,11 +188,8 @@ const FILTER_TABS = [
   ['precisa_revisao', 'Precisa revisão'],
 ];
 
-const SOURCE_NAMES = { atlantico: 'Atlântico', onuh: 'ONUH' };
-
 function origemBadge(p) {
-  if (!p.source) return '<span class="badge badge-ok">Loja</span>';
-  return `<span class="badge badge-muted" title="Cadastro da biblioteca de fornecedores">${escapeHTML(SOURCE_NAMES[p.source] || p.source)}</span>`;
+  return p.source ? '<span class="badge badge-muted">Importado</span>' : '<span class="badge badge-ok">Loja</span>';
 }
 
 /** Lista do /admin (paginada no banco). `view` = { q, filtroAtivo, brandId,
@@ -176,8 +210,7 @@ export function productsListPage(user, view) {
       ${isAdmin ? `<td><input type="checkbox" class="a-sel" value="${p.id}" aria-label="Selecionar ${escapeHTML(p.name)}"></td>` : ''}
       <td>${p.hasImage ? `<img class="a-thumb" src="${escapeHTML(p.image)}" alt="" loading="lazy" width="48" height="48">` : '<span class="badge badge-warn">sem foto</span>'}</td>
       <td>${escapeHTML(p.name)}<div class="a-help">${escapeHTML(p.brand || '—')}${p.volume ? ' · ' + escapeHTML(p.volume) : ''}${p.category ? ' · ' + escapeHTML(p.category) : ''}</div>
-        ${p.inStoreReport ? `<span class="badge badge-ok" title="${escapeHTML(p.storeReportName || '')}">no relatório da loja</span>` : ''}
-        ${p.pendingImages ? '<span class="badge badge-warn" title="Só aparece no site depois que a loja liberar o uso da foto">foto a liberar</span>' : ''}</td>
+        ${p.inStoreReport ? `<span class="badge badge-ok" title="${escapeHTML(p.storeReportName || '')}">no relatório da loja</span>` : ''}</td>
       <td>${origemBadge(p)}</td>
       <td>${p.price != null ? 'R$ ' + Number(p.price).toFixed(2).replace('.', ',') : '<span class="a-help">Consulte</span>'}</td>
       <td>${p.active ? '<span class="badge badge-ok">Publicado</span>' : '<span class="badge badge-muted">Oculto</span>'}${p.featured ? ' ★' : ''}</td>
@@ -194,7 +227,7 @@ export function productsListPage(user, view) {
         <input class="a-search" type="search" name="q" placeholder="Buscar por nome, marca ou ID OliSek" value="${escapeHTML(q || '')}">
         <select name="marca"><option value="">Todas as marcas</option>${brands.map((b) => opt(b.id, b.name, String(b.id) === String(brandId))).join('')}</select>
         <select name="categoria"><option value="">Todas as categorias</option>${categories.map((c) => opt(c, c, c === category)).join('')}</select>
-        <select name="origem"><option value="">Todas as origens</option>${opt('loja', 'Cadastros da loja', source === 'loja')}${opt('atlantico', 'Atlântico', source === 'atlantico')}${opt('onuh', 'ONUH', source === 'onuh')}</select>
+        <select name="origem"><option value="">Todas as origens</option>${opt('loja', 'Cadastros da loja', source === 'loja')}${opt('importado', 'Catálogo importado', source === 'importado')}</select>
         <button class="btn btn-ghost btn-sm" type="submit">Filtrar</button>
         ${(q || brandId || category || source) ? `<a class="btn btn-ghost btn-sm" href="${link({ q: '', marca: '', categoria: '', origem: '' })}">Limpar</a>` : ''}
       </form>`;
@@ -206,8 +239,6 @@ export function productsListPage(user, view) {
         <select id="a-lote-acao">
           <option value="publicar">Publicar no site</option>
           <option value="ocultar">Ocultar do site</option>
-          <option value="liberar_fotos">Liberar fotos (fornecedor autorizou)</option>
-          <option value="bloquear_fotos">Bloquear fotos da biblioteca</option>
         </select>
         <button class="btn btn-gold btn-sm" type="button" id="a-lote-sel">Aplicar nos selecionados</button>
         <button class="btn btn-ghost btn-sm" type="button" id="a-lote-filtro">Aplicar nos ${total} resultado${total === 1 ? '' : 's'} deste filtro</button>
@@ -280,6 +311,129 @@ export function productsListPage(user, view) {
   </div>
   ${script}`;
   return html(200, layout({ title: 'Produtos', user, active: 'produtos', body }));
+}
+
+/** Equipe (/admin/equipe): quem aparece em "Nossa equipe" e na escolha de
+ *  atendimento da sacola. Só o primeiro nome e a foto vão para o site. */
+export function teamPage(user, { members }) {
+  const itens = members.map((m, i) => `
+      <li class="a-pessoa${m.active ? '' : ' a-pessoa--oculta'}" data-id="${m.id}">
+        <div class="a-pessoa-foto">${m.photo ? `<img src="${escapeHTML(m.photo)}" alt="" width="120" height="160">` : '<span>sem foto</span>'}</div>
+        <div class="a-pessoa-dados">
+          <label class="a-help" for="t-nome-${m.id}">Nome no site</label>
+          <input id="t-nome-${m.id}" type="text" maxlength="40" value="${escapeHTML(m.name)}" data-campo="nome">
+          <div class="a-row" style="gap:6px; flex-wrap:wrap; margin-top:8px">
+            <button class="btn btn-gold btn-sm" type="button" data-acao="salvar">Salvar nome</button>
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer">Trocar foto<input type="file" accept="image/jpeg,image/png,image/webp" data-acao="foto" hidden></label>
+            <button class="btn btn-ghost btn-sm" type="button" data-acao="ativo">${m.active ? 'Esconder do site' : 'Mostrar no site'}</button>
+            ${i > 0 ? '<button class="btn btn-ghost btn-sm" type="button" data-acao="subir" title="Mover para cima">↑</button>' : ''}
+            ${i < members.length - 1 ? '<button class="btn btn-ghost btn-sm" type="button" data-acao="descer" title="Mover para baixo">↓</button>' : ''}
+            <button class="btn btn-danger btn-sm" type="button" data-acao="remover">Remover</button>
+          </div>
+          ${m.active ? '' : '<p class="a-help">Escondida: não aparece no site nem na escolha de atendimento.</p>'}
+        </div>
+      </li>`).join('');
+  const body = `
+  <div class="a-wrap">
+    <h1>Equipe</h1>
+    <p class="a-sub">Quem aparece em "Nossa equipe" no site e na hora de escolher o atendimento pela sacola. Só o primeiro nome e a foto vão para o site. A foto fica melhor em pé (retrato), com o rosto no centro.</p>
+    <div id="a-msg-equipe"></div>
+    <div class="a-card">
+      <h2>Adicionar pessoa</h2>
+      <form class="a-row" id="t-novo" style="gap:8px; flex-wrap:wrap">
+        <input type="text" name="nome" maxlength="40" placeholder="Primeiro nome" required style="max-width:260px">
+        <button class="btn btn-gold btn-sm" type="submit">Adicionar</button>
+      </form>
+      <p class="a-help">Depois de adicionar, envie a foto pelo botão "Trocar foto".</p>
+    </div>
+    <ul class="a-equipe" id="t-lista">${itens || '<li class="a-help">Ninguém cadastrado ainda.</li>'}</ul>
+  </div>
+  <script>
+    (function(){
+      ${JS_AJUDA}
+      var aviso = document.getElementById('a-msg-equipe');
+      function erro(e){ msg(aviso, (e && e.message) || 'Não deu certo. Tente de novo.', false); }
+      function recarregar(){ location.reload(); }
+      document.getElementById('t-novo').addEventListener('submit', function(ev){
+        ev.preventDefault();
+        post('/api/admin/team', 'POST', { name: ev.target.nome.value }).then(recarregar).catch(erro);
+      });
+      var lista = document.getElementById('t-lista');
+      function ordemAtual(){ return [].map.call(lista.querySelectorAll('.a-pessoa'), function(li){ return Number(li.dataset.id); }); }
+      lista.addEventListener('click', function(ev){
+        var btn = ev.target.closest('button[data-acao]'); if (!btn) return;
+        var li = btn.closest('.a-pessoa'); var id = li.dataset.id; var acao = btn.dataset.acao;
+        if (acao === 'salvar') {
+          post('/api/admin/team/' + id, 'PUT', { name: li.querySelector('[data-campo="nome"]').value })
+            .then(function(){ msg(aviso, 'Nome salvo.', true); }).catch(erro);
+        } else if (acao === 'ativo') {
+          post('/api/admin/team/' + id, 'PUT', { active: li.classList.contains('a-pessoa--oculta') }).then(recarregar).catch(erro);
+        } else if (acao === 'subir' || acao === 'descer') {
+          var ids = ordemAtual(); var i = ids.indexOf(Number(id)); var j = acao === 'subir' ? i - 1 : i + 1;
+          var t = ids[i]; ids[i] = ids[j]; ids[j] = t;
+          post('/api/admin/team/order', 'PUT', { ids: ids }).then(recarregar).catch(erro);
+        } else if (acao === 'remover') {
+          if (!confirm('Remover esta pessoa da equipe? Para só tirar do site por um tempo, use "Esconder do site".')) return;
+          post('/api/admin/team/' + id, 'DELETE').then(recarregar).catch(erro);
+        }
+      });
+      lista.addEventListener('change', function(ev){
+        var input = ev.target; if (input.dataset.acao !== 'foto' || !input.files[0]) return;
+        var li = input.closest('.a-pessoa');
+        msg(aviso, 'Enviando foto…', true);
+        prepararFoto(input.files[0]).then(function(dataUrl){
+          return post('/api/admin/team/' + li.dataset.id + '/photo', 'POST', { dataUrl: dataUrl });
+        }).then(recarregar).catch(erro);
+      });
+    })();
+  </script>`;
+  return html(200, layout({ title: 'Equipe', user, active: 'equipe', body }));
+}
+
+/** Revisão de fotos em grade: bater o olho e tirar, com um toque, foto com
+ *  logo ou marca d'água de outra empresa. O produto fica sem foto (aparece
+ *  com a imagem padrão) até a loja enviar outra. */
+export function photoReviewPage(user, { items, total, page, perPage, source }) {
+  const paginas = Math.max(1, Math.ceil(total / perPage));
+  const link = (pg, origem = source) => {
+    const qs = new URLSearchParams();
+    if (origem) qs.set('origem', origem);
+    if (pg > 1) qs.set('pagina', pg);
+    return '/admin/fotos' + (qs.toString() ? '?' + qs.toString() : '');
+  };
+  const cards = items.map((it) => `
+      <figure class="a-foto" data-produto="${it.id}" data-imagem="${it.imageId}">
+        <a href="/admin/produtos/${it.id}"><img src="${escapeHTML(it.image)}" alt="" loading="lazy" width="160" height="160"></a>
+        <figcaption>${escapeHTML(it.name)}<span class="a-help">${escapeHTML(it.brand || '—')}${it.active ? ' · publicado' : ''}</span></figcaption>
+        <button class="btn btn-danger btn-sm" type="button" data-acao="tirar">Tirar foto</button>
+      </figure>`).join('');
+  const abas = [['', 'Todas'], ['importado', 'Catálogo importado'], ['loja', 'Cadastros da loja']]
+    .map(([v, l]) => `<a class="a-tab${v === source ? ' a-tab--ativo' : ''}" href="${link(1, v)}">${l}</a>`).join('');
+  const body = `
+  <div class="a-wrap">
+    <h1>Fotos</h1>
+    <p class="a-sub">A foto principal de cada produto (${total}). Viu alguma com logo, nome de loja ou marca d'água de outra empresa? Toque em <b>Tirar foto</b>: o produto fica com a imagem padrão até vocês enviarem outra.</p>
+    <div class="a-tabs">${abas}</div>
+    <div id="a-msg-fotos"></div>
+    <div class="a-fotos">${cards || '<p class="a-help">Nenhuma foto aqui.</p>'}</div>
+    ${paginas > 1 ? `<div class="a-row a-paginas" style="justify-content:center; gap:8px; margin-top:14px">
+      ${page > 1 ? `<a class="btn btn-ghost btn-sm" href="${link(page - 1)}">&larr; Anterior</a>` : ''}
+      <span class="a-help">Página ${page} de ${paginas}</span>
+      ${page < paginas ? `<a class="btn btn-ghost btn-sm" href="${link(page + 1)}">Próxima &rarr;</a>` : ''}
+    </div>` : ''}
+  </div>
+  <script>
+    document.querySelector('.a-fotos').addEventListener('click', function(ev){
+      var btn = ev.target.closest('[data-acao="tirar"]'); if (!btn) return;
+      var fig = btn.closest('.a-foto');
+      if (!confirm('Tirar esta foto do produto? Ele fica com a imagem padrão até vocês enviarem outra.')) return;
+      btn.disabled = true;
+      fetch('/api/admin/products/' + fig.dataset.produto + '/images/' + fig.dataset.imagem, { method: 'DELETE' })
+        .then(function(r){ if (!r.ok) throw new Error(); fig.classList.add('a-foto--removida'); btn.textContent = 'Foto retirada'; })
+        .catch(function(){ btn.disabled = false; document.getElementById('a-msg-fotos').innerHTML = '<div class="a-msg a-msg-err">Não deu para tirar a foto. Tente de novo.</div>'; });
+    });
+  </script>`;
+  return html(200, layout({ title: 'Fotos', user, active: 'fotos', body }));
 }
 
 export function productFormPage(user, product, { brands, categories = [], movements = [], olisekConfigured = false }) {
@@ -431,7 +585,6 @@ export function productFormPage(user, product, { brands, categories = [], moveme
         ${p.images.map((img) => `
           <div class="a-img ${img.isMain ? 'main' : ''}" data-id="${img.id}">
             <img src="${escapeHTML(img.path)}" alt="">
-            ${img.licensed ? '' : '<span class="badge badge-warn a-img-pend" title="Foto de fornecedor: só aparece no site depois de liberada">a liberar</span>'}
             <div class="a-img-actions">
               <button type="button" data-action="main" title="Definir como principal">★</button>
               <button type="button" data-action="del" title="Excluir">🗑</button>
@@ -441,15 +594,12 @@ export function productFormPage(user, product, { brands, categories = [], moveme
       <label class="a-drop" for="a-file-input" id="a-drop">Clique para escolher uma foto (JPG, PNG ou WEBP)</label>
       <input type="file" id="a-file-input" accept="image/jpeg,image/png,image/webp" style="display:none">
       <p class="a-help">A foto é reduzida automaticamente (até 1600px, formato WEBP) antes de ir para o site — pode mandar direto da câmera do celular.</p>
-      ${isAdmin && p.pendingImages ? `<p class="a-help"><b>${p.pendingImages} foto(s) de fornecedor ainda não liberada(s)</b> — só aparecem aqui no admin. Libere quando a loja confirmar que o fornecedor autoriza o uso, ou envie uma foto própria.</p>
-        <button class="btn btn-ghost btn-sm" type="button" id="f-liberar-fotos">Liberar fotos deste produto</button>` : ''}
     </div>`;
 
   const body = `
   <div class="a-wrap">
     <p><a href="/admin/produtos">&larr; Voltar para produtos</a></p>
     <h1>${isNew ? 'Novo produto' : escapeHTML(p.name)}</h1>
-    ${!isNew && p.source ? `<p class="a-help">Cadastro da biblioteca de fornecedores: <b>${escapeHTML(SOURCE_NAMES[p.source] || p.source)}</b>${p.sourceUrl ? ` · <a href="${escapeHTML(p.sourceUrl)}" target="_blank" rel="noopener noreferrer">ver página de origem</a>` : ''}${p.concentration ? ` · ${escapeHTML(p.concentration)}` : ''}</p>` : ''}
     ${!isNew && p.inStoreReport ? `<p class="a-help"><span class="badge badge-ok">no relatório da loja</span> como "${escapeHTML(p.storeReportName || '')}"</p>` : ''}
     <div id="a-msg-topo"></div>
     <div class="a-card">${camposBase}</div>
@@ -460,37 +610,7 @@ export function productFormPage(user, product, { brands, categories = [], moveme
   </div>
   <script>
     var PRODUCT_ID = ${isNew ? 'null' : p.id};
-    function post(url, method, data){
-      return fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: data != null ? JSON.stringify(data) : undefined })
-        .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw d; return d; }); });
-    }
-    function msg(el, texto, ok){
-      el.innerHTML = '';
-      var d = document.createElement('div');
-      d.className = 'a-msg ' + (ok ? 'a-msg-ok' : 'a-msg-err');
-      d.textContent = texto;
-      el.appendChild(d);
-      setTimeout(function(){ el.innerHTML=''; }, 5000);
-    }
-    // Reduz a foto no navegador (máx. 1600px, WEBP) antes do envio. Se o
-    // navegador não conseguir, manda o arquivo original.
-    function prepararFoto(file){
-      var MAX = 1600;
-      return new Promise(function(resolve){
-        var original = function(){ var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.readAsDataURL(file); };
-        if (!window.createImageBitmap || !document.createElement('canvas').toBlob) return original();
-        createImageBitmap(file).then(function(bmp){
-          var esc = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
-          var c = document.createElement('canvas');
-          c.width = Math.round(bmp.width * esc); c.height = Math.round(bmp.height * esc);
-          c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
-          c.toBlob(function(blob){
-            if (!blob || blob.type !== 'image/webp' || (esc === 1 && blob.size >= file.size)) return original();
-            var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.readAsDataURL(blob);
-          }, 'image/webp', 0.85);
-        }).catch(original);
-      });
-    }
+    ${JS_AJUDA}
     ${isAdmin ? `
     var salvarCadastro = document.getElementById('f-salvar-cadastro');
     if (salvarCadastro) salvarCadastro.addEventListener('click', function(){
@@ -566,12 +686,6 @@ export function productFormPage(user, product, { brands, categories = [], moveme
           syncOlisek.disabled = false; syncOlisek.textContent = 'Sincronizar agora com a OliSek';
           msg(document.getElementById('a-msg-olisek'), (e && e.error) || (e && e.message) || 'Erro ao sincronizar.', false);
         });
-    });
-    var liberar = document.getElementById('f-liberar-fotos');
-    if (liberar) liberar.addEventListener('click', function(){
-      if (!confirm('A loja confirmou que o fornecedor autoriza usar estas fotos no site?')) return;
-      post('/api/admin/products/bulk', 'POST', { action: 'liberar_fotos', ids: [PRODUCT_ID] }).then(function(){ location.reload(); })
-        .catch(function(e){ msg(document.getElementById('a-msg-topo'), (e && e.message) || 'Erro.', false); });
     });
     var despub = document.getElementById('f-despublicar');
     if (despub) despub.addEventListener('click', function(){

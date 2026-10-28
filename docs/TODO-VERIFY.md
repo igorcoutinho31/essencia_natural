@@ -60,16 +60,17 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
   produto avulso — confirmar se deve sair do catálogo.
 
 ## Biblioteca de fornecedores — direitos de uso (28/10/2026)
-- PENDENTE: confirmar com **Atlântico** e com **ONUH** se a loja pode usar
-  as fotos de produto deles no site. Até lá, as fotos importadas ficam
-  "a liberar" (só no admin). Ao confirmar, registrar aqui e liberar em lote
-  no admin (filtro de origem → "Liberar fotos").
+- RESOLVIDO (28/10/2026): o responsável pelo site confirmou que os dois
+  fornecedores autorizaram o uso das fotos de produto. Todas foram
+  liberadas (`migrations/0006_fotos_liberadas.sql`) e o painel deixou de
+  mostrar nome e link de fornecedor. Foto com logo/marca d'água de outra
+  empresa: tirar em `/admin/fotos`.
 - O texto de venda da ONUH NÃO foi importado (regra do projeto: não copiar
   texto de benchmark). Descrições próprias, se a loja quiser, precisam ser
   escritas — nunca copiadas.
-- Nomes da biblioteca vêm como o fornecedor escreve (às vezes com a marca
-  repetida, ex.: "Wataniah Al Wataniah ..."). Revisar o nome antes de
-  publicar quando estiver estranho.
+- Nomes: `npm run cf:limpar-nomes` tira marca, volume e concentração
+  repetidos do nome (ver `docs/CATALOGO.md`). Ainda vale revisar o nome
+  antes de publicar quando estiver estranho.
 
 ## Envios
 - Rede social menciona "Envios para todo o Brasil" — usar como informação

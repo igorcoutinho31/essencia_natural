@@ -96,12 +96,19 @@ regras em `tools/biblioteca-regras.js` e `tools/biblioteca-plano.js`).
   olfativas e família (extraídas da descrição da ONUH). O **texto de venda
   da ONUH não é copiado** — o campo descrição fica vazio. Preço e estoque
   não vêm do pacote.
-- **Fotos de fornecedor entram "a liberar"** (`product_images.licensed = 0`):
-  aparecem só dentro do `/admin` (o endereço `/uploads/biblioteca/...` dá
-  404 para o público). Um produto publicado com foto ainda não liberada
-  aparece no site com a imagem padrão. A loja libera as fotos quando o
-  fornecedor confirmar que autoriza o uso (por produto, ou em lote:
-  filtro de origem → "Liberar fotos") — ou envia foto própria.
+- **Fotos liberadas** (28/10/2026): os fornecedores autorizaram o uso, e
+  todas as fotos importadas são públicas assim que o produto é publicado
+  (`migrations/0006_fotos_liberadas.sql`). O painel não mostra nome nem
+  link de fornecedor. Foto com logo ou marca d'água de outra empresa: tirar
+  em `/admin/fotos`. (O mecanismo `product_images.licensed` continua no
+  código, sem uso na tela.)
+- **Nome de vitrine limpo**: o nome não repete marca, volume nem
+  concentração, que têm campo próprio ("AL WATANIAH EQAAB EDP H 100ML" vira
+  "Eqaab", marca Al Wataniah, EDP, 100 ml — `tituloProduto` em
+  `tools/biblioteca-regras.js`). O título da página, o Google e a mensagem
+  de WhatsApp juntam tudo ("Al Wataniah Eqaab 100 ml"). Para os produtos já
+  importados: `npm run cf:limpar-nomes -- --remote --simular` e depois sem
+  `--simular` (o endereço das páginas não muda).
 - **Uma foto por produto**, reduzida no PC para 800 px/WEBP (~30–60 KB).
   As fotos ficam no D1; o importador para antes de passar de ~380 MB
   (o banco grátis vai até 500 MB) e aceita `--lado 600` para caber mais.

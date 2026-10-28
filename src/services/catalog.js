@@ -234,7 +234,7 @@ export function adminWhere({ q, filter, brandId, category, source } = {}) {
   if (brandId) { parts.push('p.brand_id = ?'); params.push(Number(brandId)); }
   if (category) { parts.push('p.category = ?'); params.push(String(category)); }
   if (source === 'loja') parts.push('p.source IS NULL');
-  else if (source) { parts.push('p.source = ?'); params.push(String(source)); }
+  else if (source === 'importado') parts.push('p.source IS NOT NULL');
   return { sql: parts.join(' AND '), params };
 }
 
@@ -256,6 +256,25 @@ export async function getAdminProductsPage(db, { q, filter, brandId, category, s
     page: pg,
     perPage,
     counts: Object.fromEntries(Object.keys(ADMIN_FILTERS).map((k) => [k, Number(c[k] || 0)])),
+  };
+}
+
+export const PHOTO_REVIEW_PAGE_SIZE = 120;
+
+/** Revisão rápida de fotos (/admin/fotos): a foto principal de cada produto,
+ *  em grade, para achar e tirar fotos com logo/marca d'água de terceiros. */
+export async function getPhotoReviewPage(db, { source = '', page = 1, perPage = PHOTO_REVIEW_PAGE_SIZE } = {}) {
+  const pg = Math.max(1, parseInt(page, 10) || 1);
+  const where = source === 'loja' ? 'p.source IS NULL' : source === 'importado' ? 'p.source IS NOT NULL' : '1=1';
+  const [lista, total] = await db.batch([
+    db.prepare(`SELECT p.id, p.name, p.active, b.name AS brand, pi.id AS image_id, pi.file_path AS image
+      FROM product_images pi JOIN products p ON p.id = pi.product_id LEFT JOIN brands b ON b.id = p.brand_id
+      WHERE pi.is_main = 1 AND ${where} ORDER BY p.in_store_report DESC, p.id ASC LIMIT ? OFFSET ?`).bind(perPage, (pg - 1) * perPage),
+    db.prepare(`SELECT COUNT(*) AS n FROM product_images pi JOIN products p ON p.id = pi.product_id WHERE pi.is_main = 1 AND ${where}`),
+  ]);
+  return {
+    items: lista.results.map((r) => ({ id: r.id, name: r.name, brand: r.brand, active: !!r.active, imageId: r.image_id, image: r.image })),
+    total: total.results[0].n, page: pg, perPage,
   };
 }
 

@@ -51,8 +51,10 @@ GitHub. Nada do que você faz no computador mexe no site no ar.
 | Grade de marcas | `public/assets/js/marcas.js` (as marcas vêm do banco) |
 | Menu do celular | `public/assets/js/menu.js` |
 | Animações discretas | `public/assets/js/vida.js` |
-| Fotos da equipe, logos de marcas, ícones | `public/assets/team/`, `public/assets/brands/`, `public/assets/icons/` |
+| Equipe (nomes e fotos) | pelo painel, em `/admin/equipe` |
+| Logos de marcas, ícones | `public/assets/brands/`, `public/assets/icons/` |
 | Telas do painel `/admin` | `src/routes/adminPages.js` e `public/assets/css/admin.css` |
+| App no celular (ícone, offline) | `public/manifest.webmanifest`, `public/sw.js`, `public/offline.html` |
 | Regras do catálogo (o que é público, filtros) | `src/services/catalog.js` |
 | Estoque (entradas, saídas, histórico) | `src/services/inventory.js` |
 | Cabeçalhos de segurança e cache | `public/_headers` e `src/http.js` (manter iguais) |
@@ -89,6 +91,7 @@ wrangler.toml  configuração da Cloudflare (Worker, banco, domínio, agendament
 | `npm run cf:dev` | roda no ambiente da Cloudflare, no computador |
 | `npm run cf:admin -- <ação> --remote` | contas do `/admin` no site no ar (criar, resetar senha, desativar) |
 | `npm run cf:biblioteca -- <pasta> --remote` | importa a biblioteca de fornecedores (tudo oculto) |
+| `npm run cf:limpar-nomes -- --remote --simular` | limpa os nomes (sem marca/volume/EDP repetidos); sem `--simular` grava |
 | `npm run cf:smoke -- <endereço>` | confere se o site no ar está respondendo certo |
 | `npm run cf:importar` | substitui o banco da Cloudflare por um backup (recuperação) |
 
@@ -128,6 +131,7 @@ antes (ver `docs/REGRAS.md`).
 | `docs/CATALOGO.md` | regras do catálogo, curadoria e biblioteca de fornecedores |
 | `docs/OLISEK-INTEGRATION.md` | integração com o sistema da loja (OliSek) |
 | `docs/SITEMAP.md` | sitemap e Google Search Console |
+| `docs/APP.md` | o site instalado como app no celular (PWA) |
 | `docs/BRAND-BRIEF.md`, `docs/TEAM.md`, `docs/PRODUCTS.md` | dados confirmados da marca, equipe e produtos |
 | `docs/SITE-ARCHITECTURE.md`, `docs/SOCIAL-RESEARCH.md` | estrutura da home e pesquisa de referência |
 

@@ -29,6 +29,11 @@
 <link rel="icon" href="assets/icons/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Essência Natural">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -256,17 +261,9 @@
       <p class="equipe-sub">É a mesma equipe que te recebe na loja e responde o seu pedido no WhatsApp — na hora de finalizar pela sacola, você escolhe com quem prefere falar.</p>
     </div>
 
-    <!-- Só o nome é publicado: cargo, sobrenome, função e história ainda
-         não foram confirmados pelo cliente (ver docs/TODO-VERIFY.md).
-         PARA ADICIONAR ALGUÉM: duplique um <li> abaixo, troque o src e o
-         nome (foto em assets/team/, retrato 3:4 — 900x1200 em WebP). O
-         grid é auto-fit — não precisa mexer no CSS. A etapa "Escolher
-         atendimento" da sacola lê esta mesma lista, na mesma ordem.
-         <li class="pessoa">
-           <img src="assets/team/NOME.webp" alt="NOME, da equipe da Essência Natural"
-                width="900" height="1200" loading="lazy" decoding="async">
-           <p class="pessoa-nome">NOME</p>
-         </li> -->
+    <!-- A equipe é cuidada pela loja em /admin/equipe: assets/js/atendimento.js
+         troca esta lista pela de /api/team ao carregar a página. A lista
+         abaixo só vale se a API falhar. Só o primeiro nome é publicado. -->
     <ul class="equipe-grid" role="list">
       <li class="pessoa">
         <img src="assets/team/bassam-v2.webp" alt="Bassam, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
@@ -484,12 +481,13 @@
   <button type="button" id="toast-ver">Ver sacola</button>
 </div>
 
+<script src="assets/js/app.js?v=20261028-1"></script>
 <script src="assets/js/menu.js?v=20261028-1"></script>
-<script src="assets/js/atendimento.js?v=20261028-1"></script>
-<script src="assets/js/sacola.js?v=20261028-1"></script>
+<script src="assets/js/atendimento.js?v=20261028-2"></script>
+<script src="assets/js/sacola.js?v=20261028-2"></script>
 <script src="assets/js/vida.js?v=20261028-1"></script>
 <script src="assets/js/marcas.js?v=20261028-1"></script>
-<script src="assets/js/catalogo.js?v=20261028-1"></script>
+<script src="assets/js/catalogo.js?v=20261028-2"></script>
 
 
 </body>
