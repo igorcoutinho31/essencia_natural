@@ -40,7 +40,7 @@ export function computeAvailability(row) {
   return { code: 'em_estoque', label: 'Em estoque' };
 }
 
-function rowToPublic(row) {
+function rowToPublic(row, salesRank = null) {
   const status = PUBLIC_AVAILABILITY;
   return {
     id: row.slug,
@@ -50,6 +50,7 @@ function rowToPublic(row) {
     brandSlug: row.brand_slug || null,
     category: row.category,
     volume: row.volume,
+    concentration: row.concentration || null,
     gender: row.gender,
     family: row.family,
     description: row.description,
@@ -60,6 +61,9 @@ function rowToPublic(row) {
     stockLabel: status.label,
     active: !!row.active,
     featured: !!row.featured,
+    // Posição entre os mais vendidos (1 = o que mais vendeu), só para
+    // ordenar a vitrine — a quantidade vendida nunca sai para o público.
+    salesRank,
     image: row.main_image || PLACEHOLDER_IMAGE,
     hasImage: !!row.main_image,
     images: [],
@@ -142,8 +146,18 @@ async function publicRows(db) {
   return (await all(db.prepare(`${PUBLIC_SELECT} WHERE p.active = 1 ORDER BY p.id ASC`))).filter(isPubliclyVisible);
 }
 
+/** id -> posição entre os mais vendidos (só quem tem venda registrada). */
+function salesRanks(rows) {
+  const ranks = new Map();
+  rows.filter((r) => Number(r.sales) > 0)
+    .sort((a, b) => Number(b.sales) - Number(a.sales) || a.id - b.id)
+    .forEach((r, i) => ranks.set(r.id, i + 1));
+  return ranks;
+}
+
 export async function getPublicProducts(db, { q, brand, gender, category, availability, featured, sort } = {}) {
   let rows = await publicRows(db);
+  const ranks = salesRanks(rows);
   if (q) {
     const t = normalizeText(q);
     rows = rows.filter((r) => normalizeText(r.name).includes(t) || normalizeText(r.brand_name).includes(t));
@@ -158,9 +172,10 @@ export async function getPublicProducts(db, { q, brand, gender, category, availa
   if (sort === 'price_asc') rows = comPreco((a, b) => a.price - b.price);
   else if (sort === 'price_desc') rows = comPreco((a, b) => b.price - a.price);
   else if (sort === 'az') rows = rows.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+  else if (sort === 'vendidos') rows = rows.filter((r) => ranks.has(r.id)).sort((a, b) => ranks.get(a.id) - ranks.get(b.id));
   // 'catalogo' (padrão): ordem de criação
 
-  return rows.map(rowToPublic);
+  return rows.map((r) => rowToPublic(r, ranks.get(r.id) ?? null));
 }
 
 /** Produto público + relacionados (mesma marca, depois mesma categoria,
@@ -179,7 +194,7 @@ export async function getPublicProductPage(db, slug, relatedLimit = 4) {
   const related = [...sameBrand, ...sameCat, ...outros]
     .filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)))
     .slice(0, relatedLimit)
-    .map(rowToPublic);
+    .map((r) => rowToPublic(r));
   return { product, related };
 }
 

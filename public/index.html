@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Essência Natural — Perfumes árabes e importados em São Paulo</title>
 <meta name="description" content="Perfumaria de perfumes árabes e importados na Galeria Pagé, centro de São Paulo. Varejo e atacado, atendimento pelo WhatsApp e envios para todo o Brasil.">
-<meta name="theme-color" content="#0b0906">
+<meta name="theme-color" content="#0e0c0a">
 <meta name="author" content="Essência Natural">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Essência Natural">
@@ -63,122 +63,170 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261028-1">
+<link rel="preload" as="image" href="assets/store/prateleiras-poster.webp" type="image/webp">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="assets/css/site.css?v=20261029-1">
+<script src="assets/js/inicio.js?v=20261029-1"></script>
+</head>
+<body>
 
+<a class="sr-only" href="#catalogo">Pular para o catálogo</a>
+
+<p class="faixa">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé<span class="faixa-x"> <i aria-hidden="true">◆</i> Envios para todo o Brasil</span></p>
 
 <header class="site-header">
   <div class="header-inner">
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+
     <a class="brand" href="#hero" aria-label="Essência Natural — início">
+      <img src="assets/images/logo-essencia-natural.webp" alt="" width="44" height="44">
       <span class="name">Essência Natural</span>
-      <span class="ar" lang="ar" dir="rtl">العطور</span>
     </a>
 
     <nav class="nav" id="nav" aria-label="Navegação principal">
+      <a href="#destaques">Destaques</a>
       <a href="#catalogo">Catálogo</a>
-      <a href="#marcas">Marcas</a>
+      <a href="#mais-vendidos">Mais vendidos</a>
       <a href="#canais">Atacado</a>
-      <a href="#envios">Envios</a>
-      <a href="#loja">Loja</a>
-      <a class="header-cta" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
+      <a href="#loja">A loja</a>
+      <a href="#faq">Dúvidas</a>
+      <a class="btn btn-primary header-cta" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
     </nav>
 
     <div class="header-acoes">
+      <a class="icon-btn" href="#catalogo" data-busca aria-label="Buscar no catálogo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </a>
       <button class="bag-btn" id="bag-btn" type="button" aria-haspopup="dialog" aria-label="Abrir sacola">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8.5h13l1 11.5h-15l1-11.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
         <span class="bag-n" id="bag-n" hidden>0</span>
       </button>
-      <button class="nav-toggle" id="nav-toggle" type="button"
-              aria-expanded="false" aria-controls="nav" aria-label="Abrir menu">
-        <span></span><span></span><span></span>
-      </button>
+      <a class="btn btn-primary btn-sm" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">WhatsApp</a>
     </div>
   </div>
   <div class="progresso" id="progresso" aria-hidden="true"></div>
 </header>
 
-<a class="wa-float" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
-  <svg viewBox="0 0 32 32"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.65 4.56 1.78 6.45L4 29l7.72-1.72a11.94 11.94 0 0 0 4.3.8h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.64 3 16.02 3Zm0 21.86h-.01a9.9 9.9 0 0 1-5.05-1.39l-.36-.21-4.58 1.02 1.04-4.47-.24-.37a9.86 9.86 0 0 1-1.5-5.42c0-5.46 4.44-9.9 9.9-9.9 5.45 0 9.88 4.44 9.88 9.9 0 5.46-4.43 9.84-9.08 9.84Zm5.42-7.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.36-1.46-.87-.78-1.46-1.74-1.63-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.47 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.22 5.1 4.5.71.3 1.27.49 1.7.63.72.23 1.36.2 1.88.12.57-.08 1.76-.72 2-1.42.24-.7.24-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
-</a>
-
+<main>
 <section id="hero" aria-label="Essência Natural — abertura">
-  <div class="hero-bg" aria-hidden="true">
-    <svg class="hero-pattern" role="presentation">
-      <defs>
-        <pattern id="girih" width="72" height="72" patternUnits="userSpaceOnUse">
-          <g fill="none" stroke="rgba(201,164,76,.22)" stroke-width="1">
-            <rect x="18" y="18" width="36" height="36"/>
-            <rect x="18" y="18" width="36" height="36" transform="rotate(45 36 36)"/>
-            <circle cx="36" cy="36" r="3.2"/>
-            <path d="M0 36h9M63 36h9M36 0v9M36 63v9"/>
-          </g>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#girih)"/>
-    </svg>
-    <div class="hero-haze hero-haze--a"></div>
-    <div class="hero-haze hero-haze--b"></div>
-    <canvas class="hero-particulas" id="hero-particulas"></canvas>
-
-    <!-- SLOT DE FOTO REAL ————————————————————————————————————
-         Havendo foto da loja, descomente a linha abaixo: ela entra como
-         fundo do hero e o véu acima garante a leitura do texto.
-    <img class="hero-photo" src="assets/store/vitrine.jpg" alt="">
-         ———————————————————————————————————————————————————— -->
-
-    <div class="hero-scrim"></div>
+  <div class="hero-media" aria-hidden="true">
+    <!-- Prateleiras reais da loja (trecho do vídeo enviado em 28/10/2026, sem
+         pessoas). Sem movimento reduzido e sem economia de dados, o vídeo
+         entra por cima da foto (assets/js/home.js). -->
+    <img src="assets/store/prateleiras-poster.webp" alt="" width="720" height="1280" fetchpriority="high">
   </div>
+  <div class="hero-scrim" aria-hidden="true"></div>
 
   <div class="wrap hero-conteudo">
-    <div class="hero-brasao">
-      <div class="brasao-selo">
-        <picture>
-          <source srcset="assets/images/logo-essencia-natural.webp" type="image/webp">
-          <img src="assets/images/logo-essencia-natural.png"
-               alt="Essência Natural — Perfumaria de perfumes árabes"
-               width="700" height="700" fetchpriority="high" decoding="async">
-        </picture>
-        <span class="brasao-brilho" aria-hidden="true"></span>
-      </div>
+    <p class="eyebrow hero-anim">Perfumes árabes e importados</p>
+    <h1 class="hero-title">
+      <span class="linha"><span>Sua essência.</span></span>
+      <span class="linha"><span>Sua <em class="script">identidade</em>.</span></span>
+    </h1>
+    <p class="hero-lede hero-anim">Os perfumes árabes mais desejados, escolhidos por quem vive isso todos os dias no centro de São Paulo.</p>
+    <div class="hero-ctas hero-anim">
+      <a class="btn btn-primary btn-lg" href="#catalogo">Ver catálogo</a>
+      <a class="btn btn-ghost btn-lg" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
     </div>
-
-    <p class="eyebrow hero-ar"><span class="ar" lang="ar" dir="rtl">العطور</span></p>
-    <h1 class="hero-title">Sua essência.<em>Sua identidade.</em></h1>
-    <p class="hero-lede">Perfumes árabes e importados, com atendimento próximo, loja física na Galeria Pagé e envios para todo o Brasil.</p>
-
-    <div class="hero-ctas">
-      <a class="btn btn-primary btn-lg" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
-      <a class="btn btn-ghost btn-lg" href="#loja">Visitar a loja</a>
-    </div>
-
-    <ul class="hero-marks" role="list">
-      <li class="hero-mark">Perfumes árabes e importados</li>
-      <li class="hero-mark">Varejo e atacado</li>
-      <li class="hero-mark">Loja física em São Paulo</li>
-      <li class="hero-mark">Envios para todo o Brasil</li>
+    <ul class="hero-marks hero-anim" role="list">
+      <li>Varejo e atacado</li>
+      <li>Loja física na Galeria Pagé</li>
+      <li>Envios para todo o Brasil</li>
     </ul>
   </div>
 </section>
 
-
-
-
-
-<section id="catalogo">
+<section class="atalho" aria-label="Busca rápida">
   <div class="wrap">
-    <div class="cat-head">
+    <form class="busca" id="busca-rapida" role="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <label class="sr-only" for="busca-rapida-q">Buscar perfume ou marca</label>
+      <input id="busca-rapida-q" type="search" placeholder="Buscar perfume ou marca" autocomplete="off" enterkeyhint="search">
+      <button type="submit">Buscar</button>
+    </form>
+    <div class="pilulas" id="pilulas" role="group" aria-label="Atalhos do catálogo">
+      <button class="pilula pilula--ouro" type="button" data-genero="">Todos</button>
+      <button class="pilula" type="button" data-genero="feminino">Femininos</button>
+      <button class="pilula" type="button" data-genero="masculino">Masculinos</button>
+      <button class="pilula" type="button" data-genero="unissex">Unissex</button>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="familias" aria-labelledby="familias-t">
+  <div class="wrap">
+    <div class="orn rv" aria-hidden="true"><span>◆</span></div>
+    <div class="sec-head sec-head--c">
+      <h2 id="familias-t" class="rv">Escolha pelo <em class="script">cheiro</em></h2>
+      <p class="rv">Não lembra o nome? Comece pela família olfativa.</p>
+    </div>
+    <div class="familias" id="familias-grid">
+      <button class="familia rv" type="button" data-familia="amadeirado"><span class="num">01</span><span><strong>Oud e amadeirados</strong><small>Marcantes, para a noite</small></span></button>
+      <button class="familia familia--lilas rv" type="button" data-familia="doce"><span class="num">02</span><span><strong>Doces e gourmand</strong><small>Baunilha, caramelo, frutas</small></span></button>
+      <button class="familia rv" type="button" data-familia="fresco"><span class="num">03</span><span><strong>Frescos e cítricos</strong><small>Leves, para o dia a dia</small></span></button>
+      <button class="familia rv" type="button" data-familia="floral"><span class="num">04</span><span><strong>Florais</strong><small>Delicados e femininos</small></span></button>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="destaques" aria-labelledby="destaques-t" hidden>
+  <div class="wrap">
+    <div class="sec-head sec-head--row">
+      <div>
+        <p class="eyebrow rv" id="destaques-sub">Escolhidos pela equipe</p>
+        <h2 id="destaques-t" class="rv">Destaques da loja</h2>
+      </div>
+      <a class="link-ouro rv" href="#catalogo">Ver todos</a>
+    </div>
+    <div class="vitrine" id="vitrine"></div>
+  </div>
+</section>
+
+<section class="top5" id="mais-vendidos" aria-labelledby="top5-t">
+  <div id="top5-bloco" hidden>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow rv">Os favoritos de quem compra</p>
+        <h2 id="top5-t" class="rv">Mais <em class="script">vendidos</em></h2>
+      </div>
+    </div>
+    <ol class="top5-lista" id="top5" role="list"></ol>
+  </div>
+  <div class="marcas-faixa" id="marcas" aria-label="Marcas que você encontra na loja">
+    <div class="marquee" id="marquee"></div>
+  </div>
+</section>
+
+<section class="sec" id="quiz-chamada" aria-labelledby="quiz-t">
+  <div class="wrap">
+    <div class="quiz-card rv">
+      <div>
+        <p class="script" aria-hidden="true">descubra</p>
+        <h2 id="quiz-t">O seu perfume em 4 perguntas</h2>
+        <p>Para você ou para presente, mais doce ou mais marcante. No fim, sugerimos três opções e a equipe ajuda pelo WhatsApp.</p>
+      </div>
+      <button class="btn btn-lg" id="quiz-abrir" type="button">Começar</button>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="catalogo" aria-labelledby="catalogo-t">
+  <div class="wrap">
+    <div class="sec-head">
       <p class="eyebrow">Catálogo</p>
-      <h2>Encontre sua próxima fragrância.</h2>
-      <p>Consulte disponibilidade e valores pelo WhatsApp.</p>
+      <h2 id="catalogo-t">Encontre sua próxima <em class="script">fragrância</em></h2>
+      <p>Valores e disponibilidade confirmados pela nossa equipe no WhatsApp.</p>
     </div>
 
-    <!-- Toda esta seção vem da API (/api/products), que lê o banco de dados —
-         nenhum produto, marca, categoria ou preço é escrito à mão aqui. -->
+    <!-- Tudo aqui vem da API (/api/products): nenhum produto, marca ou preço é
+         escrito à mão nesta página. -->
     <div class="cat-tools">
       <div class="cat-busca">
         <label class="sr-only" for="cat-q">Buscar fragrância por nome ou marca</label>
         <svg class="cat-lupa" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.32l5.39 5.39 1.42-1.42-5.39-5.39A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"/></svg>
-        <input id="cat-q" type="search" placeholder="Buscar fragrância" autocomplete="off" enterkeyhint="search">
+        <input id="cat-q" type="search" placeholder="Buscar fragrância ou marca" autocomplete="off" enterkeyhint="search">
         <button class="cat-limpar" id="cat-limpar" type="button" hidden aria-label="Limpar busca">&times;</button>
       </div>
       <label class="sr-only" for="cat-marca">Filtrar por marca</label>
@@ -186,20 +234,22 @@
       <label class="sr-only" for="cat-genero">Filtrar por gênero</label>
       <select class="cat-ordem" id="cat-genero">
         <option value="">Todos os gêneros</option>
-        <option value="masculino">Masculino</option>
         <option value="feminino">Feminino</option>
+        <option value="masculino">Masculino</option>
         <option value="unissex">Unissex</option>
       </select>
       <label class="sr-only" for="cat-ordem">Ordenar catálogo</label>
       <select class="cat-ordem" id="cat-ordem">
-        <option value="catalogo">Ordem do catálogo</option>
+        <option value="catalogo">Ordenar: novidades</option>
         <option value="destaques">Destaques primeiro</option>
+        <option value="vendidos">Mais vendidos</option>
         <option value="az">Nome (A–Z)</option>
         <option value="preco_asc">Menor preço</option>
         <option value="preco_desc">Maior preço</option>
       </select>
     </div>
     <div class="cat-chips" id="cat-chips" role="group" aria-label="Filtrar por categoria"></div>
+    <p class="cat-familia" id="cat-familia" role="status"><span>Família: <b id="cat-familia-t"></b></span><button type="button" id="cat-familia-x">Ver todas</button></p>
     <p class="cat-contagem" id="cat-contagem" role="status" aria-live="polite"></p>
 
     <div class="cat-grid" id="cat-grid"></div>
@@ -207,7 +257,6 @@
     <div class="cat-more" id="cat-more" hidden>
       <button class="btn btn-ghost" id="cat-mais" type="button">Ver mais produtos</button>
     </div>
-
   </div>
 </section>
 
@@ -216,51 +265,58 @@
   <div class="pd-grid" id="pd-grid"></div>
 </dialog>
 
-<section id="marcas" aria-labelledby="marcas-t">
-  <div class="wrap">
-    <div class="sec-head sec-head--c">
-      <p class="eyebrow">Marcas</p>
-      <h2 id="marcas-t">Marcas que você encontra na Essência Natural</h2>
-    </div>
-
-    <!-- Lista vem de /api/brands (banco de dados) — nunca é escrita à mão
-         aqui, para nunca exibir uma marca que a loja não confirmou (ver
-         scripts/seed.js e docs/CATALOGO.md). Sem logo enviado ainda: cada
-         marca aparece só com o nome, e vira um link direto pro WhatsApp. -->
-    <ul class="marcas-grid" role="list" id="marcas-grid">
-      <li class="marca-carregando">Carregando marcas…</li>
-    </ul>
-  </div>
-</section>
-
-<section id="canais" aria-label="Varejo e atacado">
+<section class="sec" id="canais" aria-label="Varejo e atacado">
   <div class="wrap">
     <div class="canais-grid">
-      <article class="canal">
+      <article class="canal rv">
         <p class="eyebrow">Varejo</p>
-        <h3>Encontre sua próxima fragrância.</h3>
-        <p>Para você, para presentear ou para conhecer algo novo.</p>
-        <a class="btn btn-primary" href="https://wa.me/5511949614608?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20comprar%20um%20perfume." target="_blank" rel="noopener">Comprar pelo WhatsApp</a>
+        <h3>Para você ou para presentear</h3>
+        <p>Compre na loja ou pelo WhatsApp, com retirada na Galeria Pagé ou envio para todo o Brasil.</p>
+        <a class="btn btn-ghost" href="https://wa.me/5511949614608?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20comprar%20um%20perfume." target="_blank" rel="noopener">Comprar pelo WhatsApp</a>
       </article>
-      <article class="canal">
+      <article class="canal canal--ouro rv">
         <p class="eyebrow">Atacado</p>
-        <h3>Perfumes para quem também quer vender.</h3>
-        <p>Consulte condições para lojistas e revendedores.</p>
-        <a class="btn btn-ghost" href="https://wa.me/5511949614608?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20atacado%20e%20revenda." target="_blank" rel="noopener">Consultar atacado</a>
+        <h3>Perfumes para quem também quer vender</h3>
+        <p>Atendemos lojistas e revendedores. As condições são passadas pela nossa equipe.</p>
+        <a class="btn" href="https://wa.me/5511949614608?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20atacado%20e%20revenda." target="_blank" rel="noopener">Consultar atacado</a>
       </article>
     </div>
-    <p class="canais-fluxo">Escolha sua fragrância <i aria-hidden="true">→</i> fale com a equipe <i aria-hidden="true">→</i> retire na loja ou consulte envio.</p>
+    <p class="canais-fluxo rv">Escolha sua fragrância <i aria-hidden="true">◆</i> fale com a equipe <i aria-hidden="true">◆</i> retire na loja ou receba em casa</p>
   </div>
 </section>
 
-<section id="equipe">
-  <div class="wrap">
-    <div class="equipe-head">
-      <p class="eyebrow">Nossa equipe</p>
-      <h2>Quem faz a Essência acontecer.</h2>
-      <p class="equipe-sub">É a mesma equipe que te recebe na loja e responde o seu pedido no WhatsApp — na hora de finalizar pela sacola, você escolhe com quem prefere falar.</p>
+<section class="sec" id="loja" aria-labelledby="loja-t">
+  <div class="wrap loja-grid">
+    <figure class="loja-foto rv">
+      <img src="assets/store/vitrine.webp" alt="Prateleiras iluminadas da Essência Natural, na Galeria Pagé" width="720" height="1600" loading="lazy" decoding="async">
+      <figcaption>Galeria Pagé · Sobreloja 215</figcaption>
+    </figure>
+    <div class="loja-info">
+      <p class="eyebrow rv">Loja física</p>
+      <h2 id="loja-t" class="rv">Venha sentir antes de <em class="script">escolher</em></h2>
+      <p class="loja-status rv" id="loja-status" role="status" hidden><span class="dot" aria-hidden="true"></span><span id="loja-status-t"></span></p>
+      <address class="endereco rv">
+        Rua Comendador Afonso Kherlakian, 79<br>
+        Galeria Pagé — Sobreloja 215
+        <span class="cidade">No espaço 215, a Essência Natural fica do lado direito (na fachada está escrito "Shopping Club"). Centro — São Paulo, SP.</span>
+      </address>
+      <dl class="horarios rv" id="horarios">
+        <div data-dias="1,2,3,4,5"><dt>Segunda a sexta</dt><dd>8h às 17h</dd></div>
+        <div data-dias="6"><dt>Sábado</dt><dd>8h às 16h</dd></div>
+        <div data-dias="0"><dt>Domingo</dt><dd>8h às 12h30</dd></div>
+      </dl>
+      <a class="btn btn-primary rv" href="https://www.google.com/maps/dir/?api=1&amp;destination=Rua%20Comendador%20Afonso%20Kherlakian%2C%2079%2C%20Galeria%20Pag%C3%A9%2C%20S%C3%A3o%20Paulo%2C%20SP" target="_blank" rel="noopener">Como chegar</a>
     </div>
+  </div>
+</section>
 
+<section class="sec" id="equipe" aria-labelledby="equipe-t">
+  <div class="wrap">
+    <div class="sec-head sec-head--c">
+      <p class="eyebrow rv">Nossa equipe</p>
+      <h2 id="equipe-t" class="rv">Quem te <em class="script">atende</em></h2>
+      <p class="rv">A mesma equipe que te recebe na loja responde o seu pedido no WhatsApp. Na sacola, você escolhe com quem prefere falar.</p>
+    </div>
     <!-- A equipe é cuidada pela loja em /admin/equipe: assets/js/atendimento.js
          troca esta lista pela de /api/team ao carregar a página. A lista
          abaixo só vale se a API falhar. Só o primeiro nome é publicado. -->
@@ -269,128 +325,84 @@
         <img src="assets/team/bassam-v2.webp" alt="Bassam, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
         <p class="pessoa-nome">Bassam</p>
       </li>
-      <li class="pessoa">
-        <img src="assets/team/nicolly.webp" alt="Nicolly, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
-        <p class="pessoa-nome">Nicolly</p>
-      </li>
-      <li class="pessoa">
-        <img src="assets/team/larissa-v2.webp" alt="Larissa, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
-        <p class="pessoa-nome">Larissa</p>
-      </li>
-      <li class="pessoa">
-        <img src="assets/team/livia.webp" alt="Livia, da equipe da Essência Natural" width="900" height="1200" loading="lazy" decoding="async">
-        <p class="pessoa-nome">Livia</p>
-      </li>
     </ul>
   </div>
 </section>
 
-
-<section id="social">
-  <div class="wrap social-wrap">
-    <p class="social-txt">Acompanhe novidades e bastidores.</p>
-    <div class="social-links">
-      <a class="social-link" href="https://www.instagram.com/essencianaturall__/" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.43.42.7.82.9 1.4.18.4.38 1 .43 2.2.06 1.3.07 1.7.07 4.9s0 3.6-.07 4.9c-.05 1.2-.25 1.8-.42 2.2-.22.6-.48 1-.9 1.4-.42.43-.82.7-1.4.9-.4.18-1 .38-2.2.43-1.3.06-1.7.07-4.9.07s-3.6 0-4.9-.07c-1.2-.05-1.8-.25-2.2-.42-.6-.22-1-.48-1.4-.9-.43-.42-.7-.82-.9-1.4-.18-.4-.38-1-.43-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.9c.05-1.2.25-1.8.42-2.2.22-.6.48-1 .9-1.4.42-.43.82-.7 1.4-.9.4-.18 1-.38 2.2-.43C8.4 2.2 8.8 2.2 12 2.2Zm0 1.98c-3.14 0-3.5.01-4.74.07-1.14.05-1.76.24-2.17.4-.55.21-.94.47-1.35.88-.4.4-.66.8-.88 1.35-.16.4-.35 1.03-.4 2.17-.06 1.24-.07 1.6-.07 4.74s.01 3.5.07 4.74c.05 1.14.24 1.76.4 2.17.21.55.47.94.88 1.35.4.4.8.66 1.35.88.4.16 1.03.35 2.17.4 1.24.06 1.6.07 4.74.07s3.5-.01 4.74-.07c1.14-.05 1.76-.24 2.17-.4.55-.21.94-.47 1.35-.88.4-.4.66-.8.88-1.35.16-.4.35-1.03.4-2.17.06-1.24.07-1.6.07-4.74s-.01-3.5-.07-4.74c-.05-1.14-.24-1.76-.4-2.17-.21-.55-.47-.94-.88-1.35-.4-.4-.8-.66-1.35-.88-.4-.16-1.03-.35-2.17-.4-1.24-.06-1.6-.07-4.74-.07Zm0 3.37a4.45 4.45 0 1 1 0 8.9 4.45 4.45 0 0 1 0-8.9Zm0 7.34a2.89 2.89 0 1 0 0-5.78 2.89 2.89 0 0 0 0 5.78Zm5.67-7.53a1.04 1.04 0 1 1-2.08 0 1.04 1.04 0 0 1 2.08 0Z"/></svg>
-        <span><b>Instagram</b><br>@essencianaturall__</span>
-      </a>
-      <a class="social-link" href="https://www.tiktok.com/@essencia.natura" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 1 1 .77-5.06V9.69a5.67 5.67 0 0 0-.77-.05A5.67 5.67 0 1 0 15.54 15.3V8.99a7.35 7.35 0 0 0 4.3 1.38V7.28a4.28 4.28 0 0 1-3.24-1.46Z"/></svg>
-        <span><b>TikTok</b><br>@essencia.natura</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section id="envios">
-  <div class="wrap envios-grid">
-    <div class="envios-copy">
+<section class="sec" id="envios" aria-label="Envios e redes sociais">
+  <div class="wrap info-grid">
+    <article class="info-card rv">
       <p class="eyebrow">Envios</p>
-      <h2>Envios para todo o Brasil</h2>
-      <p class="txt">Consulte disponibilidade, frete e condições com nossa equipe.</p>
-      <a class="btn btn-dark" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20consultar%20envio%20para%20minha%20cidade." target="_blank" rel="noopener">Consultar envio</a>
-    </div>
-    <div class="envios-art" aria-hidden="true">
-      <svg viewBox="0 0 320 190" fill="none" role="presentation">
-        <path class="rota" d="M26 150C86 44 214 34 288 92" stroke="#b8933e" stroke-width="1.6" stroke-dasharray="5 8" stroke-linecap="round"/>
-        <circle cx="26" cy="150" r="6" fill="#8a6b22"/>
-        <circle cx="26" cy="150" r="13" stroke="#b8933e" stroke-opacity=".5"/>
-        <circle class="ping" cx="288" cy="77" r="15" stroke="#b8933e" stroke-width="1.4"/>
-        <path d="M288 62a15 15 0 0 1 15 15c0 11-15 26-15 26s-15-15-15-26a15 15 0 0 1 15-15Z" fill="#8a6b22"/>
-        <circle cx="288" cy="77" r="5.4" fill="#f4ecd8"/>
-        <rect x="150" y="40" width="10" height="10" transform="rotate(45 155 45)" fill="#c9a44c" fill-opacity=".6"/>
-      </svg>
-    </div>
-  </div>
-</section>
-
-<section id="loja">
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">Loja física</p>
-      <h2>Venha sentir o perfume antes de decidir.</h2>
-    </div>
-    <div class="loja-grid">
-      <div>
-        <p class="loja-status" id="loja-status" role="status" hidden><span class="dot" aria-hidden="true"></span><span id="loja-status-t"></span></p>
-        <address class="endereco">
-          Rua Comendador Afonso Kherlakian, 79<br>
-          Galeria Pagé — Sobreloja 215
-          <span class="cidade">Centro — São Paulo, SP</span>
-        </address>
-        <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&amp;destination=Rua%20Comendador%20Afonso%20Kherlakian%2C%2079%2C%20Galeria%20Pag%C3%A9%2C%20S%C3%A3o%20Paulo%2C%20SP" target="_blank" rel="noopener">Como chegar</a>
+      <h3>Enviamos para todo o Brasil</h3>
+      <p>Consulte disponibilidade, frete e prazo para a sua cidade com a nossa equipe.</p>
+      <a class="btn btn-ghost" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20consultar%20envio%20para%20minha%20cidade." target="_blank" rel="noopener">Consultar envio</a>
+    </article>
+    <article class="info-card rv" id="social">
+      <p class="eyebrow">Redes sociais</p>
+      <h3>Novidades e bastidores</h3>
+      <div class="social-links">
+        <a class="social-link" href="https://www.instagram.com/essencianaturall__/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.43.42.7.82.9 1.4.18.4.38 1 .43 2.2.06 1.3.07 1.7.07 4.9s0 3.6-.07 4.9c-.05 1.2-.25 1.8-.42 2.2-.22.6-.48 1-.9 1.4-.42.43-.82.7-1.4.9-.4.18-1 .38-2.2.43-1.3.06-1.7.07-4.9.07s-3.6 0-4.9-.07c-1.2-.05-1.8-.25-2.2-.42-.6-.22-1-.48-1.4-.9-.43-.42-.7-.82-.9-1.4-.18-.4-.38-1-.43-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.9c.05-1.2.25-1.8.42-2.2.22-.6.48-1 .9-1.4.42-.43.82-.7 1.4-.9.4-.18 1-.38 2.2-.43C8.4 2.2 8.8 2.2 12 2.2Zm0 1.98c-3.14 0-3.5.01-4.74.07-1.14.05-1.76.24-2.17.4-.55.21-.94.47-1.35.88-.4.4-.66.8-.88 1.35-.16.4-.35 1.03-.4 2.17-.06 1.24-.07 1.6-.07 4.74s.01 3.5.07 4.74c.05 1.14.24 1.76.4 2.17.21.55.47.94.88 1.35.4.4.8.66 1.35.88.4.16 1.03.35 2.17.4 1.24.06 1.6.07 4.74.07s3.5-.01 4.74-.07c1.14-.05 1.76-.24 2.17-.4.55-.21.94-.47 1.35-.88.4-.4.66-.8.88-1.35.16-.4.35-1.03.4-2.17.06-1.24.07-1.6.07-4.74s-.01-3.5-.07-4.74c-.05-1.14-.24-1.76-.4-2.17-.21-.55-.47-.94-.88-1.35-.4-.4-.8-.66-1.35-.88-.4-.16-1.03-.35-2.17-.4-1.24-.06-1.6-.07-4.74-.07Zm0 3.37a4.45 4.45 0 1 1 0 8.9 4.45 4.45 0 0 1 0-8.9Zm0 7.34a2.89 2.89 0 1 0 0-5.78 2.89 2.89 0 0 0 0 5.78Zm5.67-7.53a1.04 1.04 0 1 1-2.08 0 1.04 1.04 0 0 1 2.08 0Z"/></svg>
+          <span><b>Instagram</b><br>@essencianaturall__</span>
+        </a>
+        <a class="social-link" href="https://www.tiktok.com/@essencia.natura" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 1 1 .77-5.06V9.69a5.67 5.67 0 0 0-.77-.05A5.67 5.67 0 1 0 15.54 15.3V8.99a7.35 7.35 0 0 0 4.3 1.38V7.28a4.28 4.28 0 0 1-3.24-1.46Z"/></svg>
+          <span><b>TikTok</b><br>@essencia.natura</span>
+        </a>
       </div>
-      <dl class="horarios" id="horarios">
-        <div data-dias="1,2,3,4,5"><dt>Segunda a sexta</dt><dd>8h às 17h</dd></div>
-        <div data-dias="6"><dt>Sábado</dt><dd>8h às 16h</dd></div>
-        <div data-dias="0"><dt>Domingo</dt><dd>8h às 12h30</dd></div>
-      </dl>
-    </div>
+    </article>
   </div>
 </section>
 
-<section id="faq">
+<section class="sec" id="faq" aria-labelledby="faq-t">
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">Perguntas frequentes</p>
-      <h2>O que a gente mais ouve.</h2>
+      <p class="eyebrow rv">Perguntas frequentes</p>
+      <h2 id="faq-t" class="rv">O que a gente mais ouve</h2>
     </div>
     <div class="faq-lista">
-      <details>
+      <details class="rv">
         <summary>Vocês vendem no varejo?</summary>
         <p class="resposta">Sim. Você pode comprar na loja física, na Galeria Pagé, ou falar com a nossa equipe pelo WhatsApp.</p>
       </details>
-      <details>
+      <details class="rv">
         <summary>Trabalham com atacado?</summary>
         <p class="resposta">Sim, atendemos lojistas e revendedores. As condições de atacado são passadas pela nossa equipe — <a href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20atacado%20e%20revenda." target="_blank" rel="noopener">consulte pelo WhatsApp</a>.</p>
       </details>
-      <details>
+      <details class="rv">
         <summary>Enviam para todo o Brasil?</summary>
         <p class="resposta">Sim. Para consultar disponibilidade, frete e condições de envio para a sua cidade, <a href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural%20e%20gostaria%20de%20consultar%20envio%20para%20minha%20cidade." target="_blank" rel="noopener">fale com a nossa equipe</a>.</p>
       </details>
-      <details>
+      <details class="rv">
+        <summary>Por que o site mostra "Consulte"?</summary>
+        <p class="resposta">Valores e disponibilidade mudam rápido. Monte sua sacola pelo site e a equipe confirma tudo pelo WhatsApp antes de você pagar.</p>
+      </details>
+      <details class="rv">
         <summary>Onde fica a loja?</summary>
-        <p class="resposta">Na Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé, Sobreloja 215, centro de São Paulo. Horários na seção <a href="#loja">Loja física</a>.</p>
+        <p class="resposta">Na Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé, Sobreloja 215, centro de São Paulo. No espaço 215, a Essência Natural fica do lado direito. Horários na seção <a href="#loja">Loja física</a>.</p>
       </details>
     </div>
   </div>
 </section>
 
-<section id="rodape">
-  <div class="wrap">
-    <div class="cta-final">
-      <p class="eyebrow">Sua essência <span class="ar" lang="ar" dir="rtl">العطور</span></p>
-      <h2>Vamos encontrar o seu perfume.</h2>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
-        <a class="btn btn-ghost" href="#catalogo">Ver o catálogo</a>
-      </div>
+<section class="sec" id="cta-final" aria-labelledby="cta-t">
+  <div class="wrap cta-final">
+    <div class="orn rv" aria-hidden="true"><span>◆</span></div>
+    <h2 id="cta-t" class="rv">Vamos encontrar o <em class="script">seu</em> perfume?</h2>
+    <div class="cta-row rv">
+      <a class="btn btn-primary btn-lg" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener">Falar no WhatsApp</a>
+      <a class="btn btn-ghost btn-lg" href="#catalogo">Ver o catálogo</a>
     </div>
+  </div>
+</section>
+</main>
 
-    <footer class="foot">
+<footer class="rodape" id="rodape">
+  <div class="wrap">
+    <div class="foot">
       <div class="foot-marca">
-        <p class="nome">Essência Natural</p>
-        <p class="slogan">Sua essência. Sua identidade.</p>
+        <img src="assets/images/logo-essencia-natural.webp" alt="Essência Natural — Perfumaria, perfumes árabes" width="96" height="96" loading="lazy">
+        <p class="slogan">Sua essência. <span class="script">Sua identidade.</span></p>
         <address>
           Rua Comendador Afonso Kherlakian, 79<br>
           Galeria Pagé — Sobreloja 215<br>
@@ -401,10 +413,9 @@
         <h3>Navegue</h3>
         <ul>
           <li><a href="#catalogo">Catálogo</a></li>
-          <li><a href="#marcas">Marcas</a></li>
+          <li><a href="#mais-vendidos">Mais vendidos</a></li>
           <li><a href="#canais">Varejo e atacado</a></li>
           <li><a href="#equipe">Nossa equipe</a></li>
-          <li><a href="#envios">Envios</a></li>
           <li><a href="#loja">Loja física</a></li>
           <li><a href="#faq">Perguntas frequentes</a></li>
         </ul>
@@ -417,18 +428,36 @@
           <li><a href="https://www.tiktok.com/@essencia.natura" target="_blank" rel="noopener">TikTok @essencia.natura</a></li>
         </ul>
       </div>
-    </footer>
-
+    </div>
     <div class="foot-base">
       <span>&copy; 2026 Essência Natural — Perfumaria.</span>
       <span>Perfumes árabes e importados — São Paulo, SP</span>
-      <!-- Acesso das vendedoras ao painel. Discreto de propósito: mesmo tom
-           apagado do resto desta linha, sem ícone nem destaque. -->
+      <!-- Acesso das vendedoras ao painel: discreto de propósito. -->
       <a class="foot-equipe" href="/admin/login" rel="nofollow">Área da equipe</a>
     </div>
     <p class="foot-credito">Desenvolvido por <a href="https://www.instagram.com/itechsolutionsofc?stkn=M2NnazJrd2Z4MDdy&amp;utm_source=qr" target="_blank" rel="noopener noreferrer">ITech Solutions</a></p>
   </div>
-</section>
+</footer>
+
+<a class="wa-float" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.65 4.56 1.78 6.45L4 29l7.72-1.72a11.94 11.94 0 0 0 4.3.8h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.64 3 16.02 3Zm0 21.86h-.01a9.9 9.9 0 0 1-5.05-1.39l-.36-.21-4.58 1.02 1.04-4.47-.24-.37a9.86 9.86 0 0 1-1.5-5.42c0-5.46 4.44-9.9 9.9-9.9 5.45 0 9.88 4.44 9.88 9.9 0 5.46-4.43 9.84-9.08 9.84Zm5.42-7.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.36-1.46-.87-.78-1.46-1.74-1.63-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.47 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.22 5.1 4.5.71.3 1.27.49 1.7.63.72.23 1.36.2 1.88.12.57-.08 1.76-.72 2-1.42.24-.7.24-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
+</a>
+
+<nav class="barra-app" aria-label="Atalhos">
+  <a href="#hero"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg>Início</a>
+  <a href="#catalogo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Catálogo</a>
+  <button type="button" data-abrir-sacola><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8.5h13l1 11.5h-15l1-11.5Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>Sacola<span class="bag-n" data-bag-n hidden>0</span></button>
+  <a class="wa" href="https://wa.me/5511949614608?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Ess%C3%AAncia%20Natural." target="_blank" rel="noopener"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.65 4.56 1.78 6.45L4 29l7.72-1.72a11.94 11.94 0 0 0 4.3.8h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.64 3 16.02 3Zm0 21.86h-.01a9.9 9.9 0 0 1-5.05-1.39l-.36-.21-4.58 1.02 1.04-4.47-.24-.37a9.86 9.86 0 0 1-1.5-5.42c0-5.46 4.44-9.9 9.9-9.9 5.45 0 9.88 4.44 9.88 9.9 0 5.46-4.43 9.84-9.08 9.84Z"/></svg>WhatsApp</a>
+</nav>
+
+<dialog class="quiz" id="quiz" aria-labelledby="quiz-titulo">
+  <div class="quiz-topo">
+    <p class="quiz-passo" id="quiz-passo">Pergunta 1 de 4</p>
+    <button class="bag-fechar" id="quiz-fechar" type="button" aria-label="Fechar">&times;</button>
+  </div>
+  <div class="quiz-barra" aria-hidden="true"><span id="quiz-barra"></span></div>
+  <div class="quiz-corpo" id="quiz-corpo" aria-live="polite"></div>
+</dialog>
 
 <dialog class="bag" id="sacola" aria-labelledby="sac-titulo">
   <div class="bag-topo">
@@ -471,24 +500,19 @@
   </div>
 </dialog>
 
-<!-- Passo entre a sacola e o WhatsApp ("Escolher atendimento"): o
-     <dialog> é montado por assets/js/atendimento.js, que também lê a
-     equipe desta página (#equipe) — assim o mesmo modal funciona na
-     página de produto, sem repetir marcação nem lista de equipe. -->
-
 <div class="toast" id="toast" role="status" aria-live="polite" hidden>
   <span id="toast-t"></span>
   <button type="button" id="toast-ver">Ver sacola</button>
 </div>
 
 <script src="assets/js/app.js?v=20261028-1"></script>
-<script src="assets/js/menu.js?v=20261028-1"></script>
-<script src="assets/js/atendimento.js?v=20261028-2"></script>
-<script src="assets/js/sacola.js?v=20261028-2"></script>
-<script src="assets/js/vida.js?v=20261028-1"></script>
-<script src="assets/js/marcas.js?v=20261028-1"></script>
-<script src="assets/js/catalogo.js?v=20261028-2"></script>
-
-
+<script src="assets/js/menu.js?v=20261029-1"></script>
+<script src="assets/js/atendimento.js?v=20261029-1"></script>
+<script src="assets/js/sacola.js?v=20261029-1"></script>
+<script src="assets/js/vida.js?v=20261029-1"></script>
+<script src="assets/js/marcas.js?v=20261029-1"></script>
+<script src="assets/js/catalogo.js?v=20261029-1"></script>
+<script src="assets/js/home.js?v=20261029-1"></script>
+<script src="assets/js/quiz.js?v=20261029-1"></script>
 </body>
 </html>

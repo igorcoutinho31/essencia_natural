@@ -138,3 +138,31 @@ test('app (PWA): manifesto, service worker e página offline', async (t) => {
   assert.match(home, /<link rel="manifest" href="\/manifest\.webmanifest">/);
   assert.match(home, /assets\/js\/app\.js/);
 });
+
+test('mais vendidos: a API dá só a posição, nunca a quantidade vendida', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  await app.insertProduct({ slug: 'pouco', sales: 3 });
+  await app.insertProduct({ slug: 'campeao', sales: 40 });
+  await app.insertProduct({ slug: 'sem-venda', sales: 0 });
+  await app.insertProduct({ slug: 'oculto-vende', active: 0, sales: 99 });
+  const { products } = await (await app.call('/api/products')).json();
+  const rank = Object.fromEntries(products.map((p) => [p.slug, p.salesRank]));
+  assert.deepEqual(rank, { pouco: 2, campeao: 1, 'sem-venda': null }, 'oculto não entra no ranking');
+  assert.ok(products.every((p) => !('sales' in p) && !('stock' in p)), 'quantidade vendida e estoque não saem');
+  const ordem = (await (await app.call('/api/products?sort=vendidos')).json()).products.map((p) => p.slug);
+  assert.deepEqual(ordem, ['campeao', 'pouco']);
+});
+
+test('home nova: seções, scripts e nada de produto escrito à mão', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  const home = await (await app.call('/')).text();
+  for (const id of ['hero', 'familias', 'destaques', 'mais-vendidos', 'catalogo', 'canais', 'loja', 'equipe', 'faq']) {
+    assert.match(home, new RegExp(`id="${id}"`), id);
+  }
+  for (const js of ['catalogo', 'home', 'quiz', 'marcas', 'sacola', 'atendimento']) assert.match(home, new RegExp(`assets/js/${js}\\.js`));
+  assert.ok(!/<script>(?!\s*<\/script>)/.test(home), 'home sem <script> inline');
+  assert.ok(!/<style>/.test(home), 'home sem <style> inline');
+  assert.equal((await app.call('/assets/store/prateleiras.mp4')).status, 200);
+});

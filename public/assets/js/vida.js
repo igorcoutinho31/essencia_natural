@@ -1,9 +1,6 @@
-/* ---- vida: movimento sutil ----
-   Tudo aqui é decoração: com prefers-reduced-motion nada roda, e o
-   conteúdo fica visível sem depender de nenhum destes efeitos. Os
-   efeitos de brilho/partículas foram reduzidos na V2 (menos densidade,
-   menos opacidade, menos inclinação) para um acabamento mais comercial
-   e menos "efeito de template". */
+/* ---- vida: movimento e detalhes vivos da página ----
+   Tudo aqui é decoração: com prefers-reduced-motion nada se move, e o
+   conteúdo fica visível sem depender destes efeitos. */
 (function(){
   'use strict';
   var reduzido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -26,90 +23,28 @@
     calc();
   })();
 
-  /* aparecer ao rolar */
+  /* aparecer ao rolar: todo elemento com a classe .rv. Outros scripts
+     chamam window.ENRevelar() depois de montar conteúdo novo. */
   (function revelar(){
-    if (reduzido || !('IntersectionObserver' in window)) return;
-    var alvos = [
-      '.cat-head','.cat-tools','.cat-chips','#marcas .sec-head','.marca','.canal','.canais-fluxo',
-      '.equipe-head','.pessoa','.social-wrap>*','.envios-copy>*','.envios-art',
-      '#loja .sec-head','.loja-grid>*','#faq .sec-head','.faq-lista details','.cta-final>*','.foot>*'
-    ];
-    var nos = [].slice.call(document.querySelectorAll(alvos.join(',')));
+    if (reduzido || !('IntersectionObserver' in window)) { window.ENRevelar = function(){}; return; }
     document.documentElement.classList.add('rv-on');
     var io = new IntersectionObserver(function(es){
       es.forEach(function(e){
         if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
       });
-    }, { rootMargin:'0px 0px -6% 0px', threshold:0.05 });
-    nos.forEach(function(n, i){
-      var irmaos = [].indexOf.call(n.parentNode.children, n);
-      n.classList.add('rv');
-      n.style.setProperty('--d', Math.min(irmaos, 5) * 0.08 + 's');
-      io.observe(n);
-    });
-    // rede de segurança: se nada disparar (captura de tela, aba em segundo plano), mostra tudo
-    setTimeout(function(){ nos.forEach(function(n){ n.classList.add('in'); }); }, 6000);
-  })();
-
-  /* poeira dourada no hero — discreta: poucas partículas, baixa opacidade */
-  (function poeira(){
-    var cv = document.getElementById('hero-particulas');
-    if (!cv || reduzido || !cv.getContext) return;
-    var ctx = cv.getContext('2d'), w = 0, h = 0, dpr = 1, P = [], rodando = false, raf = 0;
-    function tamanho(){
-      var r = cv.parentNode.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = r.width; h = r.height;
-      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var n = Math.max(8, Math.min(20, Math.round(w * h / 42000))); // V2: densidade reduzida
-      while (P.length < n) P.push(nova(true));
-      P.length = n;
+    }, { rootMargin:'0px 0px -8% 0px', threshold:0.06 });
+    function observar(){
+      [].forEach.call(document.querySelectorAll('.rv:not([data-rv])'), function(n){
+        n.setAttribute('data-rv', '');
+        var irmaos = [].filter.call(n.parentNode.children, function(c){ return c.classList.contains('rv'); });
+        n.style.setProperty('--d', Math.min(irmaos.indexOf(n), 5) * 0.09 + 's');
+        io.observe(n);
+      });
     }
-    function nova(inicio){
-      return { x:Math.random() * w, y:inicio ? Math.random() * h : h + 8, r:Math.random() * 1.3 + .5,
-               v:Math.random() * .18 + .06, d:Math.random() * 6.28, a:Math.random() * .26 + .1, f:Math.random() * .8 + .5 };
-    }
-    function quadro(t){
-      if (!rodando) return;
-      ctx.clearRect(0, 0, w, h);
-      for (var i = 0; i < P.length; i++) {
-        var q = P[i];
-        q.y -= q.v; q.x += Math.sin(t * .0005 + q.d) * .2;
-        if (q.y < -10) { P[i] = nova(false); continue; }
-        var borda = Math.min(1, q.y / (h * .25), (h - q.y) / (h * .1) + .2);
-        var a = q.a * (.55 + .45 * Math.sin(t * .0016 * q.f + q.d)) * Math.max(0, borda);
-        var g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, q.r * 4);
-        g.addColorStop(0, 'rgba(238,203,132,' + a + ')');
-        g.addColorStop(1, 'rgba(238,203,132,0)');
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(q.x, q.y, q.r * 4, 0, 6.283); ctx.fill();
-      }
-      raf = requestAnimationFrame(quadro);
-    }
-    function ligar(){ if (!rodando) { rodando = true; raf = requestAnimationFrame(quadro); } }
-    function desligar(){ rodando = false; cancelAnimationFrame(raf); }
-    tamanho();
-    window.addEventListener('resize', tamanho);
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function(es){ es[0].isIntersecting ? ligar() : desligar(); }).observe(cv);
-    } else ligar();
-    document.addEventListener('visibilitychange', function(){ document.hidden ? desligar() : ligar(); });
-  })();
-
-  /* o brasão acompanha o ponteiro, bem de leve (só com mouse) */
-  (function inclinar(){
-    var selo = document.querySelector('.brasao-selo');
-    var hero = document.getElementById('hero');
-    if (!selo || !hero || reduzido || !window.matchMedia('(hover:hover)').matches) return;
-    hero.addEventListener('pointermove', function(ev){
-      var r = selo.getBoundingClientRect();
-      var x = (ev.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2);
-      var y = (ev.clientY - (r.top + r.height / 2)) / (window.innerHeight / 2);
-      x = Math.max(-1, Math.min(1, x)); y = Math.max(-1, Math.min(1, y));
-      selo.style.transform = 'rotateY(' + (x * 3).toFixed(2) + 'deg) rotateX(' + (-y * 3).toFixed(2) + 'deg)'; // V2: inclinação reduzida (era 7deg)
-    });
-    hero.addEventListener('pointerleave', function(){ selo.style.transform = ''; });
+    window.ENRevelar = observar;
+    observar();
+    // rede de segurança: aba em segundo plano, captura de tela etc.
+    setTimeout(function(){ [].forEach.call(document.querySelectorAll('.rv'), function(n){ n.classList.add('in'); }); }, 8000);
   })();
 
   /* loja: aberta ou fechada agora (horário de Brasília, pelos horários do site) */
@@ -132,10 +67,7 @@
       var h = H[n.d], aberta = n.m >= h[0] && n.m < h[1], t;
       if (aberta) t = 'Aberto agora · até ' + hm(h[1]);
       else if (n.m < h[0]) t = 'Fechado agora · abre hoje às ' + hm(h[0]);
-      else {
-        var prox = (n.d + 1) % 7;
-        t = 'Fechado agora · abre amanhã às ' + hm(H[prox][0]);
-      }
+      else t = 'Fechado agora · abre amanhã às ' + hm(H[(n.d + 1) % 7][0]);
       txt.textContent = t;
       box.hidden = false;
       box.classList.toggle('fechada', !aberta);

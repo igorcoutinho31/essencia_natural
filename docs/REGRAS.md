@@ -29,7 +29,9 @@ repositório. Em caso de dúvida, a regra ganha da pressa.
   páginas públicas) só depois de um plano apresentado e **aprovado
   explicitamente** pelo responsável pela loja.
 - O hero animado de 240 frames foi aposentado (`assets/frames/` removida na
-  V1.1). Não reintroduzir animação de frames nem canvas/scroll-scrub.
+  V1.1). Não reintroduzir animação de frames nem canvas/scroll-scrub. O
+  vídeo curto das prateleiras no topo da home (V4) é filmagem real da loja,
+  sem pessoas, e respeita "menos movimento" e economia de dados.
 - A home carrega `assets/css/site.css` e os scripts de `assets/js/`, sem
   `<style>` ou `<script>` inline.
 

@@ -1,44 +1,48 @@
 /* Página individual de produto (/produto/:slug). Carregado depois de
-   site.css — reaproveita as mesmas variáveis de cor/tipografia, não
-   redefine identidade nenhuma. */
-.pd-page{padding:calc(var(--header-h) + 28px) 0 60px}
-.pd-page-inner{max-width:1120px;margin:0 auto;padding:0 24px}
-.pd-trilha{font-size:.8rem;color:var(--ink-faint);margin:0 0 22px}
-.pd-trilha a{color:var(--ink-faint)}
+   site.css — usa as mesmas cores e letras, não redefine identidade. */
+.pd-page{padding:clamp(20px,4vw,40px) 0 clamp(56px,8vw,96px)}
+.pd-page-inner{max-width:1200px;margin:0 auto;padding:0 20px}
+.pd-trilha{font-size:.8rem;color:var(--ink-3);margin:0 0 20px;display:flex;flex-wrap:wrap;gap:6px}
+.pd-trilha a{color:var(--ink-3);transition:color .2s}
 .pd-trilha a:hover{color:var(--gold-2)}
-.pd-layout{display:grid;grid-template-columns:minmax(0,460px) 1fr;gap:48px;align-items:start}
-@media (max-width:860px){.pd-layout{grid-template-columns:1fr;gap:28px}}
+.pd-layout{display:grid;grid-template-columns:1fr;gap:24px;align-items:start}
+@media (min-width:880px){.pd-layout{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:56px}}
 
-/* Não existe mais ".pd-galeria--vazia": desde o placeholder oficial de
-   imagem (fechamento V2, regra 2), a galeria sempre tem pelo menos uma
-   imagem pra mostrar — nunca fica vazia. */
-.pd-galeria{display:flex;flex-direction:column;gap:10px}
-.pd-galeria img{width:100%;aspect-ratio:4/5.2;object-fit:cover;border-radius:14px;background:var(--bg-3);border:1px solid var(--line)}
+.pd-galeria{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:var(--r-3)}
+.pd-galeria::-webkit-scrollbar{display:none}
+.pd-galeria img{flex:none;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--r-3);background:var(--bg-3);scroll-snap-align:start;height:auto}
+@media (min-width:880px){.pd-galeria{flex-direction:column;overflow:visible;position:sticky;top:calc(var(--header-h) + 20px)}}
 
-.pd-info{display:flex;flex-direction:column;gap:14px;padding-top:4px}
-.pd-marca{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0}
-.pd-nome{font-family:'Cinzel',serif;font-size:clamp(1.5rem,3vw,2.1rem);color:var(--ink);margin:0;line-height:1.25}
-.pd-selo{display:inline-flex;align-self:flex-start;padding:4px 12px;border-radius:999px;font-size:.72rem;letter-spacing:.04em}
-.pd-selo--em_estoque{background:rgba(96,200,120,.14);color:#8fd6a4}
-.pd-selo--ultimas{background:rgba(201,164,76,.16);color:var(--gold-2)}
-.pd-selo--indisponivel{background:rgba(200,115,90,.16);color:#e0a789}
-.pd-selo--consulte{background:rgba(201,164,76,.10);color:var(--gold-2)}
-.pd-preco{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold-2);margin:2px 0 0;font-variant-numeric:tabular-nums}
-.pd-preco--consulte{color:var(--ink-dim);font-family:inherit;font-size:1rem}
-.pd-preco-de{color:var(--ink-faint);text-decoration:line-through;font-size:1rem;margin-right:10px;font-weight:400}
-.pd-notas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:6px 0 0}
-.pd-notas dt{font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 4px}
-.pd-notas dd{margin:0;font-size:.88rem;color:var(--ink-dim)}
-.pd-desc{color:var(--ink-dim);line-height:1.7;font-size:.95rem;max-width:52ch}
-.pd-acoes{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.pd-info{display:flex;flex-direction:column;gap:14px}
+.pd-marca{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0}
+.pd-nome{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,7vw,3.4rem);line-height:1.02;margin:0}
+.pd-meta{color:var(--ink-3);font-size:.92rem}
+.pd-selo{display:inline-flex;align-self:flex-start;padding:5px 13px;border-radius:999px;font-size:.76rem;background:var(--bg-3);color:var(--gold-2);border:1px solid var(--line-2)}
+.pd-selo--em_estoque{color:var(--ok)}
+.pd-selo--indisponivel{color:var(--alerta)}
+.pd-preco{font-family:var(--serif);font-size:2rem;font-weight:600;color:var(--gold-2);margin:2px 0 0;font-variant-numeric:tabular-nums}
+.pd-preco--consulte{font-family:var(--sans);font-size:1rem;font-weight:400;color:var(--ink-2)}
+.pd-preco-de{color:var(--ink-3);text-decoration:line-through;font-size:1.1rem;margin-right:10px;font-weight:400}
+.pd-notas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 0}
+.pd-notas div{padding:14px 12px;border-radius:var(--r-1);background:var(--bg-2);border:1px solid var(--line)}
+.pd-notas dt{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.pd-notas dd{margin:0;font-size:.88rem;color:var(--ink-2);line-height:1.45}
+.pd-desc{color:var(--ink-2);line-height:1.75;font-size:.98rem;max-width:56ch}
+.pd-acoes{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+@media (min-width:560px){.pd-acoes{flex-direction:row}.pd-acoes .btn{flex:1}}
+.pd-acoes .btn{min-height:54px}
 .pd-add:disabled{opacity:.5;cursor:not-allowed}
+.pd-garantias{list-style:none;margin:14px 0 0;padding:16px 0 0;border-top:1px solid var(--line);display:grid;gap:8px;color:var(--ink-3);font-size:.86rem}
+.pd-garantias li{display:flex;align-items:center;gap:10px}
+.pd-garantias li::before{content:"";width:5px;height:5px;transform:rotate(45deg);background:var(--gold);flex:none}
 
-.pd-relacionados{margin-top:64px;padding-top:36px;border-top:1px solid var(--line)}
-.pd-relacionados h2{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--ink);margin:0 0 20px}
-.pd-related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
-.prod-related{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit}
-.prod-related img{width:100%;aspect-ratio:4/5.2;object-fit:cover;border-radius:10px;background:var(--bg-3);border:1px solid var(--line)}
-.prod-related-vazio{width:100%;aspect-ratio:4/5.2;border-radius:10px;background:var(--bg-3);border:1px solid var(--line)}
-.prod-related-marca{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
-.prod-related-nome{font-size:.85rem;color:var(--ink)}
+.pd-relacionados{margin-top:clamp(48px,8vw,88px);padding-top:clamp(28px,4vw,40px);border-top:1px solid var(--line)}
+.pd-relacionados h2{font-family:var(--serif);font-size:clamp(1.9rem,5vw,2.6rem);margin:0 0 20px}
+.pd-related-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:880px){.pd-related-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}}
+.prod-related{display:flex;flex-direction:column;gap:6px;color:inherit;border-radius:var(--r-2);transition:transform .35s var(--ease)}
+.prod-related:hover{transform:translateY(-3px)}
+.prod-related img,.prod-related-vazio{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--r-2);background:var(--bg-3);height:auto}
+.prod-related-marca{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-top:6px}
+.prod-related-nome{font-family:var(--serif);font-weight:600;font-size:1.2rem;line-height:1.15;color:var(--ink)}
 .prod-related:hover .prod-related-nome{color:var(--gold-2)}

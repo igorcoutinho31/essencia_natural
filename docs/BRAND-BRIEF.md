@@ -11,6 +11,10 @@ Instagram e TikTok.
 ## Endereço (ver conflito em docs/TODO-VERIFY.md)
 Rua Comendador Afonso Kherlakian, 79 — Galeria Pagé — Sobreloja 215
 
+Na sobreloja 215 a Essência Natural ocupa o lado direito do espaço; a
+fachada do espaço diz "Shopping Club" (do outro lado ficam outras empresas).
+Informado pelo responsável pelo site em 28/10/2026.
+
 ## Horário de funcionamento
 - Segunda a sexta: 8h às 17h
 - Sábado: 8h às 16h
