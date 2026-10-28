@@ -62,7 +62,7 @@ test('plano: só fatos, oculto, marca unificada, slug único, sem repetir cadast
   assert.throws(() => planejar({ schemaVersion: 1, products: [] }, vazio), /schemaVersion 2/);
 });
 
-test('importação ponta a ponta: tudo oculto, fotos só no admin até liberar, lote publica', async (t) => {
+test('importação ponta a ponta: tudo oculto, foto pública só com o produto publicado, lote publica', async (t) => {
   const app = createTestApp();
   t.after(app.cleanup);
   app.deps.storage = d1Storage(app.db);
@@ -82,44 +82,54 @@ test('importação ponta a ponta: tudo oculto, fotos só no admin até liberar, 
 
   const { c } = await app.db.prepare('SELECT COUNT(*) AS c FROM products WHERE source IS NOT NULL').first();
   assert.equal(c, 60);
-  assert.equal((await app.db.prepare('SELECT COUNT(*) AS c FROM product_images').first()).c, 60);
+  assert.equal((await app.db.prepare('SELECT COUNT(*) AS c FROM product_images WHERE licensed = 1').first()).c, 60, 'fotos entram liberadas');
+  assert.equal((await app.db.prepare('SELECT COUNT(*) AS c FROM products WHERE source_url IS NOT NULL').first()).c, 0, 'link do fornecedor não é guardado');
   assert.equal((await (await app.call('/api/products')).json()).products.length, 0, 'tudo entra oculto');
   const nova = await app.db.prepare("SELECT requires_product FROM brands WHERE name = 'Marca Nova'").first();
   assert.equal(nova.requires_product, 1, 'marca nova só aparece com produto publicado');
 
   const foto = '/uploads/' + plano.fotos[7].key;
-  assert.equal((await app.call(foto)).status, 404, 'foto a liberar não é pública');
+  assert.equal((await app.call(foto)).status, 404, 'foto de produto oculto não é pública');
   await app.login();
   const noAdmin = await app.call(foto);
   assert.equal(noAdmin.status, 200, 'no admin a foto aparece');
   assert.equal(noAdmin.headers.get('cache-control'), 'private, no-store');
 
-  // Lista paginada no admin.
+  // Lista paginada no admin, sem nome de fornecedor.
   const pag1 = await (await app.call('/admin/produtos?filtro=biblioteca')).text();
   assert.match(pag1, /Página 1 de 2/);
   assert.match(pag1, /No relatório da loja \(1\)/);
-  assert.match(pag1, /Foto a liberar \(60\)/);
+  assert.doesNotMatch(pag1, /ONUH|Atlântico|onuh\.com/i);
   const pag2 = await (await app.call('/admin/produtos?filtro=biblioteca&pagina=2')).text();
   assert.equal((pag2.match(/class="a-sel"/g) || []).length, 10);
+  const imp = await (await app.call('/admin/produtos?origem=importado')).text();
+  assert.match(imp, /60 produtos neste filtro/);
 
-  // Publicar os do relatório (critério) e liberar a foto de um por id.
-  let r = await app.call('/api/admin/products/bulk', { method: 'POST', body: { action: 'publicar', criteria: { filter: 'no_relatorio' } } });
-  assert.deepEqual(await r.json(), { ok: true, affected: 1 });
-  let pub = (await (await app.call('/api/products')).json()).products;
+  // Publicar os do relatório (critério): a foto passa a ser pública.
+  const r0 = await app.call('/api/admin/products/bulk', { method: 'POST', body: { action: 'publicar', criteria: { filter: 'no_relatorio' } } });
+  assert.deepEqual(await r0.json(), { ok: true, affected: 1 });
+  const pub = (await (await app.call('/api/products')).json()).products;
   assert.equal(pub.length, 1);
-  assert.equal(pub[0].hasImage, false, 'publicado, mas foto ainda não liberada: placeholder');
-  app.logout();
-  assert.equal((await app.call(foto)).status, 404);
-  await app.login();
-  const id = (await app.db.prepare("SELECT id FROM products WHERE source_id = 'onuh:p7'").first()).id;
-  r = await app.call('/api/admin/products/bulk', { method: 'POST', body: { action: 'liberar_fotos', ids: [id] } });
-  assert.equal((await r.json()).affected, 1);
-  pub = (await (await app.call('/api/products')).json()).products;
   assert.equal(pub[0].image, foto);
+  const id = (await app.db.prepare("SELECT id FROM products WHERE source_id = 'onuh:p7'").first()).id;
   app.logout();
   const publica = await app.call(foto);
-  assert.equal(publica.status, 200, 'liberada + publicada: pública');
+  assert.equal(publica.status, 200, 'publicada: pública');
   assert.equal(publica.headers.get('cache-control'), 'public, max-age=31536000, immutable');
+  let r;
+
+  // Revisão de fotos em grade: só administração; "Tirar foto" usa a rota de excluir imagem.
+  await app.login();
+  const grade = await (await app.call('/admin/fotos?origem=importado')).text();
+  assert.match(grade, /A foto principal de cada produto \(60\)/);
+  assert.equal((grade.match(/class="a-foto"/g) || []).length, 60);
+  const img = await app.db.prepare('SELECT pi.id FROM product_images pi WHERE pi.product_id = ?').bind(id).first();
+  assert.equal((await app.call(`/api/admin/products/${id}/images/${img.id}`, { method: 'DELETE' })).status, 200);
+  assert.equal((await (await app.call('/api/products')).json()).products[0].hasImage, false, 'sem a foto, volta a imagem padrão');
+  app.logout();
+  await app.login('ana');
+  assert.equal((await app.call('/admin/fotos')).status, 302, 'vendedora não vê a revisão de fotos');
+  app.logout();
 
   // Vendedora não faz ações em lote; ação inválida e lista vazia são recusadas.
   await app.login('ana');

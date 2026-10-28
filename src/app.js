@@ -180,7 +180,7 @@ async function adminRoutes(ctx) {
     const filtroAtivo = filter in catalog.ADMIN_FILTERS ? filter : 'todos';
     const brandId = /^\d+$/.test(sp.get('marca') || '') ? sp.get('marca') : '';
     const category = (sp.get('categoria') || '').slice(0, 100);
-    const source = ['loja', 'atlantico', 'onuh'].includes(sp.get('origem')) ? sp.get('origem') : '';
+    const source = ['loja', 'importado'].includes(sp.get('origem')) ? sp.get('origem') : '';
     const pagina = await catalog.getAdminProductsPage(db, {
       q, filter: filtroAtivo, brandId, category, source, page: sp.get('pagina'),
     });
@@ -188,6 +188,12 @@ async function adminRoutes(ctx) {
       ...pagina, q, filtroAtivo, brandId, category, source,
       brands: await catalog.listBrandsAdmin(db), categories: await catalog.listCategories(db),
     });
+  }
+  if (pathname === '/admin/fotos') {
+    if (user.role !== 'admin') return redirect('/admin/produtos');
+    const sp = ctx.url.searchParams;
+    const source = ['loja', 'importado'].includes(sp.get('origem')) ? sp.get('origem') : '';
+    return adminPages.photoReviewPage(user, { ...(await catalog.getPhotoReviewPage(db, { source, page: sp.get('pagina') })), source });
   }
   if (pathname === '/admin/produtos/novo') {
     if (user.role !== 'admin') return redirect('/admin/produtos');

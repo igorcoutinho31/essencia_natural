@@ -127,7 +127,7 @@ export async function bulk(ctx) {
     filter: c.filter in catalog.ADMIN_FILTERS ? c.filter : 'todos',
     brandId: /^\d+$/.test(String(c.brandId || '')) ? c.brandId : '',
     category: String(c.category || '').slice(0, 100),
-    source: ['loja', 'atlantico', 'onuh'].includes(c.source) ? c.source : '',
+    source: ['loja', 'importado'].includes(c.source) ? c.source : '',
   } : null;
   const affected = await catalog.bulkAction(ctx.db, body.action, { ids: Array.isArray(body.ids) ? body.ids : undefined, criteria });
   return json(200, { ok: true, affected });

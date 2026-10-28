@@ -8,7 +8,8 @@
 //    família olfativa. O texto de venda da ONUH NÃO é copiado (description
 //    fica vazia).
 //  - Nada de preço nem estoque (o pacote já não traz).
-//  - Tudo entra OCULTO; fotos entram como "a liberar" (licensed = 0).
+//  - Tudo entra OCULTO; as fotos entram liberadas (os fornecedores
+//    autorizaram o uso em 28/10/2026).
 
 const SEM_ACENTO = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
 

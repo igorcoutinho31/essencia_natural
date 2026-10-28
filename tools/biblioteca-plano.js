@@ -109,18 +109,18 @@ export function sqlCadastros(plano) {
     out.push(`INSERT OR IGNORE INTO products (slug, name, brand_id, category, volume, concentration, family, notes_top, notes_heart, notes_base,
   description, price, compare_price, stock, stock_source, active, featured, olisek_link_status, source, source_id, source_url, in_store_report, store_report_name)
 VALUES (${q(p.slug)}, ${q(p.name)}, ${p.brandSlug ? `(SELECT id FROM brands WHERE slug = ${q(p.brandSlug)})` : 'NULL'}, ${q(p.category)}, ${q(p.volume)}, ${q(p.concentration)}, ${q(p.family)}, ${q(p.notesTop)}, ${q(p.notesHeart)}, ${q(p.notesBase)},
-  NULL, NULL, NULL, 0, 'none', 0, 0, 'unlinked', ${q(p.source)}, ${q(p.sourceId)}, ${q(p.sourceUrl)}, ${p.inStoreReport}, ${q(p.storeReportName)});`);
+  NULL, NULL, NULL, 0, 'none', 0, 0, 'unlinked', ${q(p.source)}, ${q(p.sourceId)}, NULL, ${p.inStoreReport}, ${q(p.storeReportName)});`);
   }
   return out.join('\n') + '\n';
 }
 
-/** SQL que liga a foto principal (ainda "a liberar") a cada produto que usa
+/** SQL que liga a foto principal (já liberada) a cada produto que usa
  *  uma das `keys` — só se o produto ainda não tem nenhuma foto. */
 export function sqlLigarFotos(plano, keys) {
   const set = new Set(keys);
   return plano.produtos.filter((p) => p.foto && set.has(p.foto)).map((p) =>
     `INSERT INTO product_images (product_id, file_path, sort_order, is_main, licensed)
-SELECT p.id, ${q('/uploads/' + p.foto)}, 0, 1, 0 FROM products p
+SELECT p.id, ${q('/uploads/' + p.foto)}, 0, 1, 1 FROM products p
  WHERE p.source_id = ${q(p.sourceId)} AND NOT EXISTS (SELECT 1 FROM product_images pi WHERE pi.product_id = p.id);`).join('\n') + '\n';
 }
 
