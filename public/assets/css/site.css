@@ -112,12 +112,21 @@ section{position:relative}
 
 /* ---------- faixa do topo (toque lilás do logo) ---------- */
 .faixa{
-  height:var(--faixa-h);display:flex;align-items:center;justify-content:center;gap:10px;
+  height:var(--faixa-h);display:flex;align-items:center;justify-content:flex-start;
   background:var(--blush);color:var(--malva);
-  font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;overflow:hidden;padding-inline:12px;
+  font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;overflow:hidden;
 }
 .faixa i{font-style:normal;color:var(--malva-2);font-size:.55rem}
-@media (max-width:480px){.faixa .faixa-x{display:none}.faixa{letter-spacing:.14em}}
+.faixa-trilho{display:flex;width:max-content;animation:faixa-anda 36s linear infinite}
+.faixa-item{display:inline-flex;align-items:center;gap:10px;padding-right:10px}
+@keyframes faixa-anda{to{transform:translateX(-50%)}}
+/* menos movimento: parada, só a primeira frase, centralizada */
+@media (prefers-reduced-motion:reduce){
+  .faixa{justify-content:center}
+  .faixa-trilho{animation:none}
+  .faixa-item:not(:first-child),.faixa-item:first-child .faixa-sep{display:none}
+}
+
 
 /* ---------- cabeçalho ---------- */
 .site-header{
