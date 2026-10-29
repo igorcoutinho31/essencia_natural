@@ -132,11 +132,18 @@ do banco grava o saldo no produto. Tipos: `inicial`, `entrada`, `saida`,
 - Senha temporária: até trocar, a conta não consegue fazer mais nada.
 - 5 senhas erradas para o mesmo usuário (ou 20 do mesmo IP) em 15 minutos
   bloqueiam o login por 15 minutos.
-- Cookie de sessão `HttpOnly`, `SameSite=Lax` e `Secure` (HTTPS).
+- Cookie de sessão `HttpOnly`, `SameSite=Lax` e `Secure`; no HTTPS se
+  chama `__Host-en_sessao` (o navegador só aceita sem `Domain` e com
+  `Path=/`: subdomínio nenhum cria ou troca a sessão).
+- O banco guarda só o SHA-256 do código da sessão; quem vir o banco não
+  consegue usar o que viu como cookie.
+- Login de usuário inexistente leva o mesmo tempo de um login real (o
+  tempo de resposta não revela quais usuários existem).
 - Pedidos que alteram dados no admin precisam vir do próprio site
   (verificação do cabeçalho `Origin` — proteção contra CSRF).
 - Cabeçalhos em todas as respostas: CSP, HSTS, `X-Frame-Options`,
-  `nosniff`, `Referrer-Policy`, `Permissions-Policy`. Admin com
+  `nosniff`, `Referrer-Policy`, `Permissions-Policy`,
+  `Cross-Origin-Opener-Policy`. Admin com
   `noindex` e `no-store`.
 - Erros internos não mostram detalhes técnicos para quem está de fora.
 - Fotos: formato validado pelos bytes (JPG/PNG/WEBP), nunca pela extensão.

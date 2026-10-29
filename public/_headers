@@ -14,6 +14,8 @@
 # HTML/CSS/JS seguem o padrão da Cloudflare (revalida a cada visita, 304 leve).
 /assets/brands/*
   Cache-Control: public, max-age=86400
+/assets/fonts/*
+  Cache-Control: public, max-age=86400
 /assets/catalog/*
   Cache-Control: public, max-age=86400
 /assets/icons/*

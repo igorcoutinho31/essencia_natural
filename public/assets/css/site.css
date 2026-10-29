@@ -1,3 +1,7 @@
+/* Cormorant Garamond (SIL OFL 1.1, ver assets/fonts/OFL-cormorant-garamond.txt),
+   hospedada aqui com os acentos circunflexos minúsculos (â ê ô) mais baixos
+   e abertos — o desenho original deixa o "ê" alto e solto nos títulos. */
+@font-face{font-family:'Cormorant Garamond EN';src:url('/assets/fonts/cormorant-garamond-en.woff2') format('woff2');font-weight:300 700;font-style:normal;font-display:swap}
 /* Essência Natural — visual da V4 (proposta "D · Essência", aprovada em
    28/10/2026): base escura com dourado champanhe, e o branco-pérola e o
    lilás do logo só em toques pontuais (faixa do topo, quiz, etiquetas,
@@ -27,7 +31,7 @@
   --malva-2:#7a5a72;
   --ok:#8fd6a4;
   --alerta:#e2a56b;
-  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --serif:'Cormorant Garamond EN',Georgia,'Times New Roman',serif;
   --script:'Pinyon Script','Segoe Script',cursive;
   --sans:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif;
   --caps:'Cinzel',Georgia,serif;
@@ -310,11 +314,14 @@ body.nav-aberto{overflow:hidden}
 .top-item{flex:none;width:clamp(168px,44vw,220px);scroll-snap-align:start;position:relative;padding-top:46px}
 .top-item a{display:block}
 .top-num{
-  position:absolute;top:-10px;left:-4px;z-index:0;font-family:var(--serif);font-weight:500;font-size:7.4rem;line-height:1;
+  position:absolute;top:-10px;left:-4px;z-index:0;font-family:var(--serif);font-weight:500;font-size:7.4rem;line-height:1;font-variant-numeric:lining-nums;
   color:transparent;-webkit-text-stroke:1px var(--gold);opacity:.85;
 }
-.top-item img{position:relative;z-index:1;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--r-2);background:var(--bg-3);box-shadow:var(--sombra);transition:transform .5s var(--ease)}
-@media (hover:hover){.top-item a:hover img{transform:translateY(-4px)}}
+.top-media{position:relative;z-index:1;display:block;aspect-ratio:4/5;border-radius:var(--r-2);overflow:hidden;background:var(--bg-3);box-shadow:var(--sombra);transition:transform .5s var(--ease)}
+.top-media--estudio{background:radial-gradient(120% 90% at 50% 40%,#fbf8f3 0%,#f1ebe1 70%,#e9e1d4 100%)}
+.top-item img{width:100%;height:100%;object-fit:cover}
+.top-media--estudio img{object-fit:contain;padding:9% 8% 11%;mix-blend-mode:multiply}
+@media (hover:hover){.top-item a:hover .top-media{transform:translateY(-4px)}}
 .top-item .prod-marca{display:block;margin-top:12px}
 .top-item h3{font-size:1.24rem;font-weight:600;margin-top:2px}
 
@@ -656,3 +663,16 @@ dialog.bag:not(.vazia) .bag-vazia{display:none}
   .js .hero-title .linha > span,.js .hero-anim{transform:none;opacity:1}
   .marquee{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
 }
+
+/* ---- convite para instalar o app (assets/js/app.js) ---- */
+.convite-app{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:60;display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;
+  padding:14px 40px 14px 14px;border-radius:18px;border:1px solid var(--line-2);background:rgba(20,16,11,.94);color:var(--ink);box-shadow:0 24px 60px -20px rgba(0,0,0,.8);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transform:translateY(130%);opacity:0;transition:transform .5s var(--ease),opacity .4s}
+.convite-app--barra{bottom:calc(76px + env(safe-area-inset-bottom))}
+.convite-app.aberto{transform:none;opacity:1}
+.convite-app-logo{width:48px;height:48px;border-radius:12px}
+.convite-app-txt{display:flex;flex-direction:column;gap:2px;font-size:.8rem;line-height:1.4;color:var(--ink-2)}
+.convite-app-txt strong{font-family:var(--serif);font-size:1.12rem;font-weight:600;color:var(--ink)}
+.convite-app-acoes .btn{white-space:nowrap}
+.convite-app-fechar{position:absolute;top:6px;right:8px;width:30px;height:30px;border:0;background:none;color:var(--ink-3);font-size:1.4rem;line-height:1;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.convite-app{transition:none}}

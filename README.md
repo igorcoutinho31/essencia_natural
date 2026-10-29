@@ -45,6 +45,7 @@ GitHub. Nada do que você faz no computador mexe no site no ar.
 | Textos e seções da página inicial | `public/index.html` |
 | Página de links (bio do Instagram) | `public/links.html` |
 | Cores, fontes e espaçamentos | `public/assets/css/site.css` (cores no início, em `:root`) |
+| Fonte dos títulos e nomes (Cormorant Garamond com acentos ajustados) | `public/assets/fonts/` |
 | Página de cada produto | `src/routes/productPage.js` e `public/assets/css/product.css` |
 | Catálogo da home (busca, filtros, cards) | `public/assets/js/catalogo.js` |
 | Sacola e envio do pedido pelo WhatsApp | `public/assets/js/sacola.js` e `public/assets/js/atendimento.js` |

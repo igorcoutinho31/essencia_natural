@@ -353,7 +353,7 @@ export function ferramentasPage(user) {
     </div>
   </div>
   <script type="module">
-    const R = await import('/assets/js/regras-catalogo.mjs');
+    const R = await import('/assets/js/regras-catalogo.mjs?v=20261029-3');
     let cache = null;
     function el(tag, cls, txt){ const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
     async function lerTodos(aviso){
