@@ -194,6 +194,10 @@
       return out;
     }
 
+    // Foto de estúdio (fundo branco, do catálogo importado): vai num fundo
+    // marfim, inteira, sem corte. Foto tirada na loja: preenche o quadro.
+    function fotoEstudio(src){ return /^\/uploads\/biblioteca\//.test(src || ''); }
+
     function imagem(p, cls){
       var img = new Image();
       img.alt = nomeCompleto(p); img.loading = 'lazy'; img.decoding = 'async';
@@ -214,19 +218,19 @@
       var art = el('article','prod');
       if (p.stockStatus === 'indisponivel') art.classList.add('prod-indisponivel');
 
-      var media = el('div','prod-media');
+      var media = el('div','prod-media' + (fotoEstudio(p.image) ? ' prod-media--estudio' : ''));
       var link = el('a','prod-link');
       link.href = '/produto/' + p.slug;
       link.setAttribute('aria-label', 'Ver ' + nomeCompleto(p));
       link.appendChild(imagem(p));
       media.appendChild(link);
       if (p.featured) media.appendChild(el('span','prod-destaque','Destaque'));
+      var fam = familiaDe(p);
+      if (fam) media.appendChild(el('span','prod-tag' + (FAMILIAS[fam].lilas ? ' prod-tag--lilas' : ''), FAMILIAS[fam].tag));
       if (podeComprar(p)) media.appendChild(botaoAdd(p));
       art.appendChild(media);
 
       var body = el('div','prod-body');
-      var fam = familiaDe(p);
-      if (fam) body.appendChild(el('span','prod-tag' + (FAMILIAS[fam].lilas ? ' prod-tag--lilas' : ''), FAMILIAS[fam].tag));
       var marca = el('p','prod-marca', p.brand || ' ');
       if (!p.brand) marca.setAttribute('aria-hidden','true');
       body.appendChild(marca);

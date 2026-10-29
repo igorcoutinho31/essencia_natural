@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createTestApp } from './helpers.js';
-import { LOGIN_LIMITS, needsRehash } from '../src/auth.js';
+import { LOGIN_LIMITS, needsRehash, sessionKey, SESSION_COOKIE_HTTPS } from '../src/auth.js';
 
 test('login, sessão por cookie seguro e logout', async (t) => {
   const app = createTestApp();
@@ -12,7 +12,7 @@ test('login, sessão por cookie seguro e logout', async (t) => {
 
   const res = await app.login();
   const cookie = res.headers.get('set-cookie');
-  assert.match(cookie, /^en_admin_sessao=[0-9a-f]{64}; HttpOnly; Path=\/; SameSite=Lax; Max-Age=\d+; Secure$/);
+  assert.match(cookie, /^__Host-en_sessao=[0-9a-f]{64}; HttpOnly; Path=\/; SameSite=Lax; Max-Age=\d+; Secure$/);
   assert.equal((await app.call('/api/admin/products')).status, 200);
   assert.equal((await app.call('/admin/produtos')).status, 200);
   assert.equal((await app.call('/admin/estoque')).status, 200);
@@ -64,7 +64,7 @@ test('senha temporária: só deixa trocar a senha; troca derruba outras sessões
   assert.equal((await app.call('/api/admin/change-password', { method: 'POST', body: { newPassword: 'curta' } })).status, 400);
   assert.equal((await app.call('/api/admin/change-password', { method: 'POST', body: { newPassword: 'TempSenha23' } })).status, 400);
   // outra sessão aberta (ex.: outro aparelho)
-  await app.db.prepare("INSERT INTO sessions (id, user_id, expires_at) VALUES (?, 1, datetime('now', '+1 day'))").bind('a'.repeat(64)).run();
+  await app.db.prepare("INSERT INTO sessions (id, user_id, expires_at) VALUES (?, 1, datetime('now', '+1 day'))").bind(sessionKey('a'.repeat(64))).run();
   assert.equal((await app.call('/api/admin/change-password', { method: 'POST', body: { newPassword: 'NovaSenhaBoa1' } })).status, 200);
   assert.equal((await app.call('/api/admin/products')).status, 200);
   const { c } = await app.db.prepare('SELECT COUNT(*) AS c FROM sessions').first();
@@ -93,4 +93,24 @@ test('vendedora não acessa estoque, cadastro, OliSek nem backup', async (t) => 
   assert.equal((await app.call('/admin/estoque')).status, 302);
   const produto = (await (await app.call(`/api/admin/products/${id}`)).json()).product;
   assert.equal(produto.priceHistory, undefined, 'histórico de preço é só do admin');
+});
+
+test('sessão: cookie __Host- no HTTPS e só o hash do código no banco', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  await app.createUser();
+  const res = await app.login();
+  const cookie = res.headers.get('set-cookie');
+  assert.match(cookie, new RegExp('^' + SESSION_COOKIE_HTTPS + '=[0-9a-f]{64}; HttpOnly; Path=/; SameSite=Lax; Max-Age=\\d+; Secure$'));
+  const codigo = cookie.split(';')[0].split('=')[1];
+  const { id } = await app.db.prepare('SELECT id FROM sessions').first();
+  assert.equal(id, sessionKey(codigo));
+  assert.notEqual(id, codigo, 'o código do cookie não fica no banco');
+  assert.equal((await app.call('/api/admin/me')).status, 200);
+  // o que está no banco não serve como cookie
+  app.logout();
+  assert.equal((await app.call('/api/admin/me', { headers: { cookie: SESSION_COOKIE_HTTPS + '=' + id } })).status, 401);
+  // cookie sem o prefixo (que um subdomínio poderia criar) é ignorado no HTTPS
+  assert.equal((await app.call('/api/admin/me', { headers: { cookie: 'en_admin_sessao=' + codigo } })).status, 401);
+  assert.equal((await app.call('/api/admin/me', { headers: { cookie: SESSION_COOKIE_HTTPS + '=' + codigo } })).status, 200);
 });

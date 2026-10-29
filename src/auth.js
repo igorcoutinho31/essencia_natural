@@ -5,7 +5,14 @@
 import crypto from 'node:crypto';
 import { Buffer } from 'node:buffer';
 
+// No site no ar (HTTPS) o cookie leva o prefixo __Host-: o navegador só o
+// aceita com Secure, Path=/ e sem Domain — nenhum subdomínio consegue criar
+// ou trocar o cookie de sessão. No computador (http://localhost) fica o
+// nome simples, porque __Host- exige HTTPS.
 export const SESSION_COOKIE = 'en_admin_sessao';
+export const SESSION_COOKIE_HTTPS = '__Host-en_sessao';
+export const sessionCookieName = (https) => (https ? SESSION_COOKIE_HTTPS : SESSION_COOKIE);
+
 export const SESSION_DAYS = 7;
 
 // Anti força-bruta: 5 erros seguidos para o mesmo usuário (ou 20 vindos do
@@ -32,6 +39,15 @@ function parseHash(stored) {
 export function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
   const hex = crypto.scryptSync(String(password), salt, 64, SCRYPT).toString('hex');
   return { hash: `scrypt$${SCRYPT.N}$${SCRYPT.r}$${SCRYPT.p}$${hex}`, salt };
+}
+
+// Login de usuário que não existe gasta o mesmo tempo de um login real
+// (compara com um hash qualquer): o tempo de resposta não revela quais
+// usuários existem.
+const HASH_FALSO = hashPassword('senha-que-nao-existe', '0'.repeat(32));
+export function dummyVerify(password) {
+  verifyPassword(password, HASH_FALSO.salt, HASH_FALSO.hash);
+  return false;
 }
 
 export function verifyPassword(password, salt, stored) {
@@ -63,19 +79,25 @@ export function sqlDate(date) {
   return date.toISOString().replace('T', ' ').slice(0, 19);
 }
 
+// O banco guarda só o SHA-256 do código da sessão (o código mesmo fica só
+// no cookie). Quem vir o banco não consegue entrar no painel com o que viu.
+export function sessionKey(sessionId) {
+  return crypto.createHash('sha256').update(String(sessionId)).digest('hex');
+}
+
 export async function createSession(db, userId) {
   const id = crypto.randomBytes(32).toString('hex');
   const expires = sqlDate(new Date(Date.now() + SESSION_DAYS * 86400000));
-  await db.prepare('INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)').bind(id, userId, expires).run();
+  await db.prepare('INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)').bind(sessionKey(id), userId, expires).run();
   return { id, expires };
 }
 
 export async function destroySession(db, id) {
-  await db.prepare('DELETE FROM sessions WHERE id = ?').bind(id).run();
+  await db.prepare('DELETE FROM sessions WHERE id = ?').bind(sessionKey(id)).run();
 }
 
 export async function destroyUserSessions(db, userId, exceptId = '') {
-  await db.prepare('DELETE FROM sessions WHERE user_id = ? AND id <> ?').bind(userId, exceptId).run();
+  await db.prepare('DELETE FROM sessions WHERE user_id = ? AND id <> ?').bind(userId, exceptId ? sessionKey(exceptId) : '').run();
 }
 
 export async function getUserBySession(db, sessionId) {
@@ -83,7 +105,7 @@ export async function getUserBySession(db, sessionId) {
   return db.prepare(
     `SELECT u.* FROM sessions s JOIN users u ON u.id = s.user_id
      WHERE s.id = ? AND s.expires_at > datetime('now') AND u.active = 1`
-  ).bind(sessionId).first();
+  ).bind(sessionKey(sessionId)).first();
 }
 
 export function parseCookies(header) {
@@ -100,13 +122,13 @@ export function parseCookies(header) {
 }
 
 export function sessionCookie(sessionId, { secure }) {
-  const parts = [`${SESSION_COOKIE}=${sessionId}`, 'HttpOnly', 'Path=/', 'SameSite=Lax', `Max-Age=${SESSION_DAYS * 86400}`];
+  const parts = [`${sessionCookieName(secure)}=${sessionId}`, 'HttpOnly', 'Path=/', 'SameSite=Lax', `Max-Age=${SESSION_DAYS * 86400}`];
   if (secure) parts.push('Secure');
   return parts.join('; ');
 }
 
 export function clearSessionCookie({ secure }) {
-  return `${SESSION_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0${secure ? '; Secure' : ''}`;
+  return `${sessionCookieName(secure)}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0${secure ? '; Secure' : ''}`;
 }
 
 // ---------- limite de tentativas de login ----------
