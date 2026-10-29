@@ -60,8 +60,9 @@ GitHub. Nada do que você faz no computador mexe no site no ar.
 | Cabeçalhos de segurança e cache | `public/_headers` e `src/http.js` (manter iguais) |
 | Endereço oficial, domínio, banco | `wrangler.toml` |
 
-Produtos, preços, fotos de produto e contas **não ficam no código**: são
-cuidados pelo `/admin` do site no ar.
+Produtos, preços, fotos de produto, equipe e contas **não ficam no código**:
+são cuidados pelo `/admin` do site no ar. Arrumações em lote (nomes e fotos)
+ficam em `/admin/ferramentas`, com prévia antes de gravar — sem terminal.
 
 ## Estrutura
 
@@ -91,7 +92,7 @@ wrangler.toml  configuração da Cloudflare (Worker, banco, domínio, agendament
 | `npm run cf:dev` | roda no ambiente da Cloudflare, no computador |
 | `npm run cf:admin -- <ação> --remote` | contas do `/admin` no site no ar (criar, resetar senha, desativar) |
 | `npm run cf:biblioteca -- <pasta> --remote` | importa a biblioteca de fornecedores (tudo oculto) |
-| `npm run cf:limpar-nomes -- --remote --simular` | limpa os nomes (sem marca/volume/EDP repetidos); sem `--simular` grava |
+| `node tools/logos-ouro.cjs previa.jpg` | gera os logos das marcas em dourado (`public/assets/brands/ouro/`) |
 | `npm run cf:smoke -- <endereço>` | confere se o site no ar está respondendo certo |
 | `npm run cf:importar` | substitui o banco da Cloudflare por um backup (recuperação) |
 

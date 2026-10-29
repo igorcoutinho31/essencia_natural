@@ -4,7 +4,6 @@ import { createTestApp, PNG_DATA_URL } from './helpers.js';
 import * as R from '../tools/biblioteca-regras.js';
 import { planejar, sqlCadastros, sqlLigarFotos } from '../tools/biblioteca-plano.js';
 import { d1Storage } from '../src/storage.js';
-import { planejarLimpeza, sqlLimpeza } from '../tools/cf-limpar-nomes.js';
 
 const item = (over = {}) => ({
   source: 'onuh', sourceId: 'onuh:x', sourceUrl: 'https://exemplo/x', name: 'Afnan 9 Am Dive EDP 100 ml', brand: 'Afnan',
@@ -158,21 +157,4 @@ test('importação ponta a ponta: tudo oculto, foto pública só com o produto p
   // Publicar por marca + busca.
   r = await app.call('/api/admin/products/bulk', { method: 'POST', body: { action: 'publicar', criteria: { q: 'Teste 1', source: 'onuh' } } });
   assert.equal((await r.json()).affected, 11, '"Teste 1", "Teste 10".."Teste 19"');
-});
-
-test('limpar nomes já cadastrados: sem marca/volume/EDP no nome, slug intacto, idempotente', async (t) => {
-  const app = createTestApp();
-  t.after(app.cleanup);
-  app.db.raw.exec(`INSERT INTO brands (name, slug) VALUES ('Al Wataniah', 'al-wataniah');
-    INSERT INTO products (slug, name, brand_id, volume, source, source_id) VALUES
-      ('al-wataniah-eqaab', 'AL WATANIAH EQAAB EDP H 100ML', (SELECT id FROM brands WHERE slug='al-wataniah'), '100ml', 'atlantico', 'atlantico:1'),
-      ('ja-limpo', 'Sabah Al Ward', (SELECT id FROM brands WHERE slug='al-wataniah'), '100 ml', 'onuh', 'onuh:1');`);
-  const ler = () => app.db.raw.prepare('SELECT p.id, p.slug, p.name, p.volume, p.concentration, b.name AS brand FROM products p LEFT JOIN brands b ON b.id = p.brand_id WHERE p.source IS NOT NULL ORDER BY p.id').all();
-  const mudancas = planejarLimpeza(ler());
-  assert.equal(mudancas.length, 1, 'só muda o que está sujo');
-  app.db.raw.exec(sqlLimpeza(mudancas));
-  const [a] = ler();
-  assert.deepEqual({ slug: a.slug, name: a.name, volume: a.volume, concentration: a.concentration },
-    { slug: 'al-wataniah-eqaab', name: 'Eqaab', volume: '100 ml', concentration: 'EDP' });
-  assert.equal(planejarLimpeza(ler()).length, 0, 'rodar de novo não muda nada');
 });

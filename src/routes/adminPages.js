@@ -54,6 +54,7 @@ function layout({ title, user, active, body }) {
         <a href="/admin/produtos"${active === 'produtos' ? ' class="a-nav-ativo"' : ''}>Produtos</a>
         ${user.role === 'admin' ? `<a href="/admin/fotos"${active === 'fotos' ? ' class="a-nav-ativo"' : ''}>Fotos</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/equipe"${active === 'equipe' ? ' class="a-nav-ativo"' : ''}>Equipe</a>` : ''}
+        ${user.role === 'admin' ? `<a href="/admin/ferramentas"${active === 'ferramentas' ? ' class="a-nav-ativo"' : ''}>Ferramentas</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/estoque"${active === 'estoque' ? ' class="a-nav-ativo"' : ''}>Estoque</a>` : ''}
         <a href="/admin/trocar-senha">Trocar senha</a>
         <a href="/" target="_blank" rel="noopener">Ver site</a>
@@ -311,6 +312,147 @@ export function productsListPage(user, view) {
   </div>
   ${script}`;
   return html(200, layout({ title: 'Produtos', user, active: 'produtos', body }));
+}
+
+/** Ferramentas (/admin/ferramentas): arrumar nomes e padronizar fotos em
+ *  poucos cliques. As regras rodam aqui no navegador
+ *  (/assets/js/regras-catalogo.mjs); a pessoa confere a prévia, desmarca o
+ *  que não quiser e aplica — o servidor só grava o que foi aprovado. */
+export function ferramentasPage(user) {
+  const body = `
+  <div class="a-wrap">
+    <h1>Ferramentas</h1>
+    <p class="a-sub">Arrumações em lote, com prévia antes de gravar. Nada muda no site até você clicar em <b>Aplicar</b>.</p>
+
+    <div class="a-card a-ferr" id="f-nomes">
+      <h2>Arrumar nomes</h2>
+      <p class="a-help">Tira do nome a marca, o volume e a concentração repetidos (eles já aparecem ao lado) e arruma nomes em MAIÚSCULAS. Ex.: "AL WATANIAH EQAAB EDP H 100ML" vira "Eqaab", com 100 ml e EDP nos campos certos.</p>
+      <button class="btn btn-gold" type="button" data-acao="nomes">Verificar nomes</button>
+      <div class="a-ferr-res" aria-live="polite"></div>
+    </div>
+
+    <div class="a-card a-ferr" id="f-fotos">
+      <h2>Padronizar fotos</h2>
+      <p class="a-help">Troca as fotos antigas dos cadastros da loja (tiradas no balcão / Instagram) pela foto de fundo limpo do mesmo perfume no catálogo importado. As fotos antigas ficam guardadas por 90 dias. Confira cada par antes de aplicar.</p>
+      <button class="btn btn-gold" type="button" data-acao="fotos">Procurar pares</button>
+      <div class="a-ferr-res" aria-live="polite"></div>
+    </div>
+  </div>
+  <script type="module">
+    const R = await import('/assets/js/regras-catalogo.mjs');
+    let cache = null;
+    function el(tag, cls, txt){ const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+    async function lerTodos(aviso){
+      if (cache) return cache;
+      const todos = []; let depois = 0;
+      for (;;) {
+        aviso.textContent = 'Lendo produtos… ' + todos.length;
+        const r = await fetch('/api/admin/ferramentas/produtos?depois=' + depois);
+        if (!r.ok) throw new Error('Não foi possível ler os produtos.');
+        const d = await r.json();
+        todos.push(...d.produtos);
+        if (d.fim || !d.produtos.length) break;
+        depois = d.produtos[d.produtos.length - 1].id;
+      }
+      cache = todos; return todos;
+    }
+    async function enviar(url, campo, itens, lote, aviso){
+      let feitos = 0;
+      for (let i = 0; i < itens.length; i += lote) {
+        const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [campo]: itens.slice(i, i + lote) }) });
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message || 'Erro ao gravar.');
+        feitos = Math.min(itens.length, i + lote);
+        aviso.textContent = 'Gravando… ' + feitos + ' de ' + itens.length;
+      }
+    }
+    function barraAcoes(res, total, aplicar){
+      const barra = el('div', 'a-row a-ferr-acoes');
+      const todos = el('label'); const cb = el('input'); cb.type = 'checkbox'; cb.checked = true; todos.append(cb, ' Marcar todos');
+      cb.addEventListener('change', () => res.querySelectorAll('.a-ferr-cb').forEach((x) => { x.checked = cb.checked; }));
+      const btn = el('button', 'btn btn-gold', 'Aplicar'); btn.type = 'button';
+      btn.addEventListener('click', aplicar);
+      barra.append(todos, btn);
+      return barra;
+    }
+
+    async function nomes(card){
+      const res = card.querySelector('.a-ferr-res'); res.textContent = '';
+      const aviso = el('p', 'a-help'); res.appendChild(aviso);
+      const todos = await lerTodos(aviso);
+      const lista = R.mudancasDeNomes(todos);
+      aviso.textContent = lista.length ? lista.length + ' nome(s) para arrumar, de ' + todos.length + ' produtos. Desmarque o que não quiser mudar.' : 'Tudo certo: nenhum nome para arrumar (' + todos.length + ' produtos).';
+      if (!lista.length) return;
+      const tabela = el('div', 'a-ferr-lista');
+      lista.forEach((m, i) => {
+        const linha = el('label', 'a-ferr-linha');
+        const cb = el('input', 'a-ferr-cb'); cb.type = 'checkbox'; cb.checked = true; cb.dataset.i = i;
+        const antes = el('span', 'a-ferr-antes', m.antes.name);
+        const depois = el('span', 'a-ferr-depois', m.depois.name + [m.depois.concentration, m.depois.volume].filter(Boolean).map((x) => ' · ' + x).join(''));
+        const marca = el('span', 'a-help', m.antes.brand || '');
+        linha.append(cb, antes, el('span', 'a-ferr-seta', '→'), depois, marca);
+        tabela.appendChild(linha);
+      });
+      res.append(barraAcoes(res, lista.length, async () => {
+        const marcados = [...res.querySelectorAll('.a-ferr-cb:checked')].map((x) => lista[+x.dataset.i]);
+        if (!marcados.length) return;
+        if (!confirm('Gravar ' + marcados.length + ' nome(s)?')) return;
+        try {
+          await enviar('/api/admin/ferramentas/nomes', 'mudancas', marcados.map((m) => ({ id: m.id, ...m.depois })), 300, aviso);
+          cache = null; res.textContent = ''; res.appendChild(el('div', 'a-msg a-msg-ok', marcados.length + ' nome(s) arrumado(s). Já aparecem no site.'));
+        } catch (e) { aviso.textContent = e.message; }
+      }), tabela);
+    }
+
+    async function fotos(card){
+      const res = card.querySelector('.a-ferr-res'); res.textContent = '';
+      const aviso = el('p', 'a-help'); res.appendChild(aviso);
+      const todos = await lerTodos(aviso);
+      const { pares, semPar } = R.paresDeFotos(todos);
+      aviso.textContent = pares.length
+        ? pares.length + ' cadastro(s) da loja com foto nova disponível. Confira cada par: o da esquerda é a foto atual, o da direita a nova.'
+        : 'Nenhum par novo encontrado.';
+      if (pares.length) {
+        const grade = el('div', 'a-ferr-pares');
+        pares.forEach((par, i) => {
+          const item = el('label', 'a-ferr-par' + (par.exato ? '' : ' a-ferr-par--confira'));
+          const cb = el('input', 'a-ferr-cb'); cb.type = 'checkbox'; cb.checked = true; cb.dataset.i = i;
+          const fotos = el('span', 'a-ferr-fotos');
+          const a = new Image(); a.src = par.imagem || '/assets/images/placeholder-produto.svg'; a.alt = ''; a.loading = 'lazy';
+          const b = new Image(); b.src = par.deImagem; b.alt = ''; b.loading = 'lazy';
+          fotos.append(a, el('span', 'a-ferr-seta', '→'), b);
+          const txt = el('span', 'a-ferr-txt');
+          txt.append(el('b', null, par.nome), el('span', 'a-help', '→ ' + par.deNome));
+          if (!par.exato) txt.appendChild(el('span', 'badge badge-warn', 'confira: nome parecido'));
+          item.append(cb, fotos, txt);
+          grade.appendChild(item);
+        });
+        res.append(barraAcoes(res, pares.length, async () => {
+          const marcados = [...res.querySelectorAll('.a-ferr-cb:checked')].map((x) => pares[+x.dataset.i]);
+          if (!marcados.length) return;
+          if (!confirm('Trocar a foto de ' + marcados.length + ' produto(s)?')) return;
+          try {
+            await enviar('/api/admin/ferramentas/fotos', 'pares', marcados.map((p) => ({ id: p.id, de: p.de })), 50, aviso);
+            cache = null; res.textContent = ''; res.appendChild(el('div', 'a-msg a-msg-ok', marcados.length + ' foto(s) trocada(s). As antigas ficam guardadas por 90 dias.'));
+          } catch (e) { aviso.textContent = e.message; }
+        }), grade);
+      }
+      if (semPar.length) {
+        const det = el('details', 'a-ferr-sem');
+        det.appendChild(el('summary', null, semPar.length + ' cadastro(s) da loja sem foto equivalente no catálogo importado'));
+        const ul = el('ul'); semPar.forEach((p) => { const li = el('li'); const a = el('a', null, [p.marca, p.nome].filter(Boolean).join(' ')); a.href = '/admin/produtos/' + p.id; li.appendChild(a); ul.appendChild(li); });
+        det.append(el('p', 'a-help', 'Esses continuam com a foto atual. Você pode enviar uma foto nova ou ocultar o produto pela tela dele.'), ul);
+        res.appendChild(det);
+      }
+    }
+
+    document.querySelectorAll('.a-ferr [data-acao]').forEach((b) => b.addEventListener('click', async () => {
+      const card = b.closest('.a-ferr'); b.disabled = true;
+      try { await (b.dataset.acao === 'nomes' ? nomes(card) : fotos(card)); }
+      catch (e) { card.querySelector('.a-ferr-res').textContent = e.message || 'Algo deu errado. Tente de novo.'; }
+      finally { b.disabled = false; }
+    }));
+  </script>`;
+  return html(200, layout({ title: 'Ferramentas', user, active: 'ferramentas', body }));
 }
 
 /** Equipe (/admin/equipe): quem aparece em "Nossa equipe" e na escolha de

@@ -4,14 +4,12 @@
 // (tools/cf-biblioteca.js) busca o estado atual do banco, chama isto e
 // executa o SQL; os testes chamam isto direto contra um banco em memória.
 import { slugify } from '../src/util.js';
-import { chave, chaveMarca, limparNome, tituloProduto, categoria, extrairNotas, tokens, indiceRelatorio, casarRelatorio } from './biblioteca-regras.js';
+import { chave, chaveMarca, chaveProduto, limparNome, tituloProduto, categoria, extrairNotas, tokens, indiceRelatorio, casarRelatorio } from './biblioteca-regras.js';
+
+export { chaveProduto };
 
 const q = (v) => (v === null || v === undefined ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`);
 
-/** Chave de "mesmo produto": marca + palavras do nome (sem volume/EDP...). */
-function chaveProduto(nome, marca) {
-  return `${chaveMarca(marca) || ''}|${[...tokens(nome)].sort().join(' ')}`;
-}
 
 /**
  * @param catalogo  conteúdo do catalog.json (schemaVersion 2)

@@ -158,11 +158,11 @@ test('home nova: seções, scripts e nada de produto escrito à mão', async (t)
   const app = createTestApp();
   t.after(app.cleanup);
   const home = await (await app.call('/')).text();
-  for (const id of ['hero', 'familias', 'destaques', 'mais-vendidos', 'catalogo', 'canais', 'loja', 'equipe', 'faq']) {
+  for (const id of ['hero', 'marcas', 'destaques', 'mais-vendidos', 'catalogo', 'cat-familias', 'canais', 'loja', 'equipe', 'faq']) {
     assert.match(home, new RegExp(`id="${id}"`), id);
   }
   for (const js of ['catalogo', 'home', 'quiz', 'marcas', 'sacola', 'atendimento']) assert.match(home, new RegExp(`assets/js/${js}\\.js`));
   assert.ok(!/<script>(?!\s*<\/script>)/.test(home), 'home sem <script> inline');
   assert.ok(!/<style>/.test(home), 'home sem <style> inline');
-  assert.equal((await app.call('/assets/store/prateleiras.mp4')).status, 200);
+  assert.equal((await app.call('/assets/brands/ouro/lattafa.png')).status, 200, 'logos em dourado');
 });

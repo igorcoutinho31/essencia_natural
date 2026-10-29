@@ -1,5 +1,23 @@
 # Arquitetura do site
 
+## V4.1 — acabamento de luxo (29/10/2026)
+Pedido do responsável pelo site depois de ver a V4 no ar:
+- **Topo sem vídeo** (o das prateleiras não agradou): fundo escuro com
+  brilhos dourados se movendo devagar, padrão geométrico, poeira dourada e
+  o **logo grande** com reflexo de luz — volta o luxo da versão anterior.
+  Há espaço para um vídeo profissional no futuro (classe `hero-video`).
+- **Home mais enxuta:** saíram a busca rápida e "Escolha pelo cheiro"; as
+  famílias viraram filtro dentro do catálogo (só as com 3+ perfumes, e só
+  com 2+ famílias). Ordem: topo → marcas → destaques/novidades → mais
+  vendidos (se houver) → catálogo → quiz → varejo/atacado → loja → equipe.
+- **Marcas com logo** em dourado sobre transparente
+  (`public/assets/brands/ouro/`, gerados por `tools/logos-ouro.cjs`).
+- **Loja física** sem a foto tirada do vídeo: emblema "215" em dourado
+  (trocar por foto profissional quando houver).
+- Títulos em Playfair Display (o Cormorant desenhava o acento do "ê" torto)
+  e legendas em Cinzel; Amiri no toque em árabe.
+- Nomes e fotos em lote: tela `/admin/ferramentas` (sem terminal).
+
 ## V4 — home nova (proposta "D · Essência", aprovada em 28/10/2026)
 Visual: base escura (`#0e0c0a`) com dourado champanhe (`#c8a46a`), e o
 branco-pérola e o lilás do logo só em toques (faixa do topo, card "Doces",
@@ -11,11 +29,7 @@ entre dois traços dourados (vem do logo). Cores e componentes em
 
 Ordem da home (`public/index.html`), pensada para o celular:
 1. faixa lilás · cabeçalho fixo com logo, menu, busca e sacola;
-2. abertura com vídeo curto das prateleiras reais da loja
-   (`assets/store/prateleiras.mp4`, trecho sem pessoas do vídeo enviado em
-   28/10/2026; foto parada se o aparelho pedir menos movimento ou economia
-   de dados). Não é animação de frames: a regra do hero de 240 frames
-   continua valendo;
+2. abertura (na V4 era um vídeo das prateleiras; trocado na V4.1);
 3. busca rápida + atalhos por gênero;
 4. "Escolha pelo cheiro" (4 famílias, agrupadas pelo campo família e pelas
    notas do cadastro — família vazia nunca é inventada);
