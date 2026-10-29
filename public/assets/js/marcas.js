@@ -19,7 +19,7 @@
       a.href = '#catalogo';
       var src = logoOuro(m);
       if (src) {
-        var img = new Image(); img.alt = m.name; img.decoding = 'async'; img.loading = 'lazy'; img.src = src; img.height = 78;
+        var img = new Image(); img.alt = m.name; img.decoding = 'async'; img.src = src; img.height = 78;
         img.addEventListener('error', function(){ img.remove(); nomeTexto(a, m); }, { once: true });
         a.appendChild(img);
       } else nomeTexto(a, m);
@@ -45,5 +45,23 @@
           faixa.appendChild(a);
         });
       });
+      // Só começa a andar depois que os logos carregaram: o Safari calcula o
+      // "andar metade da largura" no início da animação e não recalcula —
+      // com a faixa ainda vazia (ou sem as imagens), ela ficava parada.
+      var imgs = [].slice.call(faixa.querySelectorAll('img'));
+      var prontas = imgs.map(function(im){
+        return im.complete ? Promise.resolve() : new Promise(function(ok){ im.addEventListener('load', ok, { once: true }); im.addEventListener('error', ok, { once: true }); });
+      });
+      var andar = function(){
+        faixa.classList.remove('anda');
+        void faixa.offsetWidth; // reinicia a animação com a largura certa
+        faixa.classList.add('anda');
+      };
+      Promise.race([Promise.all(prontas), new Promise(function(ok){ setTimeout(ok, 4000); })]).then(function(){
+        andar();
+        Promise.all(prontas).then(andar); // se passou do tempo, recomeça quando tudo chegar
+      });
+      var largura = window.innerWidth;
+      window.addEventListener('resize', function(){ if (window.innerWidth !== largura) { largura = window.innerWidth; andar(); } });
     }).catch(function(){ faixa.parentNode.hidden = true; });
   })();
