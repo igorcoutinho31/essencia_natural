@@ -24,6 +24,8 @@
   Cache-Control: public, max-age=86400
 /assets/social/*
   Cache-Control: public, max-age=86400
+/assets/store/*
+  Cache-Control: public, max-age=86400
 /assets/team/*
   Cache-Control: public, max-age=86400
 
