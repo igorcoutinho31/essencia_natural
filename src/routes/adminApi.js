@@ -8,6 +8,7 @@ import * as inventory from '../services/inventory.js';
 import * as olisek from '../services/olisek.js';
 import * as team from '../services/team.js';
 import * as ferramentas from '../services/ferramentas.js';
+import * as loja from '../services/loja.js';
 import { exportDataJSON, readSnapshotJSON, trashUpload } from '../services/autoBackup.js';
 import { optimizeImage } from '../images.js';
 import { json, readJson, readBytes, HttpError } from '../http.js';
@@ -353,6 +354,31 @@ export async function ferramentasHdGravar(ctx) {
   const bytes = await readBytes(ctx.request, ferramentas.MAX_HD);
   const r = await ferramentas.gravarHD(ctx.db, ctx.storage, ctx.url.searchParams.get('sha') || '', bytes);
   return r.erro ? json(r.erro === 'nao_encontrada' ? 404 : 400, { error: r.erro, message: 'Foto não gravada.' }) : json(200, r);
+}
+
+// ---- painel da loja (/admin/loja) — vendedoras e administração ----
+
+export async function lojaBusca(ctx) {
+  const sp = ctx.url.searchParams;
+  return json(200, await loja.buscar(ctx.db, { q: (sp.get('q') || '').slice(0, 100), filtro: sp.get('filtro') || 'todos', pagina: sp.get('pagina') }));
+}
+
+export async function lojaOpcoes(ctx) {
+  return json(200, await loja.opcoes(ctx.db));
+}
+
+export async function lojaCriar(ctx) {
+  const body = await readJson(ctx.request, 16 * 1024);
+  const r = await loja.criar(ctx.db, body, ctx.user);
+  return r.erro ? json(400, { error: 'invalid', message: r.erro }) : json(201, r);
+}
+
+export async function lojaSite(ctx, id) {
+  const body = await readJson(ctx.request, 4 * 1024);
+  const r = await loja.mostrarNoSite(ctx.db, Number(id), body.ativo === true);
+  if (r.erro === 'not_found') return json(404, { error: 'not_found' });
+  if (r.erro === 'sem_foto') return json(400, { error: 'sem_foto', message: 'Coloque uma foto antes de mostrar no site.' });
+  return json(200, r);
 }
 
 // ---- equipe (/admin/equipe) — só administração ----
