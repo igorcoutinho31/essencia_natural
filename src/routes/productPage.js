@@ -81,8 +81,7 @@ function render(siteUrl, product, related) {
   const ogImage = absolute(siteUrl, product.hasImage ? product.image : '/assets/social/og-essencia-natural.jpg');
   // Nome de vitrine é curto ("Khamrah"); título, WhatsApp e Google levam
   // marca e volume ("Lattafa Khamrah 100 ml").
-  const openBox = product.category === 'Open box';
-  const nomeCompleto = [product.brand, product.name, product.volume].filter(Boolean).join(' ') + (openBox ? ' (Open box)' : '');
+  const nomeCompleto = [product.brand, product.name, product.volume].filter(Boolean).join(' ');
   const title = `${nomeCompleto} | ${SITE_NAME}`;
   const descBase = descricaoUtil(product) ||
     `${product.name}${product.brand ? ', ' + product.brand : ''} — perfumaria árabe e importada na Galeria Pagé, São Paulo. Consulte disponibilidade pelo WhatsApp.`;
@@ -161,7 +160,6 @@ function render(siteUrl, product, related) {
         <h1 class="pd-nome">${escapeHTML(product.name)}</h1>
         ${meta ? `<p class="pd-meta">${escapeHTML(meta)}</p>` : ''}
         <span class="pd-selo ${stockBadgeClass(product.stockStatus)}">${escapeHTML(product.stockLabel)}</span>
-        ${openBox ? '<p class="pd-openbox"><b>Open box</b> — produto com a embalagem aberta. Confirme os detalhes com a nossa equipe pelo WhatsApp.</p>' : ''}
         ${priceHTML}
         ${notesList(product.notes)}
         <p class="pd-desc">${escapeHTML(descBase)}</p>

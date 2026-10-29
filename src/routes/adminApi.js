@@ -298,8 +298,7 @@ export async function ferramentasLista(ctx) {
   requireAdmin(ctx);
   const depois = parseInt(ctx.url.searchParams.get('depois') || '0', 10) || 0;
   const produtos = await ferramentas.listaLeve(ctx.db, depois);
-  const marcas = depois ? undefined : await ferramentas.nomesDeMarcas(ctx.db);
-  return json(200, { produtos, marcas, fim: produtos.length < ferramentas.LISTA_LIMITE });
+  return json(200, { produtos, fim: produtos.length < ferramentas.LISTA_LIMITE });
 }
 
 export async function ferramentasNomes(ctx) {

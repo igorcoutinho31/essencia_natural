@@ -326,7 +326,7 @@ export function ferramentasPage(user) {
 
     <div class="a-card a-ferr" id="f-nomes">
       <h2><span class="a-passo">1</span> Arrumar nomes</h2>
-      <p class="a-help">Tira do nome a marca, o volume e a concentração repetidos (eles já aparecem ao lado) e arruma nomes em MAIÚSCULAS. Ex.: "AL WATANIAH EQAAB EDP H 100ML" vira "Eqaab", com 100 ml e EDP nos campos certos. Os "OPENBOX …" ganham a marca certa e vão para a categoria <b>Open box</b> (com etiqueta no site).</p>
+      <p class="a-help">Tira do nome a marca, o volume e a concentração repetidos (eles já aparecem ao lado) e arruma nomes em MAIÚSCULAS. Ex.: "AL WATANIAH EQAAB EDP H 100ML" vira "Eqaab", com 100 ml e EDP nos campos certos.</p>
       <button class="btn btn-gold" type="button" data-acao="nomes">Verificar nomes</button>
       <div class="a-ferr-res" aria-live="polite"></div>
     </div>
@@ -364,7 +364,6 @@ export function ferramentasPage(user) {
         const r = await fetch('/api/admin/ferramentas/produtos?depois=' + depois);
         if (!r.ok) throw new Error('Não foi possível ler os produtos.');
         const d = await r.json();
-        if (d.marcas) todos.marcas = d.marcas;
         todos.push(...d.produtos);
         if (d.fim || !d.produtos.length) break;
         depois = d.produtos[d.produtos.length - 1].id;
@@ -394,7 +393,7 @@ export function ferramentasPage(user) {
       const res = card.querySelector('.a-ferr-res'); res.textContent = '';
       const aviso = el('p', 'a-help'); res.appendChild(aviso);
       const todos = await lerTodos(aviso);
-      const lista = R.mudancasDeNomes(todos, todos.marcas || []);
+      const lista = R.mudancasDeNomes(todos);
       aviso.textContent = lista.length ? lista.length + ' nome(s) para arrumar, de ' + todos.length + ' produtos. Desmarque o que não quiser mudar.' : 'Tudo certo: nenhum nome para arrumar (' + todos.length + ' produtos).';
       if (!lista.length) return;
       const tabela = el('div', 'a-ferr-lista');
@@ -403,7 +402,7 @@ export function ferramentasPage(user) {
         const cb = el('input', 'a-ferr-cb'); cb.type = 'checkbox'; cb.checked = true; cb.dataset.i = i;
         const antes = el('span', 'a-ferr-antes', m.antes.name);
         const depois = el('span', 'a-ferr-depois', m.depois.name + [m.depois.concentration, m.depois.volume].filter(Boolean).map((x) => ' · ' + x).join(''));
-        const marca = el('span', 'a-help', [m.depois.brand ? 'marca: ' + m.depois.brand : m.antes.brand, m.depois.category ? 'categoria: ' + m.depois.category : ''].filter(Boolean).join(' · '));
+        const marca = el('span', 'a-help', m.antes.brand || '');
         linha.append(cb, antes, el('span', 'a-ferr-seta', '→'), depois, marca);
         tabela.appendChild(linha);
       });

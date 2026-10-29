@@ -272,7 +272,6 @@ body.nav-aberto{overflow:hidden}
 .prod-media img.ok{opacity:1}
 .prod-destaque{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:999px;background:rgba(14,12,10,.78);color:var(--gold-2);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .prod-selo{display:none}
-.prod-openbox{position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;background:rgba(14,12,10,.78);color:var(--blush);font-family:var(--caps);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .prod-add{
   position:absolute;right:10px;bottom:10px;width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;
   background:var(--gold);color:#16110a;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(0,0,0,.6);
