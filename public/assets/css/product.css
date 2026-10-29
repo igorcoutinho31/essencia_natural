@@ -15,7 +15,7 @@
 
 .pd-info{display:flex;flex-direction:column;gap:14px}
 .pd-marca{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0}
-.pd-nome{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,7vw,3.4rem);line-height:1.02;margin:0}
+.pd-nome{font-variant-numeric:lining-nums;font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,7vw,3.4rem);line-height:1.02;margin:0}
 .pd-meta{color:var(--ink-3);font-size:.92rem}
 .pd-selo{display:inline-flex;align-self:flex-start;padding:5px 13px;border-radius:999px;font-size:.76rem;background:var(--bg-3);color:var(--gold-2);border:1px solid var(--line-2)}
 .pd-selo--em_estoque{color:var(--ok)}
@@ -43,6 +43,11 @@
 .prod-related{display:flex;flex-direction:column;gap:6px;color:inherit;border-radius:var(--r-2);transition:transform .35s var(--ease)}
 .prod-related:hover{transform:translateY(-3px)}
 .prod-related img,.prod-related-vazio{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--r-2);background:var(--bg-3);height:auto}
+/* foto de estúdio (fundo branco): inteira, num fundo marfim */
+.foto-estudio{display:block;flex:none;width:100%;aspect-ratio:4/5;border-radius:var(--r-3);scroll-snap-align:start;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 40%,#fbf8f3 0%,#f1ebe1 70%,#e9e1d4 100%)}
+.prod-related .foto-estudio{border-radius:var(--r-2)}
+.pd-galeria .foto-estudio img,.prod-related .foto-estudio img{width:100%;height:100%;aspect-ratio:auto;object-fit:contain;padding:3%;background:none;border-radius:0;mix-blend-mode:multiply}
 .prod-related-marca{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-top:6px}
-.prod-related-nome{font-family:var(--serif);font-weight:600;font-size:1.2rem;line-height:1.15;color:var(--ink)}
+.prod-related-nome{font-variant-numeric:lining-nums;font-family:var(--serif);font-weight:600;font-size:1.2rem;line-height:1.15;color:var(--ink)}
 .prod-related:hover .prod-related-nome{color:var(--gold-2)}

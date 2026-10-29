@@ -80,12 +80,27 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
   que tiverem logo, nome de loja ou marca d'água de outra empresa. O
   produto fica com a imagem padrão até a loja enviar outra.
 - `/admin/ferramentas` (só administração) — arrumações em lote, com prévia
-  antes de gravar: **Arrumar nomes** (tira marca/volume/concentração
-  repetidos e arruma MAIÚSCULAS) e **Padronizar fotos** (cadastros antigos
-  da loja ganham a foto de fundo limpo do mesmo perfume do catálogo
-  importado; cada par aparece com as duas fotos para conferir). As regras
-  rodam no navegador (`public/assets/js/regras-catalogo.mjs`); o servidor só
-  grava o que foi aprovado (`src/services/ferramentas.js`).
+  antes de gravar, em passos numerados:
+  1. **Arrumar nomes** — tira marca/volume/concentração repetidos e arruma
+     MAIÚSCULAS.
+  2. **Montar a vitrine** — publica os produtos do relatório da loja que
+     têm foto e oculta os do catálogo importado que não estão no relatório
+     (cadastros feitos pela loja não mudam). Mostra as contagens e alguns
+     nomes antes.
+  3. **Padronizar fotos** — cadastros antigos da loja ganham a foto de
+     fundo limpo do mesmo perfume do catálogo importado; cada par aparece
+     com as duas fotos para conferir.
+  4. **Fotos em alta definição** — na primeira vez pede o `catalog.json` do
+     pacote e guarda o endereço da foto original de cada foto (tabela
+     `foto_origem`, uso interno). Depois, para os produtos publicados, o
+     Worker busca o original no fornecedor (só por foto conhecida e só nos
+     hosts permitidos), o navegador reduz para até 1200 px e o servidor
+     grava como `biblioteca/<sha>-hd.webp`, trocando em todos os produtos.
+     Só troca quando há ganho; a versão pequena vai para a lixeira de 90
+     dias. Rodar de novo depois de publicar produtos novos.
+  As regras rodam no navegador (`public/assets/js/regras-catalogo.mjs` e o
+  script da página); o servidor só grava o que foi aprovado
+  (`src/services/ferramentas.js`).
 - `/admin/equipe` (só administração) — quem aparece em "Nossa equipe" e na
   escolha de atendimento da sacola: adicionar, renomear, trocar a foto,
   esconder do site, mudar a ordem e remover. Ver `docs/TEAM.md`.

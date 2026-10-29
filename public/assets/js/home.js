@@ -58,7 +58,10 @@
             img.addEventListener('error', function(){ img.src = '/assets/images/placeholder-produto.svg'; }, { once: true });
             var marca = document.createElement('span'); marca.className = 'prod-marca'; marca.textContent = p.brand || '';
             var h = document.createElement('h3'); h.textContent = p.name;
-            a.appendChild(img); a.appendChild(marca); a.appendChild(h);
+            var media = document.createElement('span');
+            media.className = 'top-media' + (/^\/uploads\/biblioteca\//.test(p.image || '') ? ' top-media--estudio' : '');
+            media.appendChild(img);
+            a.appendChild(media); a.appendChild(marca); a.appendChild(h);
             li.appendChild(num); li.appendChild(a);
             top.appendChild(li);
           });

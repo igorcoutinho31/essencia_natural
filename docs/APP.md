@@ -9,13 +9,20 @@ loja de aplicativos e não custa nada.
 - **Android (Chrome):** menu ⋮ → **Instalar app** (ou o aviso que o
   próprio Chrome mostra).
 
+O site também convida: no celular, depois de uns 20 segundos, aparece um
+aviso discreto embaixo ("Leve a Essência no celular"). No Android o botão
+**Instalar** abre a instalação; no iPhone (Safari) o aviso explica o
+Compartilhar → Adicionar à Tela de Início. Não aparece para quem já
+instalou, nem em navegadores que não instalam (ex.: o navegador interno do
+Instagram), e some por 30 dias quando a pessoa fecha.
+
 ## Como funciona
 | Arquivo | Para quê |
 |---|---|
 | `public/manifest.webmanifest` | nome, ícones (192 e 512), cores e atalhos (Catálogo, WhatsApp) |
 | `public/sw.js` | service worker: guarda CSS/JS/ícones no aparelho e mostra a página offline |
 | `public/offline.html` | o que aparece quando o cliente abre o app sem internet |
-| `public/assets/js/app.js` | registra o service worker (só em HTTPS) |
+| `public/assets/js/app.js` | registra o service worker (só em HTTPS) e mostra o convite para instalar |
 
 Regras do service worker:
 - páginas e API sempre vêm da rede (preço, publicação e equipe mudam pelo

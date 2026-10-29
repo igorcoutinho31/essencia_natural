@@ -68,7 +68,7 @@ async function libraryPhotoAccess(ctx, key) {
       WHERE pi.file_path = ? AND pi.licensed = 1 AND p.active = 1 LIMIT 1`
   ).bind('/uploads/' + key).first();
   if (liberada) return 'public';
-  const sid = auth.parseCookies(ctx.request.headers.get('cookie'))[auth.SESSION_COOKIE];
+  const sid = auth.parseCookies(ctx.request.headers.get('cookie'))[auth.sessionCookieName(ctx.https)];
   return sid && (await auth.getUserBySession(ctx.db, sid)) ? 'private' : null;
 }
 
@@ -135,6 +135,12 @@ async function adminRoutes(ctx) {
     if (pathname === '/api/admin/ferramentas/produtos' && method === 'GET') return adminApi.ferramentasLista(ctx);
     if (pathname === '/api/admin/ferramentas/nomes' && method === 'POST') return adminApi.ferramentasNomes(ctx);
     if (pathname === '/api/admin/ferramentas/fotos' && method === 'POST') return adminApi.ferramentasFotos(ctx);
+    if (pathname === '/api/admin/ferramentas/vitrine' && method === 'GET') return adminApi.ferramentasVitrine(ctx);
+    if (pathname === '/api/admin/ferramentas/vitrine' && method === 'POST') return adminApi.ferramentasVitrineAplicar(ctx);
+    if (pathname === '/api/admin/ferramentas/origens' && method === 'POST') return adminApi.ferramentasOrigens(ctx);
+    if (pathname === '/api/admin/ferramentas/hd' && method === 'GET') return adminApi.ferramentasHdLista(ctx);
+    if (pathname === '/api/admin/ferramentas/hd/original' && method === 'GET') return adminApi.ferramentasHdOriginal(ctx);
+    if (pathname === '/api/admin/ferramentas/hd' && method === 'POST') return adminApi.ferramentasHdGravar(ctx);
     if (pathname === '/api/admin/team' && method === 'POST') return adminApi.createTeamMember(ctx);
     if (pathname === '/api/admin/team/order' && method === 'PUT') return adminApi.reorderTeam(ctx);
     m = pathname.match(/^\/api\/admin\/team\/(\d+)$/);
@@ -314,7 +320,7 @@ export async function handle(request, deps) {
   try {
     const ehAdmin = pathname.startsWith('/api/admin/') || pathname.startsWith('/admin');
     if (ehAdmin) {
-      const sid = auth.parseCookies(request.headers.get('cookie'))[auth.SESSION_COOKIE];
+      const sid = auth.parseCookies(request.headers.get('cookie'))[auth.sessionCookieName(https)];
       ctx.sessionId = sid || null;
       ctx.user = sid ? await auth.getUserBySession(deps.db, sid) : null;
       if (!SAFE_METHODS.has(request.method) && !sameOrigin(request, url)) {

@@ -145,3 +145,11 @@ tr:hover td{background:#fbf9f2}
 .a-ferr-txt{display:flex;flex-direction:column;gap:2px;font-size:14px}
 .a-ferr-sem{margin-top:14px}
 .a-ferr-sem ul{margin:8px 0 0;padding-left:18px;columns:2;font-size:14px}
+.a-passo{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-right:6px;border-radius:50%;background:var(--a-gold);color:#fff;font-size:15px;vertical-align:2px}
+.a-ferr-op{display:flex;gap:10px;align-items:flex-start;padding:12px;margin:8px 0;border:1px solid var(--a-line);border-radius:8px;cursor:pointer}
+.a-ferr-op .a-ferr-cb{width:20px;height:20px;flex:none;margin-top:2px}
+.a-ferr-op ul{margin:6px 0 0;padding-left:18px;font-size:14px;columns:2}
+.a-ferr-arquivo{padding:12px;border:1px dashed var(--a-line);border-radius:8px;margin-top:8px}
+.a-ferr-prog{width:100%;height:10px;accent-color:var(--a-gold)}
+.a-ferr-hd{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px}
+.a-ferr-hd img{width:100%;aspect-ratio:4/5;object-fit:contain;background:#f4efe7;border-radius:6px;padding:4px}

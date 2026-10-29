@@ -27,13 +27,14 @@ export function createTestApp({ env = {}, images = null } = {}) {
   };
   let cookie = '';
 
-  /** Faz um pedido ao site. `body` objeto = JSON (com Origin do site). */
+  /** Faz um pedido ao site. `body` objeto = JSON, Uint8Array = bytes (com Origin do site). */
   async function call(pathname, { method = 'GET', body, headers = {}, ip, url = ORIGIN } = {}) {
     const init = { method, headers: Object.fromEntries(Object.entries(headers).filter(([, v]) => v !== undefined)) };
     if (cookie) init.headers.cookie = cookie;
     if (body !== undefined) {
-      init.body = typeof body === 'string' ? body : JSON.stringify(body);
-      init.headers['content-type'] = 'application/json';
+      const bruto = body instanceof Uint8Array;
+      init.body = bruto || typeof body === 'string' ? body : JSON.stringify(body);
+      init.headers['content-type'] = bruto ? 'application/octet-stream' : 'application/json';
       if (!('origin' in headers)) init.headers.origin = url;
     }
     const res = await handle(new Request(url + pathname, init), { ...deps, clientIp: ip || deps.clientIp });

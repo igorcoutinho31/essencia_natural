@@ -8,10 +8,13 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Cross-Origin-Opener-Policy: same-origin
 
 # Imagens: cache de 24h (foto nova = nome de arquivo novo, ver docs/TEAM.md).
 # HTML/CSS/JS seguem o padrão da Cloudflare (revalida a cada visita, 304 leve).
 /assets/brands/*
+  Cache-Control: public, max-age=86400
+/assets/fonts/*
   Cache-Control: public, max-age=86400
 /assets/catalog/*
   Cache-Control: public, max-age=86400

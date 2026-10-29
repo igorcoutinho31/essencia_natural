@@ -322,24 +322,38 @@ export function ferramentasPage(user) {
   const body = `
   <div class="a-wrap">
     <h1>Ferramentas</h1>
-    <p class="a-sub">Arrumações em lote, com prévia antes de gravar. Nada muda no site até você clicar em <b>Aplicar</b>.</p>
+    <p class="a-sub">Arrumações em lote, com prévia antes de gravar. Siga na ordem, de cima para baixo. Nada muda no site até você clicar em <b>Aplicar</b>.</p>
 
     <div class="a-card a-ferr" id="f-nomes">
-      <h2>Arrumar nomes</h2>
+      <h2><span class="a-passo">1</span> Arrumar nomes</h2>
       <p class="a-help">Tira do nome a marca, o volume e a concentração repetidos (eles já aparecem ao lado) e arruma nomes em MAIÚSCULAS. Ex.: "AL WATANIAH EQAAB EDP H 100ML" vira "Eqaab", com 100 ml e EDP nos campos certos.</p>
       <button class="btn btn-gold" type="button" data-acao="nomes">Verificar nomes</button>
       <div class="a-ferr-res" aria-live="polite"></div>
     </div>
 
+    <div class="a-card a-ferr" id="f-vitrine">
+      <h2><span class="a-passo">2</span> Montar a vitrine</h2>
+      <p class="a-help">Deixa no site o que a loja tem: publica os produtos do relatório da loja que têm foto e oculta os do catálogo importado que não estão no relatório. Os cadastros feitos pela loja não mudam. Dá para desfazer a qualquer hora pela lista de produtos.</p>
+      <button class="btn btn-gold" type="button" data-acao="vitrine">Ver o que muda</button>
+      <div class="a-ferr-res" aria-live="polite"></div>
+    </div>
+
     <div class="a-card a-ferr" id="f-fotos">
-      <h2>Padronizar fotos</h2>
+      <h2><span class="a-passo">3</span> Padronizar fotos</h2>
       <p class="a-help">Troca as fotos antigas dos cadastros da loja (tiradas no balcão / Instagram) pela foto de fundo limpo do mesmo perfume no catálogo importado. As fotos antigas ficam guardadas por 90 dias. Confira cada par antes de aplicar.</p>
       <button class="btn btn-gold" type="button" data-acao="fotos">Procurar pares</button>
       <div class="a-ferr-res" aria-live="polite"></div>
     </div>
+
+    <div class="a-card a-ferr" id="f-hd">
+      <h2><span class="a-passo">4</span> Fotos em alta definição</h2>
+      <p class="a-help">As fotos do catálogo importado foram guardadas pequenas. Aqui o painel busca de novo a foto original no fornecedor e grava uma versão maior e mais nítida (até 1200 px) dos produtos publicados. A versão pequena fica guardada por 90 dias. Deixe esta página aberta até terminar.</p>
+      <button class="btn btn-gold" type="button" data-acao="hd">Procurar fotos</button>
+      <div class="a-ferr-res" aria-live="polite"></div>
+    </div>
   </div>
   <script type="module">
-    const R = await import('/assets/js/regras-catalogo.mjs');
+    const R = await import('/assets/js/regras-catalogo.mjs?v=20261029-3');
     let cache = null;
     function el(tag, cls, txt){ const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
     async function lerTodos(aviso){
@@ -445,9 +459,140 @@ export function ferramentasPage(user) {
       }
     }
 
+    async function vitrine(card){
+      const res = card.querySelector('.a-ferr-res'); res.textContent = '';
+      const aviso = el('p', 'a-help', 'Conferindo…'); res.appendChild(aviso);
+      const r = await fetch('/api/admin/ferramentas/vitrine');
+      if (!r.ok) throw new Error('Não foi possível ler os produtos.');
+      const d = await r.json();
+      aviso.textContent = 'Hoje há ' + d.publicados + ' produto(s) publicados no site.';
+      if (!d.publicar.total && !d.ocultar.total) { res.appendChild(el('div', 'a-msg a-msg-ok', 'A vitrine já está montada: nada para mudar.')); return; }
+      const parte = (chave, titulo, info) => {
+        const box = el('label', 'a-ferr-op');
+        const cb = el('input', 'a-ferr-cb'); cb.type = 'checkbox'; cb.checked = info.total > 0; cb.disabled = !info.total; cb.dataset.parte = chave;
+        const txt = el('span', 'a-ferr-txt'); txt.appendChild(el('b', null, titulo.replace('{n}', info.total)));
+        if (info.exemplos.length) {
+          const det = el('details'); det.appendChild(el('summary', 'a-help', 'Ver ' + (info.total > info.exemplos.length ? 'alguns' : 'quais')));
+          const ul = el('ul'); info.exemplos.forEach((x) => { const li = el('li'); const a = el('a', null, [x.marca, x.nome].filter(Boolean).join(' ')); a.href = '/admin/produtos/' + x.id; a.target = '_blank'; li.appendChild(a); ul.appendChild(li); });
+          if (info.total > info.exemplos.length) ul.appendChild(el('li', 'a-help', '… e mais ' + (info.total - info.exemplos.length)));
+          det.appendChild(ul); txt.appendChild(det);
+        }
+        box.append(cb, txt); return box;
+      };
+      res.append(parte('publicar', 'Publicar {n} produto(s) do relatório da loja', d.publicar), parte('ocultar', 'Ocultar {n} produto(s) do catálogo importado que não estão no relatório', d.ocultar));
+      if (d.semFoto) res.appendChild(el('p', 'a-help', d.semFoto + ' produto(s) do relatório estão sem foto e continuam ocultos até ganharem uma.'));
+      const btn = el('button', 'btn btn-gold', 'Aplicar'); btn.type = 'button';
+      btn.addEventListener('click', async () => {
+        const quer = (k) => !!res.querySelector('[data-parte="' + k + '"]:checked');
+        const pub = quer('publicar'), oc = quer('ocultar');
+        if (!pub && !oc) return;
+        if (!confirm([pub && 'publicar ' + d.publicar.total, oc && 'ocultar ' + d.ocultar.total].filter(Boolean).join(' e ') + ' produto(s)?')) return;
+        btn.disabled = true;
+        const r2 = await fetch('/api/admin/ferramentas/vitrine', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ publicar: pub, ocultar: oc }) });
+        const x = await r2.json().catch(() => ({}));
+        cache = null; res.textContent = '';
+        res.appendChild(r2.ok ? el('div', 'a-msg a-msg-ok', 'Pronto: ' + x.publicados + ' publicado(s) e ' + x.ocultados + ' ocultado(s). Já vale no site.') : el('div', 'a-msg a-msg-err', x.message || 'Não deu certo. Tente de novo.'));
+      });
+      res.appendChild(btn);
+    }
+
+    // ---- fotos em alta definição ----
+    const LADO_HD = 1200;
+    function lerArquivo(arquivo){ return new Promise((ok, falha) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.onerror = () => falha(new Error('Não deu para ler o arquivo.')); fr.readAsText(arquivo); }); }
+    function escolherCatalogo(res, texto, depois){
+      const box = el('div', 'a-ferr-arquivo');
+      box.appendChild(el('p', 'a-help', texto));
+      const rotulo = el('label', 'btn btn-ghost', 'Escolher o catalog.json');
+      const input = el('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
+      rotulo.appendChild(input); box.appendChild(rotulo);
+      const st = el('p', 'a-help'); box.appendChild(st);
+      input.addEventListener('change', async () => {
+        const f = input.files[0]; if (!f) return;
+        try {
+          st.textContent = 'Lendo o arquivo…';
+          const cat = JSON.parse(await lerArquivo(f));
+          const vistos = new Map();
+          for (const p of (cat.products || [])) for (const im of (p.images || [])) if (im && im.sha256 && im.url && !vistos.has(im.sha256)) vistos.set(im.sha256, { sha: im.sha256, url: im.url });
+          const itens = [...vistos.values()];
+          if (!itens.length) throw new Error('Esse arquivo não parece ser o catalog.json do pacote.');
+          await enviar('/api/admin/ferramentas/origens', 'itens', itens, 1000, st);
+          depois();
+        } catch (e) { st.textContent = e.message || 'Não deu certo.'; }
+      });
+      res.appendChild(box);
+    }
+    async function blobDe(url){ const r = await fetch(url); if (!r.ok) throw new Error('foto ' + r.status); return r.blob(); }
+    function codificar(bmp){
+      const escala = Math.min(1, LADO_HD / Math.max(bmp.width, bmp.height));
+      const w = Math.round(bmp.width * escala), h = Math.round(bmp.height * escala);
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.imageSmoothingQuality = 'high'; g.drawImage(bmp, 0, 0, w, h);
+      const em = (tipo, q) => new Promise((ok) => cv.toBlob(ok, tipo, q));
+      return em('image/webp', 0.9).then((b) => (b && b.type === 'image/webp' ? b : em('image/jpeg', 0.9))).then((b) => ({ blob: b, lado: Math.max(w, h) }));
+    }
+    async function melhorar(f){
+      const [orig, atual] = await Promise.all([blobDe('/api/admin/ferramentas/hd/original?sha=' + f.sha), blobDe(f.image)]);
+      const [bo, ba] = await Promise.all([createImageBitmap(orig), createImageBitmap(atual)]);
+      const ladoNovo = Math.min(LADO_HD, Math.max(bo.width, bo.height)), ladoAtual = Math.max(ba.width, ba.height);
+      // Só troca se ganha tamanho, ou se o original é bem mais nítido (menos comprimido).
+      if (ladoNovo < ladoAtual * 1.15 && orig.size < atual.size * 2.5) return 'igual';
+      const { blob } = await codificar(bo);
+      const r = await fetch('/api/admin/ferramentas/hd?sha=' + f.sha, { method: 'POST', headers: { 'Content-Type': blob.type }, body: blob });
+      if (!r.ok) throw new Error('gravar ' + r.status);
+      return (await r.json()).image;
+    }
+    async function hd(card){
+      const res = card.querySelector('.a-ferr-res'); res.textContent = '';
+      const aviso = el('p', 'a-help', 'Conferindo…'); res.appendChild(aviso);
+      const r = await fetch('/api/admin/ferramentas/hd');
+      if (!r.ok) throw new Error('Não foi possível ler as fotos.');
+      const d = await r.json();
+      const deNovo = () => hd(card);
+      if (!d.origens) {
+        aviso.textContent = '';
+        escolherCatalogo(res, 'Só na primeira vez: escolha o arquivo catalog.json, que fica na pasta "catalogo" do computador (a mesma usada na importação). O painel guarda o endereço de cada foto original e não pede mais.', deNovo);
+        return;
+      }
+      aviso.textContent = d.fotos.length ? d.fotos.length + ' foto(s) de produtos publicados podem ficar em alta definição.' : 'Todas as fotos dos produtos publicados já estão em alta (ou não têm original conhecido).';
+      if (d.fotos.length) {
+        const barra = el('div', 'a-row a-ferr-acoes');
+        const btn = el('button', 'btn btn-gold', 'Melhorar ' + d.fotos.length + ' foto(s)'); btn.type = 'button';
+        const parar = el('button', 'btn btn-ghost', 'Parar'); parar.type = 'button'; parar.hidden = true;
+        barra.append(btn, parar); res.appendChild(barra);
+        const prog = el('progress', 'a-ferr-prog'); prog.max = d.fotos.length; prog.value = 0; prog.hidden = true;
+        const st = el('p', 'a-help'); const grade = el('div', 'a-ferr-hd');
+        res.append(prog, st, grade);
+        let parou = false; parar.addEventListener('click', () => { parou = true; parar.disabled = true; });
+        btn.addEventListener('click', async () => {
+          btn.disabled = true; parar.hidden = false; prog.hidden = false;
+          const fila = d.fotos.slice(); const c = { ok: 0, igual: 0, falha: 0 };
+          const conta = () => { prog.value = c.ok + c.igual + c.falha; st.textContent = prog.value + ' de ' + d.fotos.length + ' · ' + c.ok + ' melhorada(s) · ' + c.igual + ' já estava(m) boa(s) · ' + c.falha + ' sem resposta do fornecedor'; };
+          const trabalhador = async () => {
+            while (fila.length && !parou) {
+              const f = fila.shift();
+              try {
+                const nova = await melhorar(f);
+                if (nova === 'igual') c.igual++;
+                else { c.ok++; if (grade.children.length < 24) { const im = new Image(); im.src = nova; im.alt = f.nome; im.title = f.nome; grade.appendChild(im); } }
+              } catch { c.falha++; }
+              conta();
+            }
+          };
+          await Promise.all([trabalhador(), trabalhador(), trabalhador()]);
+          parar.hidden = true;
+          st.textContent = (parou ? 'Parado. ' : 'Pronto. ') + c.ok + ' foto(s) em alta definição, ' + c.igual + ' já estava(m) boa(s), ' + c.falha + ' sem resposta do fornecedor.' + (c.falha ? ' Dá para tentar de novo depois: só as que faltam aparecem.' : '');
+        });
+      }
+      const det = el('details', 'a-ferr-sem');
+      det.appendChild(el('summary', 'a-help', 'Atualizar com outro catalog.json'));
+      res.appendChild(det);
+      escolherCatalogo(det, 'Use quando chegar um pacote novo do catálogo.', deNovo);
+    }
+
+    const ACOES = { nomes, vitrine, fotos, hd };
     document.querySelectorAll('.a-ferr [data-acao]').forEach((b) => b.addEventListener('click', async () => {
       const card = b.closest('.a-ferr'); b.disabled = true;
-      try { await (b.dataset.acao === 'nomes' ? nomes(card) : fotos(card)); }
+      try { await ACOES[b.dataset.acao](card); }
       catch (e) { card.querySelector('.a-ferr-res').textContent = e.message || 'Algo deu errado. Tente de novo.'; }
       finally { b.disabled = false; }
     }));

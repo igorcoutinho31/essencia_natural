@@ -56,12 +56,17 @@ function descricaoUtil(product) {
   return /[\p{L}\p{N}]/u.test(texto) ? texto : '';
 }
 
+// Foto de estúdio (fundo branco, do catálogo importado) vai inteira num
+// fundo marfim; foto tirada na loja preenche o quadro.
+const ehEstudio = (src) => String(src || '').startsWith('/uploads/biblioteca/');
+const naMoldura = (src, img) => (ehEstudio(src) ? `<span class="foto-estudio">${img}</span>` : img);
+
 function relatedCard(p) {
   // `p.image` sempre vem preenchido (placeholder oficial quando não há foto
   // real) — não existe mais o caso "relacionado sem nenhuma imagem".
   return `
     <a class="prod-related" href="/produto/${p.slug}">
-      <img src="${escapeHTML(p.image)}" alt="" loading="lazy" width="220" height="290" ${IMG_FALLBACK_ATTR}>
+      ${naMoldura(p.image, `<img src="${escapeHTML(p.image)}" alt="" loading="lazy" width="220" height="290" ${IMG_FALLBACK_ATTR}>`)}
       ${p.brand ? `<span class="prod-related-marca">${escapeHTML(p.brand)}</span>` : ''}
       <span class="prod-related-nome">${escapeHTML(p.name)}</span>
     </a>`;
@@ -109,7 +114,7 @@ function render(siteUrl, product, related) {
   // foto real, ver catalog.PLACEHOLDER_IMAGE) — a galeria nunca fica
   // vazia, então não existe mais o caso "sem nenhuma imagem" aqui.
   const images = product.images && product.images.length ? product.images : [product.image];
-  const galeria = `<div class="pd-galeria">${images.map((src, i) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(product.name)}" ${i === 0 ? '' : 'loading="lazy"'} width="480" height="620" ${IMG_FALLBACK_ATTR}>`).join('')}</div>`;
+  const galeria = `<div class="pd-galeria">${images.map((src, i) => naMoldura(src, `<img src="${escapeHTML(src)}" alt="${escapeHTML(product.name)}" ${i === 0 ? '' : 'loading="lazy"'} width="480" height="620" ${IMG_FALLBACK_ATTR}>`)).join('')}</div>`;
 
   const body = `
 <p class="faixa">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé<span class="faixa-x"> <i aria-hidden="true">◆</i> Envios para todo o Brasil</span></p>
@@ -254,12 +259,12 @@ function render(siteUrl, product, related) {
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-t"></span><button type="button" id="toast-ver">Ver sacola</button></div>
 
 <script>window.__PRODUTO__ = ${jsonForScript(product)}; window.__RELACIONADOS__ = ${jsonForScript(related)};</script>
-<script src="/assets/js/app.js?v=20261028-1"></script>
+<script src="/assets/js/app.js?v=20261029-3"></script>
 <script src="/assets/js/menu.js?v=20261029-1"></script>
 <script src="/assets/js/atendimento.js?v=20261029-1"></script>
 <script src="/assets/js/sacola.js?v=20261029-1"></script>
-<script src="/assets/js/vida.js?v=20261029-2"></script>
-<script src="/assets/js/home.js?v=20261029-2"></script>
+<script src="/assets/js/vida.js?v=20261029-3"></script>
+<script src="/assets/js/home.js?v=20261029-3"></script>
 <script>
   (function(){
     if (window.ENSacola) window.ENSacola.catalogo([window.__PRODUTO__].concat(window.__RELACIONADOS__));
@@ -299,9 +304,10 @@ function render(siteUrl, product, related) {
 <script type="application/ld+json">${jsonForScript(schema)}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@400;500;600&family=Pinyon+Script&display=swap">
-<link rel="stylesheet" href="/assets/css/site.css?v=20261029-2">
-<link rel="stylesheet" href="/assets/css/product.css?v=20261029-2">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Jost:wght@400;500;600&family=Pinyon+Script&display=swap">
+<link rel="preload" href="/assets/fonts/cormorant-garamond-en.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=20261029-3">
+<link rel="stylesheet" href="/assets/css/product.css?v=20261029-3">
 </head>
 <body>
 ${body}
@@ -319,7 +325,7 @@ function jsonForScript(value) {
 export async function productPage(ctx, slug) {
   const data = await catalog.getPublicProductPage(ctx.db, slug, 4);
   if (!data) {
-    return html(404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20261029-2"></head><body style="padding:80px 24px;text-align:center;background:#0e0c0a;color:#f3ede4;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
+    return html(404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20261029-3"></head><body style="padding:80px 24px;text-align:center;background:#0e0c0a;color:#f3ede4;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
   }
   return render(ctx.config.siteUrl, data.product, data.related);
 }
