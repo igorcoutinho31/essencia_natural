@@ -9,7 +9,7 @@ import { chave, chaveMarca, limparNome, tituloProduto, categoria, extrairNotas, 
 const q = (v) => (v === null || v === undefined ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`);
 
 /** Chave de "mesmo produto": marca + palavras do nome (sem volume/EDP...). */
-function chaveProduto(nome, marca) {
+export function chaveProduto(nome, marca) {
   return `${chaveMarca(marca) || ''}|${[...tokens(nome)].sort().join(' ')}`;
 }
 

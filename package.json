@@ -18,6 +18,7 @@
     "cf:importar": "node tools/cf-importar.js",
     "cf:biblioteca": "node tools/cf-biblioteca.js",
     "cf:limpar-nomes": "node tools/cf-limpar-nomes.js",
+    "cf:fotos": "node tools/cf-fotos.js",
     "cf:admin": "node tools/cf-admin.js",
     "cf:smoke": "node tools/cf-smoke.js"
   },

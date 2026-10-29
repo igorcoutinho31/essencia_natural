@@ -15,6 +15,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { planejar, sqlCadastros, sqlLigarFotos } from './biblioteca-plano.js';
 import { uploadSQL } from '../src/storage.js';
 import { wrangler, targetFlag, D1_NAME, ROOT } from './wrangler.js';
@@ -147,4 +148,7 @@ async function main() {
   }
 }
 
-main().catch((e) => { console.error('\nErro:', e.message); process.exit(1); });
+// Só roda quando chamado direto (tools/cf-fotos.js importa otimizarFoto daqui).
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((e) => { console.error('\nErro:', e.message); process.exit(1); });
+}

@@ -92,6 +92,8 @@ wrangler.toml  configuração da Cloudflare (Worker, banco, domínio, agendament
 | `npm run cf:admin -- <ação> --remote` | contas do `/admin` no site no ar (criar, resetar senha, desativar) |
 | `npm run cf:biblioteca -- <pasta> --remote` | importa a biblioteca de fornecedores (tudo oculto) |
 | `npm run cf:limpar-nomes -- --remote --simular` | limpa os nomes (sem marca/volume/EDP repetidos); sem `--simular` grava |
+| `npm run cf:fotos -- <pasta> --remote --simular` | padroniza as fotos (antigas → foto do pacote) e reenvia as publicadas em alta |
+| `node tools/logos-ouro.cjs previa.jpg` | gera os logos das marcas em dourado (`public/assets/brands/ouro/`) |
 | `npm run cf:smoke -- <endereço>` | confere se o site no ar está respondendo certo |
 | `npm run cf:importar` | substitui o banco da Cloudflare por um backup (recuperação) |
 

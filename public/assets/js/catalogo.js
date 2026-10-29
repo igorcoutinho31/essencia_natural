@@ -14,9 +14,7 @@
     var ordemEl = document.getElementById('cat-ordem');
     var marcaEl = document.getElementById('cat-marca');
     var generoEl= document.getElementById('cat-genero');
-    var famBox  = document.getElementById('cat-familia');
-    var famTxt  = document.getElementById('cat-familia-t');
-    var famX    = document.getElementById('cat-familia-x');
+    var famBox  = document.getElementById('cat-familias');
     var moreWrap= document.getElementById('cat-more');
     var moreBtn = document.getElementById('cat-mais');
     var pd      = document.getElementById('pd');
@@ -148,10 +146,28 @@
       lista.forEach(function(par){ var o = el('option', null, par[1]); o.value = par[0]; marcaEl.appendChild(o); });
       marcaEl.value = fMarca;
     }
+    /* famílias olfativas como filtro do catálogo: só as que têm pelo menos
+       3 perfumes publicados, e a linha só aparece com 2 ou mais famílias */
+    var MIN_FAMILIA = 3;
+    function montarFamilias(){
+      if (!famBox) return;
+      var cont = {};
+      produtos.forEach(function(p){ var f = familiaDe(p); if (f) cont[f] = (cont[f] || 0) + 1; });
+      var lista = Object.keys(FAMILIAS).filter(function(k){ return (cont[k] || 0) >= MIN_FAMILIA; });
+      famBox.textContent = '';
+      if (lista.length < 2) { famBox.hidden = true; return; }
+      famBox.appendChild(el('span','rotulo','Família'));
+      [['', 'Todas']].concat(lista.map(function(k){ return [k, FAMILIAS[k].nome]; })).forEach(function(par){
+        var b = el('button','fam-chip', par[1]); b.type = 'button'; b.dataset.familia = par[0];
+        b.addEventListener('click', function(){ fFamilia = par[0]; mostrarFamilia(); reset(); });
+        famBox.appendChild(b);
+      });
+      famBox.hidden = false;
+      mostrarFamilia();
+    }
     function mostrarFamilia(){
       if (!famBox) return;
-      famBox.classList.toggle('on', !!fFamilia);
-      if (fFamilia) famTxt.textContent = FAMILIAS[fFamilia].nome;
+      [].forEach.call(famBox.querySelectorAll('.fam-chip'), function(b){ b.setAttribute('aria-pressed', String(b.dataset.familia === fFamilia)); });
     }
 
     function listaAtual(){
@@ -222,9 +238,9 @@
       h3.appendChild(trig);
       body.appendChild(h3);
 
-      var meta = [p.concentration, p.volume].filter(Boolean).join(' · ') || p.category || '';
+      var meta = [p.concentration, p.volume].filter(Boolean).join(' · ');
       if (meta) body.appendChild(el('p','prod-cat', meta));
-      body.appendChild(el('p','prod-preco' + (p.price ? '' : ' prod-preco--consulte'), precoTexto(p)));
+      if (p.price) body.appendChild(el('p','prod-preco', precoTexto(p)));
 
       var cta = el('div','prod-cta');
       cta.appendChild(botaoWhatsApp(p));
@@ -315,7 +331,6 @@
     ordemEl.addEventListener('change', function(){ ordem = ordemEl.value; reset(); });
     if (marcaEl) marcaEl.addEventListener('change', function(){ fMarca = marcaEl.value; reset(); });
     if (generoEl) generoEl.addEventListener('change', function(){ fGenero = generoEl.value; reset(); });
-    if (famX) famX.addEventListener('click', function(){ fFamilia = ''; mostrarFamilia(); reset(); });
 
     // esqueletos enquanto a API responde
     for (var s = 0; s < 4; s++) grid.appendChild(el('div','esqueleto'));
@@ -351,6 +366,7 @@
         if (!produtos.length) throw new Error('nenhum produto no catálogo');
         status.hidden = true;
         montarChips();
+        montarFamilias();
         montarMarcas();
         if (window.ENSacola) window.ENSacola.catalogo(produtos);
         reset();

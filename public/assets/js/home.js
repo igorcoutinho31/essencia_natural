@@ -1,32 +1,11 @@
   /* ---- home: liga as partes da página ao catálogo ----
-     Vídeo do topo, busca rápida, atalhos de gênero, famílias olfativas,
-     "Destaques" (produtos marcados com ★ no painel), "Mais vendidos" (pela
-     posição de vendas que a API informa, nunca a quantidade) e a barra fixa
-     do celular. Nada aqui inventa produto: se não houver destaque ou venda
-     registrada, a seção simplesmente não aparece. */
+     "Destaques" (produtos marcados com ★ no painel; sem nenhum, as
+     novidades com foto), "Mais vendidos" (pela posição de vendas que a API
+     informa, nunca a quantidade) e a barra fixa do celular. Nada aqui
+     inventa produto: sem dados, a seção simplesmente não aparece. Também
+     roda na página de produto (só a barra do celular). */
   (function home(){
-    var reduzido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var cat = window.ENCatalogo;
-
-    /* vídeo das prateleiras por cima da foto (só se o aparelho deixar) */
-    (function videoTopo(){
-      var caixa = document.querySelector('.hero-media');
-      var conexao = navigator.connection || {};
-      if (!caixa || reduzido || conexao.saveData || /(^|-)2g$/.test(conexao.effectiveType || '')) return;
-      var v = document.createElement('video');
-      v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
-      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
-      v.preload = 'auto';
-      v.poster = 'assets/store/prateleiras-poster.webp';
-      v.src = 'assets/store/prateleiras.mp4';
-      v.addEventListener('playing', function(){
-        var img = caixa.querySelector('img');
-        caixa.appendChild(v);
-        if (img) setTimeout(function(){ img.remove(); }, 400);
-      }, { once: true });
-      var p = v.play();
-      if (p && p.catch) p.catch(function(){});
-    })();
 
     /* barra do celular: sacola e contador */
     var abrirSacola = document.querySelector('[data-abrir-sacola]');
@@ -41,53 +20,21 @@
 
     if (!cat) return;
 
-    /* busca rápida e atalhos */
-    var form = document.getElementById('busca-rapida');
-    if (form) form.addEventListener('submit', function(ev){
-      ev.preventDefault();
-      cat.filtrar({ termo: document.getElementById('busca-rapida-q').value.trim() });
-    });
-    var pilulas = document.getElementById('pilulas');
-    if (pilulas) pilulas.addEventListener('click', function(ev){
-      var b = ev.target.closest('[data-genero]'); if (!b) return;
-      [].forEach.call(pilulas.children, function(x){ x.classList.toggle('pilula--ouro', x === b); });
-      cat.filtrar({ genero: b.dataset.genero });
-    });
+    /* lupa do cabeçalho: leva ao catálogo e já põe o cursor na busca */
     document.querySelectorAll('[data-busca]').forEach(function(a){
       a.addEventListener('click', function(){ setTimeout(function(){ var q = document.getElementById('cat-q'); if (q) q.focus({ preventScroll: true }); }, 500); });
     });
 
-    /* famílias: mostra quantos produtos há em cada uma e esconde as vazias */
-    var familias = document.getElementById('familias-grid');
-    if (familias) familias.addEventListener('click', function(ev){
-      var b = ev.target.closest('[data-familia]'); if (!b) return;
-      cat.filtrar({ familia: b.dataset.familia });
-    });
-
     cat.pronto(function(produtos){
-      /* contagem por família */
-      if (familias) {
-        var cont = {};
-        produtos.forEach(function(p){ var f = cat.familiaDe(p); if (f) cont[f] = (cont[f] || 0) + 1; });
-        [].forEach.call(familias.querySelectorAll('[data-familia]'), function(b){
-          var n = cont[b.dataset.familia] || 0;
-          var small = b.querySelector('small');
-          if (!n) { b.hidden = true; return; }
-          if (small) small.textContent += ' · ' + n + (n === 1 ? ' perfume' : ' perfumes');
-        });
-        if (!familias.querySelector('[data-familia]:not([hidden])')) {
-          var sec = document.getElementById('familias'); if (sec) sec.hidden = true;
-        }
-      }
-
-      /* destaques: os marcados com ★; sem nenhum, os que têm foto */
+      /* destaques: os marcados com ★; sem nenhum, as novidades com foto */
       var vitrine = document.getElementById('vitrine');
       if (vitrine) {
         var destaques = produtos.filter(function(p){ return p.featured; });
-        var sub = document.getElementById('destaques-sub');
         if (!destaques.length) {
           destaques = produtos.filter(function(p){ return p.hasImage; }).slice(-8).reverse();
-          if (sub) sub.textContent = 'Novidades no catálogo';
+          var sub = document.getElementById('destaques-sub'), tit = document.getElementById('destaques-t');
+          if (sub) sub.textContent = 'Acabaram de chegar';
+          if (tit) tit.textContent = 'Novidades';
         }
         destaques = destaques.slice(0, 8);
         if (destaques.length >= 2) {
@@ -116,6 +63,7 @@
             top.appendChild(li);
           });
           document.getElementById('top5-bloco').hidden = false;
+          document.getElementById('mais-vendidos').hidden = false;
         }
       }
       if (window.ENRevelar) window.ENRevelar();
