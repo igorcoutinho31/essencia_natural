@@ -225,6 +225,12 @@ export function casarRelatorio(indice, nome, marca) {
   return melhor ? melhor.nome : null;
 }
 
+/** Produto de caixa aberta ("OPENBOX ..." no nome ou como marca do
+ *  fornecedor): a loja não vende, então não entra no site. */
+export function ehCaixaAberta(nome, marca) {
+  return /(^|[^a-z])open\s?box([^a-z]|$)/i.test(`${nome || ''} ${marca || ''}`);
+}
+
 /** Chave de "mesmo produto": marca + palavras do nome (sem volume/EDP...). */
 export function chaveProduto(nome, marca) {
   return `${chaveMarca(marca) || ''}|${[...tokens(nome)].sort().join(' ')}`;

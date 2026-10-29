@@ -333,7 +333,7 @@ export function ferramentasPage(user) {
 
     <div class="a-card a-ferr" id="f-vitrine">
       <h2><span class="a-passo">2</span> Montar a vitrine</h2>
-      <p class="a-help">Deixa no site o que a loja tem: publica os produtos do relatório da loja que têm foto e oculta os do catálogo importado que não estão no relatório. Os cadastros feitos pela loja não mudam. Dá para desfazer a qualquer hora pela lista de produtos.</p>
+      <p class="a-help">Deixa no site o que a loja tem: publica os produtos do relatório da loja que têm foto e oculta os do catálogo importado que não estão no relatório. Produtos de caixa aberta (OPENBOX) saem do site e nunca são publicados. Os cadastros feitos pela loja não mudam. Dá para desfazer a qualquer hora pela lista de produtos.</p>
       <button class="btn btn-gold" type="button" data-acao="vitrine">Ver o que muda</button>
       <div class="a-ferr-res" aria-live="polite"></div>
     </div>
@@ -479,7 +479,7 @@ export function ferramentasPage(user) {
         }
         box.append(cb, txt); return box;
       };
-      res.append(parte('publicar', 'Publicar {n} produto(s) do relatório da loja', d.publicar), parte('ocultar', 'Ocultar {n} produto(s) do catálogo importado que não estão no relatório', d.ocultar));
+      res.append(parte('publicar', 'Publicar {n} produto(s) do relatório da loja', d.publicar), parte('ocultar', 'Ocultar {n} produto(s): do catálogo importado fora do relatório e de caixa aberta (OPENBOX)', d.ocultar));
       if (d.semFoto) res.appendChild(el('p', 'a-help', d.semFoto + ' produto(s) do relatório estão sem foto e continuam ocultos até ganharem uma.'));
       const btn = el('button', 'btn btn-gold', 'Aplicar'); btn.type = 'button';
       btn.addEventListener('click', async () => {

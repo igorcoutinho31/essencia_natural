@@ -121,6 +121,9 @@ regras em `public/assets/js/regras-catalogo.mjs` e `tools/biblioteca-plano.js`).
   marcas novas entram com `requires_product = 1` (só aparecem em
   `/#marcas` quando tiverem produto publicado). "OPENBOX", "Miniaturas"
   etc. não viram marca.
+- **Caixa aberta:** itens "OPENBOX" (produto de caixa aberta) não são
+  importados — a loja não vende. Os que já estavam no banco saem do site
+  pelo passo "Montar a vitrine" do `/admin/ferramentas`.
 - **Categorias** limpas: Perfume, Body Splash, Kit, Miniatura, Skincare,
   Cuidados corporais, Óleo perfumado, Cabelos, Casa e ambiente, Outros.
 - **Relatório da loja:** cada item é comparado com os nomes do relatório de

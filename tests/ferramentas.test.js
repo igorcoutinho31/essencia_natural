@@ -109,11 +109,15 @@ test('ferramentas: vitrine e fotos em alta pela API', async (t) => {
   const semFoto = await app.insertProduct({ slug: 'sem-foto', name: 'Sem Foto', active: 0 });
   const sai = await app.insertProduct({ slug: 'sai', name: 'Sai', active: 1 });
   const fica = await app.insertProduct({ slug: 'fica', name: 'Fica', active: 1 });
+  const caixaLoja = await app.insertProduct({ slug: 'cx-loja', name: 'OPENBOX Lattafa Mayar', active: 1 });
+  const caixaRel = await app.insertProduct({ slug: 'cx-rel', name: 'Openbox Afnan Turathi Blue', active: 0 });
   app.db.raw.exec(`UPDATE products SET source = 'onuh', source_id = 'onuh:' || id WHERE id IN (${entra}, ${semFoto}, ${sai}, ${fica});
-    UPDATE products SET in_store_report = 1 WHERE id IN (${entra}, ${semFoto}, ${fica});
+    UPDATE products SET in_store_report = 1 WHERE id IN (${entra}, ${semFoto}, ${fica}, ${caixaRel});
+    UPDATE products SET source = 'onuh', source_id = 'onuh:cx' WHERE id = ${caixaRel};
     INSERT INTO product_images (product_id, file_path, sort_order, is_main, licensed) VALUES
       (${entra}, '/uploads/biblioteca/${SHA_A}.webp', 0, 1, 1), (${fica}, '/uploads/biblioteca/${SHA_A}.webp', 0, 1, 1),
-      (${sai}, '/uploads/biblioteca/${SHA_B}.webp', 0, 1, 1), (${loja}, '/uploads/products/loja/x.webp', 0, 1, 1);`);
+      (${sai}, '/uploads/biblioteca/${SHA_B}.webp', 0, 1, 1), (${loja}, '/uploads/products/loja/x.webp', 0, 1, 1),
+      (${caixaRel}, '/uploads/biblioteca/cx.webp', 0, 1, 1);`);
 
   await app.login('ana');
   for (const [p, m] of [['/api/admin/ferramentas/vitrine', 'GET'], ['/api/admin/ferramentas/hd', 'GET'], ['/api/admin/ferramentas/hd/original?sha=' + SHA_A, 'GET']]) {
@@ -124,14 +128,14 @@ test('ferramentas: vitrine e fotos em alta pela API', async (t) => {
   await app.login();
 
   const previa = await (await app.call('/api/admin/ferramentas/vitrine')).json();
-  assert.equal(previa.publicados, 3);
-  assert.deepEqual([previa.publicar.total, previa.ocultar.total, previa.semFoto], [1, 1, 1]);
+  assert.equal(previa.publicados, 4);
+  assert.deepEqual([previa.publicar.total, previa.ocultar.total, previa.semFoto], [1, 2, 1], 'caixa aberta nunca é publicada');
   assert.deepEqual(previa.publicar.exemplos.map((x) => x.id), [entra]);
-  assert.deepEqual(previa.ocultar.exemplos.map((x) => x.id), [sai]);
+  assert.deepEqual(previa.ocultar.exemplos.map((x) => x.id).sort(), [sai, caixaLoja].sort());
   assert.equal((await app.call('/api/admin/ferramentas/vitrine', { method: 'POST', body: {} })).status, 400);
-  assert.deepEqual(await (await app.call('/api/admin/ferramentas/vitrine', { method: 'POST', body: { publicar: true, ocultar: true } })).json(), { publicados: 1, ocultados: 1 });
+  assert.deepEqual(await (await app.call('/api/admin/ferramentas/vitrine', { method: 'POST', body: { publicar: true, ocultar: true } })).json(), { publicados: 1, ocultados: 2 });
   const ativos = app.db.raw.prepare('SELECT id FROM products WHERE active = 1 ORDER BY id').all().map((r) => r.id);
-  assert.deepEqual(ativos, [loja, entra, fica], 'cadastro da loja não muda; sai o importado fora do relatório');
+  assert.deepEqual(ativos, [loja, entra, fica], 'cadastro comum da loja não muda; saem o importado fora do relatório e a caixa aberta');
 
   // origens: só o que for válido é guardado
   let r = await app.call('/api/admin/ferramentas/origens', { method: 'POST', body: { itens: [

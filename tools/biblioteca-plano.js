@@ -4,7 +4,7 @@
 // (tools/cf-biblioteca.js) busca o estado atual do banco, chama isto e
 // executa o SQL; os testes chamam isto direto contra um banco em memória.
 import { slugify } from '../src/util.js';
-import { chave, chaveMarca, chaveProduto, limparNome, tituloProduto, categoria, extrairNotas, tokens, indiceRelatorio, casarRelatorio } from './biblioteca-regras.js';
+import { ehCaixaAberta, chave, chaveMarca, chaveProduto, limparNome, tituloProduto, categoria, extrairNotas, tokens, indiceRelatorio, casarRelatorio } from './biblioteca-regras.js';
 
 export { chaveProduto };
 
@@ -27,14 +27,16 @@ export function planejar(catalogo, estado, relatorio = []) {
   const fotosExistentes = new Set(estado.fotosExistentes);
   const daLoja = new Set(estado.produtosLoja.map((p) => chaveProduto(p.name, p.brand)));
 
-  // 1ª passada: quais itens entram (pula já importados e cadastros da loja).
-  const resumo = { total: catalogo.products.length, novos: 0, jaImportados: 0, repetidosDaLoja: 0, noRelatorio: 0, semFoto: 0, porCategoria: {}, porOrigem: {} };
+  // 1ª passada: quais itens entram (pula já importados, cadastros da loja e
+  // produtos de caixa aberta, que a loja não vende).
+  const resumo = { total: catalogo.products.length, novos: 0, jaImportados: 0, repetidosDaLoja: 0, caixaAberta: 0, noRelatorio: 0, semFoto: 0, porCategoria: {}, porOrigem: {} };
   const entram = [];
   const vistos = new Set();
   for (const it of catalogo.products) {
     if (!it.sourceId || vistos.has(it.sourceId)) continue;
     vistos.add(it.sourceId);
     if (jaImportados.has(it.sourceId)) { resumo.jaImportados += 1; continue; }
+    if (ehCaixaAberta(it.name, it.brand)) { resumo.caixaAberta += 1; continue; }
     const nome = limparNome(it.name);
     if (!nome) continue;
     if (daLoja.has(chaveProduto(nome, it.brand))) { resumo.repetidosDaLoja += 1; continue; }
