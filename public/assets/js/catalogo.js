@@ -66,7 +66,7 @@
       return melhor;
     }
 
-    function nomeCompleto(p){ return [p.brand, p.name, p.volume].filter(Boolean).join(' '); }
+    function nomeCompleto(p){ return [p.brand, p.name, p.volume].filter(Boolean).join(' ') + (p.category === 'Open box' ? ' (Open box)' : ''); }
     function linkWhatsApp(p){
       var msg = p && !p.price
         ? 'Olá! Vim pelo site da Essência Natural e gostaria de consultar o valor do produto ' + nomeCompleto(p) + '.'
@@ -225,6 +225,7 @@
       link.appendChild(imagem(p));
       media.appendChild(link);
       if (p.featured) media.appendChild(el('span','prod-destaque','Destaque'));
+      if (p.category === 'Open box') media.appendChild(el('span','prod-openbox','Open box'));
       var fam = familiaDe(p);
       if (fam) media.appendChild(el('span','prod-tag' + (FAMILIAS[fam].lilas ? ' prod-tag--lilas' : ''), FAMILIAS[fam].tag));
       if (podeComprar(p)) media.appendChild(botaoAdd(p));
@@ -375,6 +376,10 @@
         if (window.ENSacola) window.ENSacola.catalogo(produtos);
         reset();
         prontos.splice(0).forEach(function(cb){ try { cb(produtos); } catch (e) {} });
+        // link direto para uma marca: /?marca=lattafa#catalogo (usado na trilha
+        // da página do produto e nos resultados do Google)
+        var marcaUrl = (location.search.match(/[?&]marca=([a-z0-9-]+)/) || [])[1];
+        if (marcaUrl && produtos.some(function(p){ return p.brandSlug === marcaUrl; })) window.ENCatalogo.filtrar({ marca: marcaUrl });
       })
       .catch(function(err){
         grid.textContent = '';

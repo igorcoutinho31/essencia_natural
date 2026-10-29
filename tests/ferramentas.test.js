@@ -154,3 +154,41 @@ test('ferramentas: vitrine e fotos em alta pela API', async (t) => {
   const publico = (await (await app.call('/api/products')).json()).products.find((p) => p.slug === 'fica');
   assert.equal(publico.image, `/uploads/biblioteca/${SHA_A}-hd.webp`);
 });
+
+test('regras: OPENBOX vira categoria Open box com a marca certa', () => {
+  const lista = mudancasDeNomes([
+    { id: 1, name: 'OPENBOX Lattafa Mayar', brand: null, volume: '100 ml', concentration: 'EDP', category: 'Perfume' },
+    { id: 2, name: 'OPENBOX Afnan Turathi Blue EDP 90 ml', brand: 'OPENBOX', volume: null, concentration: null, category: 'Perfume' },
+    { id: 3, name: 'Amouage Openbox Amouage Outlands', brand: 'Amouage', volume: '100 ml', concentration: 'EDP', category: 'Perfume' },
+    { id: 4, name: 'OPENBOX Sabah Al Ward Garden', brand: null, volume: '100 ml', concentration: 'EDP', category: 'Perfume' },
+    { id: 5, name: 'Mayar', brand: 'Lattafa', volume: '100 ml', concentration: 'EDP', category: 'Perfume' },
+  ], ['Lattafa', 'Afnan', 'Amouage', 'Al Wataniah']);
+  assert.deepEqual(lista.map((m) => [m.id, m.depois]), [
+    [1, { name: 'Mayar', volume: '100 ml', concentration: 'EDP', brand: 'Lattafa', category: 'Open box' }],
+    [2, { name: 'Turathi Blue', volume: '90 ml', concentration: 'EDP', brand: 'Afnan', category: 'Open box' }],
+    [3, { name: 'Outlands', volume: '100 ml', concentration: 'EDP', category: 'Open box' }],
+    [4, { name: 'Sabah Al Ward Garden', volume: '100 ml', concentration: 'EDP', category: 'Open box' }],
+  ], 'sem marca conhecida no começo, fica sem marca; o resto não muda');
+  assert.equal(mudancasDeNomes([{ id: 1, name: 'Mayar', brand: 'Lattafa', volume: '100 ml', concentration: 'EDP', category: 'Open box' }]).length, 0, 'já arrumado');
+});
+
+test('ferramentas: nomes gravam marca existente e categoria', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  await app.createUser();
+  app.db.raw.exec("INSERT INTO brands (name, slug) VALUES ('Lattafa', 'lattafa')");
+  const id = await app.insertProduct({ slug: 'ob', name: 'OPENBOX Lattafa Mayar' });
+  await app.login();
+  const { marcas } = await (await app.call('/api/admin/ferramentas/produtos')).json();
+  assert.ok(marcas.includes('Lattafa'));
+  assert.equal((await (await app.call('/api/admin/ferramentas/produtos?depois=1')).json()).marcas, undefined, 'marcas só na primeira página');
+  let r = await app.call('/api/admin/ferramentas/nomes', { method: 'POST', body: { mudancas: [{ id, name: 'Mayar', volume: '100 ml', concentration: 'EDP', brand: 'lattafa', category: 'Open box' }] } });
+  assert.equal(r.status, 200);
+  const p = app.db.raw.prepare('SELECT p.name, p.category, b.name AS brand FROM products p LEFT JOIN brands b ON b.id = p.brand_id WHERE p.id = ?').get(id);
+  assert.deepEqual({ ...p }, { name: 'Mayar', category: 'Open box', brand: 'Lattafa' });
+  // marca que não existe não é criada nem apaga a atual
+  r = await app.call('/api/admin/ferramentas/nomes', { method: 'POST', body: { mudancas: [{ id, name: 'Mayar', volume: null, concentration: null, brand: 'Inventada' }] } });
+  assert.equal(r.status, 200);
+  assert.equal(app.db.raw.prepare('SELECT b.name AS brand FROM products p JOIN brands b ON b.id = p.brand_id WHERE p.id = ?').get(id).brand, 'Lattafa');
+  assert.equal((await app.call('/api/admin/ferramentas/nomes', { method: 'POST', body: { mudancas: [{ id, name: 'Mayar', category: 'x'.repeat(61) }] } })).status, 400);
+});

@@ -37,7 +37,8 @@ export function limparNome(nome) {
       return w.charAt(0) + w.slice(1).toLowerCase();
     }).join(' ');
   }
-  return n;
+  // "Collector'S Edition" -> "Collector's Edition"
+  return n.replace(/(\p{L})(['’])S(?=\s|$)/gu, '$1$2s');
 }
 
 // Grafias diferentes da mesma marca (chave sem espaços -> chave canônica).
@@ -142,6 +143,7 @@ export function tituloProduto(nomeOriginal, { marca = null, volume = null, conce
 export function categoria(item) {
   const t = chave(`${item.category || ''} ${item.sourceCategory || ''} ${item.name || ''}`);
   const tem = (...ps) => ps.some((p) => new RegExp(`\\b${p}\\b`).test(t));
+  if (tem('openbox', 'open box')) return 'Open box';
   if (tem('skincare', 'serum', 'serum facial', 'creme facial', 'mascara facial', 'protetor solar', 'toner', 'cleanser')) return 'Skincare';
   if (tem('cabelo', 'cabelos', 'hair mist', 'shampoo', 'condicionador')) return 'Cabelos';
   if (tem('body splash', 'splash')) return 'Body Splash';
@@ -234,13 +236,47 @@ export function chaveProduto(nome, marca) {
 /** Mudanças de nome para a tela "Arrumar nomes". Recebe
  *  [{ id, name, brand, volume, concentration }] e devolve só os que mudam:
  *  [{ id, antes: {...}, depois: { name, volume, concentration } }]. */
-export function mudancasDeNomes(produtos) {
+// "Open box": produto com a embalagem aberta. No pacote do fornecedor vem
+// como "marca" (OPENBOX) ou no começo do nome ("OPENBOX Lattafa Mayar").
+// Vira categoria própria; a marca de verdade é a que vem logo depois.
+const RE_OPENBOX = /(^|\s)open\s?box(?=\s|$)/i;
+export const CATEGORIA_OPENBOX = 'Open box';
+export const ehOpenBox = (texto) => RE_OPENBOX.test(String(texto || ''));
+
+/** Marca que abre o nome ("Afnan Historic Olmeda" -> "Afnan"), escolhida
+ *  entre as marcas conhecidas (a grafia devolvida é a da lista). */
+export function marcaNoNome(nome, marcas) {
+  const porChave = new Map();
+  for (const m of marcas || []) { const k = chaveMarca(m); if (k && !porChave.has(k)) porChave.set(k, m); }
+  const ws = limparNome(nome).split(/\s+/).filter(Boolean);
+  for (let n = Math.min(4, ws.length - 1); n >= 1; n -= 1) {
+    const k = chaveMarca(ws.slice(0, n).join(' '));
+    if (!k) continue;
+    if (porChave.has(k)) return porChave.get(k);
+    if (porChave.has('al' + k)) return porChave.get('al' + k);
+  }
+  return null;
+}
+
+/** Nomes a arrumar. `marcas` = nomes das marcas cadastradas (para achar a
+ *  marca dos "OPENBOX ..." que vieram sem marca). */
+export function mudancasDeNomes(produtos, marcas = []) {
+  const conhecidas = [...new Set([...marcas, ...produtos.map((p) => p.brand).filter(Boolean)])];
   const out = [];
   for (const p of produtos) {
-    const t = tituloProduto(p.name, { marca: p.brand, volume: p.volume, concentracao: p.concentration });
+    let nome = p.name, marca = p.brand || null, cat = p.category || null;
+    if (ehOpenBox(nome) || ehOpenBox(marca)) {
+      nome = nome.replace(new RegExp(RE_OPENBOX.source, 'gi'), ' ').replace(/\s+/g, ' ').trim() || nome;
+      if (ehOpenBox(marca)) marca = null;
+      if (!marca) marca = marcaNoNome(nome, conhecidas);
+      cat = CATEGORIA_OPENBOX;
+    }
+    const t = tituloProduto(nome, { marca, volume: p.volume, concentracao: p.concentration });
     const depois = { name: t.nome, volume: t.volume || null, concentration: t.concentracao || null };
-    if (depois.name !== p.name || depois.volume !== (p.volume || null) || depois.concentration !== (p.concentration || null)) {
-      out.push({ id: p.id, antes: { name: p.name, brand: p.brand || null, volume: p.volume || null, concentration: p.concentration || null }, depois });
+    if (marca && marca !== (p.brand || null)) depois.brand = marca;
+    if (cat !== (p.category || null)) depois.category = cat;
+    if (depois.name !== p.name || depois.volume !== (p.volume || null) || depois.concentration !== (p.concentration || null) || depois.brand || depois.category) {
+      out.push({ id: p.id, antes: { name: p.name, brand: p.brand || null, volume: p.volume || null, concentration: p.concentration || null, category: p.category || null }, depois });
     }
   }
   return out;

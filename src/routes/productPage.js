@@ -81,7 +81,8 @@ function render(siteUrl, product, related) {
   const ogImage = absolute(siteUrl, product.hasImage ? product.image : '/assets/social/og-essencia-natural.jpg');
   // Nome de vitrine é curto ("Khamrah"); título, WhatsApp e Google levam
   // marca e volume ("Lattafa Khamrah 100 ml").
-  const nomeCompleto = [product.brand, product.name, product.volume].filter(Boolean).join(' ');
+  const openBox = product.category === 'Open box';
+  const nomeCompleto = [product.brand, product.name, product.volume].filter(Boolean).join(' ') + (openBox ? ' (Open box)' : '');
   const title = `${nomeCompleto} | ${SITE_NAME}`;
   const descBase = descricaoUtil(product) ||
     `${product.name}${product.brand ? ', ' + product.brand : ''} — perfumaria árabe e importada na Galeria Pagé, São Paulo. Consulte disponibilidade pelo WhatsApp.`;
@@ -90,25 +91,29 @@ function render(siteUrl, product, related) {
     ? `<p class="pd-preco">${product.comparePrice > product.price ? `<span class="pd-preco-de">R$ ${Number(product.comparePrice).toFixed(2).replace('.', ',')}</span>` : ''}R$ ${Number(product.price).toFixed(2).replace('.', ',')}</p>`
     : '<p class="pd-preco pd-preco--consulte">Consulte o valor</p>';
 
-  const schema = {
+  // Dados estruturados para o Google: trilha (Catálogo › Marca › Produto)
+  // sempre; ficha de produto (Product) só com preço confirmado — o Google
+  // exige preço na oferta e acusa erro no Search Console sem ele. Nunca
+  // inventamos um valor só para preencher o schema.
+  const trilha = [{ nome: 'Catálogo', url: siteUrl + '/#catalogo' }];
+  if (product.brand && product.brandSlug) trilha.push({ nome: product.brand, url: `${siteUrl}/?marca=${encodeURIComponent(product.brandSlug)}#catalogo` });
+  trilha.push({ nome: product.name, url: canonical });
+  const schemas = [{
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    description: descBase,
-  };
-  if (product.brand) schema.brand = { '@type': 'Brand', name: product.brand };
-  schema.url = canonical;
-  if (product.image) schema.image = absolute(siteUrl, product.image);
-  schema.offers = {
-    '@type': 'Offer',
-    priceCurrency: 'BRL',
-    url: canonical,
-  };
-  const availabilitySchema = schemaAvailability(product.stockStatus);
-  if (availabilitySchema) schema.offers.availability = availabilitySchema;
-  if (product.price != null) schema.offers.price = Number(product.price).toFixed(2);
-  // Sem price: omitimos "price" (Google tolera Offer sem preço quando "Consulte" é o caso real
-  // do negócio) — nunca inventamos um valor só para preencher o schema.
+    '@type': 'BreadcrumbList',
+    itemListElement: trilha.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.nome, item: t.url })),
+  }];
+  if (product.price != null) {
+    const ficha = { '@context': 'https://schema.org', '@type': 'Product', name: product.name, description: descBase };
+    if (product.brand) ficha.brand = { '@type': 'Brand', name: product.brand };
+    if (product.category) ficha.category = product.category;
+    ficha.url = canonical;
+    if (product.image) ficha.image = (product.images && product.images.length ? product.images : [product.image]).map((src) => absolute(siteUrl, src));
+    ficha.offers = { '@type': 'Offer', priceCurrency: 'BRL', price: Number(product.price).toFixed(2), url: canonical, itemCondition: 'https://schema.org/NewCondition' };
+    const availabilitySchema = schemaAvailability(product.stockStatus);
+    if (availabilitySchema) ficha.offers.availability = availabilitySchema;
+    schemas.push(ficha);
+  }
 
   // `product.image` sempre vem preenchido (placeholder oficial quando não há
   // foto real, ver catalog.PLACEHOLDER_IMAGE) — a galeria nunca fica
@@ -156,6 +161,7 @@ function render(siteUrl, product, related) {
         <h1 class="pd-nome">${escapeHTML(product.name)}</h1>
         ${meta ? `<p class="pd-meta">${escapeHTML(meta)}</p>` : ''}
         <span class="pd-selo ${stockBadgeClass(product.stockStatus)}">${escapeHTML(product.stockLabel)}</span>
+        ${openBox ? '<p class="pd-openbox"><b>Open box</b> — produto com a embalagem aberta. Confirme os detalhes com a nossa equipe pelo WhatsApp.</p>' : ''}
         ${priceHTML}
         ${notesList(product.notes)}
         <p class="pd-desc">${escapeHTML(descBase)}</p>
@@ -259,12 +265,12 @@ function render(siteUrl, product, related) {
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-t"></span><button type="button" id="toast-ver">Ver sacola</button></div>
 
 <script>window.__PRODUTO__ = ${jsonForScript(product)}; window.__RELACIONADOS__ = ${jsonForScript(related)};</script>
-<script src="/assets/js/app.js?v=20261029-3"></script>
+<script src="/assets/js/app.js?v=20261029-4"></script>
 <script src="/assets/js/menu.js?v=20261029-1"></script>
 <script src="/assets/js/atendimento.js?v=20261029-1"></script>
 <script src="/assets/js/sacola.js?v=20261029-1"></script>
-<script src="/assets/js/vida.js?v=20261029-3"></script>
-<script src="/assets/js/home.js?v=20261029-3"></script>
+<script src="/assets/js/vida.js?v=20261029-4"></script>
+<script src="/assets/js/home.js?v=20261029-4"></script>
 <script>
   (function(){
     if (window.ENSacola) window.ENSacola.catalogo([window.__PRODUTO__].concat(window.__RELACIONADOS__));
@@ -301,13 +307,13 @@ function render(siteUrl, product, related) {
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Essência Natural">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<script type="application/ld+json">${jsonForScript(schema)}</script>
+${schemas.map((s) => `<script type="application/ld+json">${jsonForScript(s)}</script>`).join('\n')}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Jost:wght@400;500;600&family=Pinyon+Script&display=swap">
 <link rel="preload" href="/assets/fonts/cormorant-garamond-en.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/site.css?v=20261029-3">
-<link rel="stylesheet" href="/assets/css/product.css?v=20261029-3">
+<link rel="stylesheet" href="/assets/css/site.css?v=20261029-4">
+<link rel="stylesheet" href="/assets/css/product.css?v=20261029-4">
 </head>
 <body>
 ${body}
@@ -325,7 +331,7 @@ function jsonForScript(value) {
 export async function productPage(ctx, slug) {
   const data = await catalog.getPublicProductPage(ctx.db, slug, 4);
   if (!data) {
-    return html(404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20261029-3"></head><body style="padding:80px 24px;text-align:center;background:#0e0c0a;color:#f3ede4;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
+    return html(404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20261029-4"></head><body style="padding:80px 24px;text-align:center;background:#0e0c0a;color:#f3ede4;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
   }
   return render(ctx.config.siteUrl, data.product, data.related);
 }

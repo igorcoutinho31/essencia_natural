@@ -30,6 +30,37 @@ estoque zerado com dez vendas, caracteres especiais, atualização automática,
 GET/HEAD, cabeçalhos, robots e respostas das rotas existentes. Não altera
 o catálogo real nem acessa a OliSek.
 
+## Fotos e dados estruturados (29/10/2026)
+
+- Cada produto do sitemap leva a foto principal (`<image:image>`, extensão
+  de imagens do Google) — os perfumes podem aparecer no Google Imagens. Só
+  foto real; a imagem padrão nunca entra.
+- Página de produto: trilha `BreadcrumbList` (Catálogo › Marca › Produto)
+  sempre. A ficha `Product` com oferta só sai quando o produto tem preço
+  confirmado: o Google exige preço na oferta e acusaria erro no Search
+  Console sem ele. Nunca se inventa preço para preencher.
+- A trilha aponta para `/?marca=<slug>#catalogo`, que abre o catálogo já
+  filtrado pela marca.
+- A home tem `Store` com endereço, telefone e horário (dados do
+  `BRAND-BRIEF.md`).
+
+## Cadastrar no Google Search Console (uma vez)
+
+1. Entre em https://search.google.com/search-console com a conta Google da
+   loja (a mesma do Perfil da Empresa no Google, se houver).
+2. **Adicionar propriedade** → **Domínio** → `lojaessencianatural.com.br`
+   → Continuar.
+3. O Google mostra um registro TXT. Como o domínio está na Cloudflare, ele
+   costuma oferecer **Verificar com a Cloudflare**: clique, entre na conta
+   Cloudflare da loja e autorize — o registro é criado sozinho. Se não
+   aparecer: Cloudflare → `lojaessencianatural.com.br` → **DNS** →
+   **Adicionar registro** → Tipo `TXT`, Nome `@`, Conteúdo = o texto que o
+   Google mostrou → Salvar; volte ao Google e clique em **Verificar**.
+4. Com a propriedade verificada: **Sitemaps** → digite `sitemap.xml` →
+   **Enviar**.
+5. Em alguns dias aparecem as páginas indexadas e as buscas que trazem
+   clientes (**Desempenho**).
+
 ## Depois de publicar
 
 1. Abra `https://www.lojaessencianatural.com.br/sitemap.xml`: deve retornar

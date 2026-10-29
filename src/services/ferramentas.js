@@ -12,13 +12,13 @@ export const MAX_FOTOS = 100;
 /** Uma página da lista leve de produtos (id crescente, a partir de `depois`). */
 export async function listaLeve(db, depois = 0, limite = LISTA_LIMITE) {
   const { results } = await db.prepare(
-    `SELECT p.id, p.name, b.name AS brand, p.volume, p.concentration, p.source, p.active,
+    `SELECT p.id, p.name, b.name AS brand, p.volume, p.concentration, p.category, p.source, p.active,
        (SELECT pi.file_path FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.is_main DESC, pi.sort_order ASC LIMIT 1) AS image
      FROM products p LEFT JOIN brands b ON b.id = p.brand_id
      WHERE p.id > ? ORDER BY p.id ASC LIMIT ?`
   ).bind(Math.max(0, Number(depois) || 0), limite).all();
   return results.map((r) => ({
-    id: r.id, name: r.name, brand: r.brand || null, volume: r.volume || null, concentration: r.concentration || null,
+    id: r.id, name: r.name, brand: r.brand || null, volume: r.volume || null, concentration: r.concentration || null, category: r.category || null,
     source: r.source || null, active: !!r.active, image: r.image || null, hasImage: !!r.image,
   }));
 }
@@ -29,16 +29,28 @@ function texto(v, max) {
   return s && s.length <= max ? s : undefined; // undefined = inválido
 }
 
-/** Grava nomes conferidos: [{ id, name, volume, concentration }]. */
+/** Nomes das marcas cadastradas (para a regra achar a marca no nome). */
+export async function nomesDeMarcas(db) {
+  const { results } = await db.prepare('SELECT name FROM brands ORDER BY name').all();
+  return results.map((r) => r.name);
+}
+
+/** Grava nomes conferidos: [{ id, name, volume, concentration, brand?, category? }].
+ *  `brand` só vale se a marca já existir (pelo nome); `category` troca a categoria. */
 export async function aplicarNomes(db, mudancas) {
   if (!Array.isArray(mudancas) || !mudancas.length || mudancas.length > MAX_NOMES) return { erro: 'lista_invalida' };
   const stmts = [];
   for (const m of mudancas) {
     const id = Number(m && m.id);
     const name = texto(m.name, 200), volume = texto(m.volume, 40), concentration = texto(m.concentration, 60);
-    if (!Number.isInteger(id) || id <= 0 || !name || volume === undefined || concentration === undefined) return { erro: 'item_invalido', id: m && m.id };
-    stmts.push(db.prepare("UPDATE products SET name = ?, volume = ?, concentration = ?, updated_at = datetime('now') WHERE id = ?")
-      .bind(name, volume, concentration, id));
+    const brand = m.brand === undefined ? null : texto(m.brand, 80), category = m.category === undefined ? null : texto(m.category, 60);
+    if (!Number.isInteger(id) || id <= 0 || !name || volume === undefined || concentration === undefined || brand === undefined || category === undefined) {
+      return { erro: 'item_invalido', id: m && m.id };
+    }
+    stmts.push(db.prepare(`UPDATE products SET name = ?, volume = ?, concentration = ?,
+        brand_id = COALESCE((SELECT id FROM brands WHERE ? IS NOT NULL AND name = ? COLLATE NOCASE), brand_id),
+        category = COALESCE(?, category), updated_at = datetime('now') WHERE id = ?`)
+      .bind(name, volume, concentration, brand, brand, category, id));
   }
   const res = await db.batch(stmts);
   return { alterados: res.reduce((n, r) => n + (r.meta?.changes ? 1 : 0), 0) };

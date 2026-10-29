@@ -71,6 +71,9 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 - O texto de venda da ONUH NÃO foi importado (regra do projeto: não copiar
   texto de benchmark). Descrições próprias, se a loja quiser, precisam ser
   escritas — nunca copiadas.
+- Open box: o site explica como "produto com a embalagem aberta" e manda
+  confirmar os detalhes no WhatsApp. Confirmar com a loja se é isso mesmo
+  (e se há algo a mais para dizer, como garantia ou desconto).
 - Nomes: `/admin/ferramentas` → "Arrumar nomes" tira marca, volume e
   concentração repetidos do nome (ver `docs/CATALOGO.md`). Ainda vale revisar o nome
   antes de publicar quando estiver estranho.
