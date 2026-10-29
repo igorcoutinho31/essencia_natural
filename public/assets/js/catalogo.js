@@ -375,6 +375,10 @@
         if (window.ENSacola) window.ENSacola.catalogo(produtos);
         reset();
         prontos.splice(0).forEach(function(cb){ try { cb(produtos); } catch (e) {} });
+        // link direto para uma marca: /?marca=lattafa#catalogo (usado na trilha
+        // da página do produto e nos resultados do Google)
+        var marcaUrl = (location.search.match(/[?&]marca=([a-z0-9-]+)/) || [])[1];
+        if (marcaUrl && produtos.some(function(p){ return p.brandSlug === marcaUrl; })) window.ENCatalogo.filtrar({ marca: marcaUrl });
       })
       .catch(function(err){
         grid.textContent = '';

@@ -166,3 +166,28 @@ test('home nova: seções, scripts e nada de produto escrito à mão', async (t)
   assert.ok(!/<style>/.test(home), 'home sem <style> inline');
   assert.equal((await app.call('/assets/brands/ouro/lattafa.png')).status, 200, 'logos em dourado');
 });
+
+test('Google: trilha sempre, ficha de produto só com preço e foto no sitemap', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  const marca = (await app.db.prepare("INSERT INTO brands (name, slug) VALUES ('Lattafa', 'lattafa')").run()).meta.last_row_id;
+  const sem = await app.insertProduct({ slug: 'sem-preco', name: 'Khamrah', brandId: marca });
+  await app.insertProduct({ slug: 'com-preco', name: 'Yara', brandId: marca, price: 199.9 });
+  app.db.raw.exec(`INSERT INTO product_images (product_id, file_path, sort_order, is_main, licensed) VALUES (${sem}, '/uploads/biblioteca/abc-hd.webp', 0, 1, 1)`);
+  const blocos = async (slug) => [...(await (await app.call('/produto/' + slug)).text()).matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)].map((m) => JSON.parse(m[1]));
+
+  const a = await blocos('sem-preco');
+  assert.deepEqual(a.map((s) => s['@type']), ['BreadcrumbList'], 'sem preço não há ficha de produto (o Google acusaria erro)');
+  assert.deepEqual(a[0].itemListElement.map((i) => i.name), ['Catálogo', 'Lattafa', 'Khamrah']);
+  assert.equal(a[0].itemListElement[1].item, ORIGIN + '/?marca=lattafa#catalogo');
+
+  const b = await blocos('com-preco');
+  const ficha = b.find((s) => s['@type'] === 'Product');
+  assert.equal(ficha.offers.price, '199.90');
+  assert.equal(ficha.offers.priceCurrency, 'BRL');
+
+  const xml = await (await app.call('/sitemap.xml')).text();
+  assert.match(xml, /xmlns:image="http:\/\/www\.google\.com\/schemas\/sitemap-image\/1\.1"/);
+  assert.match(xml, /<loc>[^<]*\/produto\/sem-preco<\/loc><lastmod>[^<]+<\/lastmod><image:image><image:loc>https:\/\/www\.lojaessencianatural\.com\.br\/uploads\/biblioteca\/abc-hd\.webp<\/image:loc><\/image:image><\/url>/);
+  assert.ok(!/com-preco<\/loc>(<lastmod>[^<]+<\/lastmod>)?<image:image>/.test(xml), 'sem foto real, sem imagem no sitemap');
+});

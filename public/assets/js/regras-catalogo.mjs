@@ -37,7 +37,8 @@ export function limparNome(nome) {
       return w.charAt(0) + w.slice(1).toLowerCase();
     }).join(' ');
   }
-  return n;
+  // "Collector'S Edition" -> "Collector's Edition"
+  return n.replace(/(\p{L})(['’])S(?=\s|$)/gu, '$1$2s');
 }
 
 // Grafias diferentes da mesma marca (chave sem espaços -> chave canônica).
@@ -222,6 +223,12 @@ export function casarRelatorio(indice, nome, marca) {
     if (j >= 0.8 && (!melhor || j > melhor.j)) melhor = { j, nome: indice.lista[i].nome };
   }
   return melhor ? melhor.nome : null;
+}
+
+/** Produto de caixa aberta ("OPENBOX ..." no nome ou como marca do
+ *  fornecedor): a loja não vende, então não entra no site. */
+export function ehCaixaAberta(nome, marca) {
+  return /(^|[^a-z])open\s?box([^a-z]|$)/i.test(`${nome || ''} ${marca || ''}`);
 }
 
 /** Chave de "mesmo produto": marca + palavras do nome (sem volume/EDP...). */

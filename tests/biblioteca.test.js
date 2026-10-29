@@ -26,6 +26,10 @@ test('regras: nome, categoria, notas e marca', () => {
   assert.equal(R.chaveMarca('Maison Al Hambra'), R.chaveMarca('Maison Alhambra'));
   assert.equal(R.chaveMarca('Wataniah'), R.chaveMarca('Al Wataniah'));
   assert.equal(R.chaveMarca('OPENBOX'), null);
+  assert.equal(R.ehCaixaAberta('OPENBOX Lattafa Mayar EDP 100 ml', null), true);
+  assert.equal(R.ehCaixaAberta('Turathi Blue', 'OPENBOX'), true);
+  assert.equal(R.ehCaixaAberta('Amouage Openbox Amouage Outlands', 'Amouage'), true);
+  assert.equal(R.ehCaixaAberta('Box Set Lattafa', 'Lattafa'), false);
 });
 
 test('regras: nome de vitrine sem marca, volume e concentração repetidos', () => {

@@ -87,7 +87,7 @@ async function main() {
   const plano = planejar(catalogo, estado, relatorio);
   const r = plano.resumo;
   console.log(`\nNo pacote: ${r.total} produtos.`);
-  console.log(`  Entram agora (ocultos): ${r.novos}   ·   já importados antes: ${r.jaImportados}   ·   iguais a cadastros da loja (pulados): ${r.repetidosDaLoja}`);
+  console.log(`  Entram agora (ocultos): ${r.novos}   ·   já importados antes: ${r.jaImportados}   ·   iguais a cadastros da loja (pulados): ${r.repetidosDaLoja}   ·   caixa aberta (pulados): ${r.caixaAberta}`);
   console.log(`  Constam no relatório da loja: ${r.noRelatorio}   ·   sem foto: ${r.semFoto}   ·   marcas novas: ${r.marcasNovas}`);
   console.log('  Por categoria:', Object.entries(r.porCategoria).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(', '));
   console.log('  Por origem:', Object.entries(r.porOrigem).map(([k, v]) => `${k} ${v}`).join(', '));

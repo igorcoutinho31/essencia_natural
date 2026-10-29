@@ -76,12 +76,15 @@ export async function aplicarFotos(db, pares) {
 // ---------- vitrine: o que fica publicado ----------
 // Regra: aparece no site o que a loja tem (produtos do relatório da loja,
 // com foto). Do catálogo importado, sai o que não está no relatório.
-// Cadastros feitos pela loja (sem origem) não são tocados.
+// Produtos de caixa aberta ("OPENBOX" no nome) a loja não vende: nunca são
+// publicados e saem do site. Os demais cadastros feitos pela loja (sem
+// origem) não são tocados.
+const CAIXA_ABERTA = "(p.name LIKE '%openbox%' OR p.name LIKE '%open box%')";
 const VITRINE = {
-  publicar: `p.active = 0 AND p.in_store_report = 1
+  publicar: `p.active = 0 AND p.in_store_report = 1 AND NOT ${CAIXA_ABERTA}
     AND EXISTS (SELECT 1 FROM product_images pi WHERE pi.product_id = p.id)`,
-  ocultar: 'p.active = 1 AND p.source IS NOT NULL AND p.in_store_report = 0',
-  semFoto: `p.active = 0 AND p.in_store_report = 1
+  ocultar: `p.active = 1 AND ((p.source IS NOT NULL AND p.in_store_report = 0) OR ${CAIXA_ABERTA})`,
+  semFoto: `p.active = 0 AND p.in_store_report = 1 AND NOT ${CAIXA_ABERTA}
     AND NOT EXISTS (SELECT 1 FROM product_images pi WHERE pi.product_id = p.id)`,
 };
 

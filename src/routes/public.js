@@ -53,11 +53,14 @@ export async function sitemap(ctx) {
     ...(await catalog.getPublicProducts(ctx.db)).map((p) => ({
       loc: `${base}/produto/${encodeURIComponent(p.slug)}`,
       lastmod: p.updatedAt ? String(p.updatedAt).slice(0, 10) : null,
+      // foto do produto (Google Imagens) — só foto real, nunca a imagem padrão
+      image: p.hasImage && p.image && p.image.startsWith('/uploads/') ? base + p.image : null,
     })),
   ];
   const body = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    entries.map((e) => `  <url><loc>${escapeXML(e.loc)}</loc>${e.lastmod ? `<lastmod>${escapeXML(e.lastmod)}</lastmod>` : ''}</url>`).join('\n') +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
+    entries.map((e) => `  <url><loc>${escapeXML(e.loc)}</loc>${e.lastmod ? `<lastmod>${escapeXML(e.lastmod)}</lastmod>` : ''}` +
+      `${e.image ? `<image:image><image:loc>${escapeXML(e.image)}</image:loc></image:image>` : ''}</url>`).join('\n') +
     '\n</urlset>\n';
   const bytes = new TextEncoder().encode(body);
   return new Response(ctx.request.method === 'HEAD' ? null : bytes, {

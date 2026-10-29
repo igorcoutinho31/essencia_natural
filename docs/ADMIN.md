@@ -85,8 +85,9 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
      MAIÚSCULAS.
   2. **Montar a vitrine** — publica os produtos do relatório da loja que
      têm foto e oculta os do catálogo importado que não estão no relatório
-     (cadastros feitos pela loja não mudam). Mostra as contagens e alguns
-     nomes antes.
+     (cadastros feitos pela loja não mudam). Produtos de caixa aberta
+     ("OPENBOX" no nome) a loja não vende: saem do site e nunca são
+     publicados. Mostra as contagens e alguns nomes antes.
   3. **Padronizar fotos** — cadastros antigos da loja ganham a foto de
      fundo limpo do mesmo perfume do catálogo importado; cada par aparece
      com as duas fotos para conferir.
