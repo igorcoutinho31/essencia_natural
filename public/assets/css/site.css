@@ -112,12 +112,21 @@ section{position:relative}
 
 /* ---------- faixa do topo (toque lilás do logo) ---------- */
 .faixa{
-  height:var(--faixa-h);display:flex;align-items:center;justify-content:center;gap:10px;
+  height:var(--faixa-h);display:flex;align-items:center;justify-content:flex-start;
   background:var(--blush);color:var(--malva);
-  font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;overflow:hidden;padding-inline:12px;
+  font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;overflow:hidden;
 }
 .faixa i{font-style:normal;color:var(--malva-2);font-size:.55rem}
-@media (max-width:480px){.faixa .faixa-x{display:none}.faixa{letter-spacing:.14em}}
+.faixa-trilho{display:flex;width:max-content;animation:faixa-anda 36s linear infinite}
+.faixa-item{display:inline-flex;align-items:center;gap:10px;padding-right:10px}
+@keyframes faixa-anda{to{transform:translateX(-50%)}}
+/* menos movimento: parada, só a primeira frase, centralizada */
+@media (prefers-reduced-motion:reduce){
+  .faixa{justify-content:center}
+  .faixa-trilho{animation:none}
+  .faixa-item:not(:first-child),.faixa-item:first-child .faixa-sep{display:none}
+}
+
 
 /* ---------- cabeçalho ---------- */
 .site-header{
@@ -327,7 +336,11 @@ body.nav-aberto{overflow:hidden}
 
 .marcas-faixa{margin-top:clamp(18px,4vw,30px);padding:10px 0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .marquee{display:flex;align-items:center;gap:clamp(36px,7vw,72px);width:max-content;animation:marquee 50s linear infinite}
-.marcas-faixa:hover .marquee,.marcas-faixa:active .marquee,.marcas-faixa:focus-within .marquee{animation-play-state:paused}
+/* Pausa para clicar: com o mouse em cima (só onde existe mouse — no
+   celular o "hover" fica grudado depois de um toque e a faixa parava), com
+   o dedo apertando e na navegação por teclado. */
+@media (hover:hover){.marcas-faixa:hover .marquee{animation-play-state:paused}}
+.marcas-faixa:active .marquee,.marcas-faixa:has(:focus-visible) .marquee{animation-play-state:paused}
 .marquee a{display:inline-flex;align-items:center;justify-content:center;height:clamp(56px,11vw,78px);opacity:.82;transition:opacity .25s,transform .35s var(--ease)}
 .marquee a:hover{opacity:1;transform:scale(1.06)}
 .marquee img{height:100%;width:auto;max-width:clamp(120px,28vw,190px);object-fit:contain}

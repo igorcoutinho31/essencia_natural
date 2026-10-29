@@ -121,7 +121,7 @@ function render(siteUrl, product, related) {
   const galeria = `<div class="pd-galeria">${images.map((src, i) => naMoldura(src, `<img src="${escapeHTML(src)}" alt="${escapeHTML(product.name)}" ${i === 0 ? '' : 'loading="lazy"'} width="480" height="620" ${IMG_FALLBACK_ATTR}>`)).join('')}</div>`;
 
   const body = `
-<p class="faixa">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé<span class="faixa-x"> <i aria-hidden="true">◆</i> Envios para todo o Brasil</span></p>
+<p class="faixa"><span class="faixa-trilho"><span class="faixa-item">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé <i aria-hidden="true">◆</i> Envios para todo o Brasil<i class="faixa-sep" aria-hidden="true">◆</i></span><span class="faixa-item" aria-hidden="true">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé <i aria-hidden="true">◆</i> Envios para todo o Brasil<i class="faixa-sep" aria-hidden="true">◆</i></span><span class="faixa-item" aria-hidden="true">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé <i aria-hidden="true">◆</i> Envios para todo o Brasil<i class="faixa-sep" aria-hidden="true">◆</i></span><span class="faixa-item" aria-hidden="true">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé <i aria-hidden="true">◆</i> Envios para todo o Brasil<i class="faixa-sep" aria-hidden="true">◆</i></span><span class="faixa-item" aria-hidden="true">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé <i aria-hidden="true">◆</i> Envios para todo o Brasil<i class="faixa-sep" aria-hidden="true">◆</i></span><span class="faixa-item" aria-hidden="true">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé <i aria-hidden="true">◆</i> Envios para todo o Brasil<i class="faixa-sep" aria-hidden="true">◆</i></span><span class="faixa-item" aria-hidden="true">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé <i aria-hidden="true">◆</i> Envios para todo o Brasil<i class="faixa-sep" aria-hidden="true">◆</i></span><span class="faixa-item" aria-hidden="true">Varejo e atacado <i aria-hidden="true">◆</i> Galeria Pagé <i aria-hidden="true">◆</i> Envios para todo o Brasil<i class="faixa-sep" aria-hidden="true">◆</i></span></span></p>
 <header class="site-header">
   <div class="header-inner">
     <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu"><span></span><span></span><span></span></button>
@@ -263,12 +263,12 @@ function render(siteUrl, product, related) {
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-t"></span><button type="button" id="toast-ver">Ver sacola</button></div>
 
 <script>window.__PRODUTO__ = ${jsonForScript(product)}; window.__RELACIONADOS__ = ${jsonForScript(related)};</script>
-<script src="/assets/js/app.js?v=20261029-6"></script>
+<script src="/assets/js/app.js?v=20261029-7"></script>
 <script src="/assets/js/menu.js?v=20261029-1"></script>
 <script src="/assets/js/atendimento.js?v=20261029-1"></script>
 <script src="/assets/js/sacola.js?v=20261029-1"></script>
-<script src="/assets/js/vida.js?v=20261029-6"></script>
-<script src="/assets/js/home.js?v=20261029-6"></script>
+<script src="/assets/js/vida.js?v=20261029-7"></script>
+<script src="/assets/js/home.js?v=20261029-7"></script>
 <script>
   (function(){
     if (window.ENSacola) window.ENSacola.catalogo([window.__PRODUTO__].concat(window.__RELACIONADOS__));
@@ -310,8 +310,8 @@ ${schemas.map((s) => `<script type="application/ld+json">${jsonForScript(s)}</sc
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Jost:wght@400;500;600&family=Pinyon+Script&display=swap">
 <link rel="preload" href="/assets/fonts/cormorant-garamond-en.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/site.css?v=20261029-6">
-<link rel="stylesheet" href="/assets/css/product.css?v=20261029-6">
+<link rel="stylesheet" href="/assets/css/site.css?v=20261029-7">
+<link rel="stylesheet" href="/assets/css/product.css?v=20261029-7">
 </head>
 <body>
 ${body}
@@ -329,7 +329,7 @@ function jsonForScript(value) {
 export async function productPage(ctx, slug) {
   const data = await catalog.getPublicProductPage(ctx.db, slug, 4);
   if (!data) {
-    return html(404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20261029-6"></head><body style="padding:80px 24px;text-align:center;background:#0e0c0a;color:#f3ede4;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
+    return html(404, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Produto não encontrado — ${SITE_NAME}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/site.css?v=20261029-7"></head><body style="padding:80px 24px;text-align:center;background:#0e0c0a;color:#f3ede4;font-family:sans-serif"><h1>Produto não encontrado</h1><p><a href="/#catalogo" style="color:#c9a44c">Voltar para o catálogo</a></p></body></html>`);
   }
   return render(ctx.config.siteUrl, data.product, data.related);
 }
