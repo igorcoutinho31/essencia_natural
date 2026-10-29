@@ -481,17 +481,17 @@ dialog.pd::backdrop{background:rgba(6,5,4,.8);-webkit-backdrop-filter:blur(3px);
 .loja-info .btn{align-self:flex-start}
 
 /* ---------- equipe ---------- */
-.equipe-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:18px 12px}
-@media (min-width:860px){.equipe-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:28px}}
-.pessoa{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.equipe-grid{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:22px 18px}
+@media (min-width:860px){.equipe-grid{gap:36px 44px}}
+.pessoa{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;width:min(176px,calc(50% - 9px))}
+@media (min-width:860px){.pessoa{width:236px}}
 .pessoa img,.pessoa-inicial{
-  width:min(132px,100%);aspect-ratio:1;border-radius:50%;object-fit:cover;object-position:50% 18%;
-  border:2px solid var(--gold);padding:4px;background:var(--bg-2);background-clip:content-box;
+  width:100%;aspect-ratio:1;border-radius:50%;object-fit:cover;object-position:50% 18%;
+  border:2px solid var(--gold);padding:5px;background:var(--bg-2);background-clip:content-box;
 }
-@media (min-width:860px){.pessoa img,.pessoa-inicial{width:168px}}
 .pessoa-inicial{display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:3rem;color:var(--gold);background:var(--bg-2);padding:0}
 .pessoa:nth-child(even) .pessoa-inicial{background:var(--blush);color:var(--malva-2)}
-.pessoa-nome{font-family:var(--serif);font-size:1.3rem;font-weight:600}
+.pessoa-nome{font-family:var(--serif);font-size:1.45rem;font-weight:600}
 
 /* ---------- envios, redes, perguntas ---------- */
 .info-grid{display:grid;gap:12px}

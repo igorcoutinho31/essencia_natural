@@ -10,7 +10,7 @@ test('equipe: lista pública vem do banco, com a formação confirmada', async (
   const r = await app.call('/api/team');
   assert.equal(r.status, 200);
   const { team } = await r.json();
-  assert.deepEqual(team.map((p) => p.name), ['Bassam', 'Nicolly', 'Larissa', 'Livia']);
+  assert.deepEqual(team.map((p) => p.name), ['Bassam', 'Nicolly', 'Larissa', 'Livia', 'Ali']);
   assert.equal(team[0].photo, '/assets/team/bassam-v2.webp');
   assert.deepEqual(Object.keys(team[0]).sort(), ['id', 'name', 'photo'], 'só nome e foto saem para o público');
 });
@@ -31,7 +31,7 @@ test('equipe: administração cadastra, renomeia, troca foto, esconde, reordena 
   await app.login();
   assert.equal((await app.call('/api/admin/team', { method: 'POST', body: { name: '  ' } })).status, 400);
   const { id } = await (await app.call('/api/admin/team', { method: 'POST', body: { name: 'Maria' } })).json();
-  assert.deepEqual(await nomes(), ['Bassam', 'Nicolly', 'Larissa', 'Livia', 'Maria']);
+  assert.deepEqual(await nomes(), ['Bassam', 'Nicolly', 'Larissa', 'Livia', 'Ali', 'Maria']);
 
   assert.equal((await app.call(`/api/admin/team/${id}`, { method: 'PUT', body: { name: 'Mariana' } })).status, 200);
   const foto = await (await app.call(`/api/admin/team/${id}/photo`, { method: 'POST', body: { dataUrl: PNG_DATA_URL } })).json();
@@ -42,15 +42,15 @@ test('equipe: administração cadastra, renomeia, troca foto, esconde, reordena 
 
   const ids = (await (await app.call('/api/team')).json()).team.map((p) => p.id);
   await app.call('/api/admin/team/order', { method: 'PUT', body: { ids: [id, ...ids.filter((x) => x !== id)] } });
-  assert.deepEqual(await nomes(), ['Mariana', 'Bassam', 'Nicolly', 'Larissa', 'Livia']);
+  assert.deepEqual(await nomes(), ['Mariana', 'Bassam', 'Nicolly', 'Larissa', 'Livia', 'Ali']);
 
   await app.call(`/api/admin/team/${ids[0]}`, { method: 'PUT', body: { active: false } });
-  assert.deepEqual(await nomes(), ['Mariana', 'Nicolly', 'Larissa', 'Livia'], 'escondida não aparece no site');
+  assert.deepEqual(await nomes(), ['Mariana', 'Nicolly', 'Larissa', 'Livia', 'Ali'], 'escondida não aparece no site');
   const pagina = await (await app.call('/admin/equipe')).text();
   assert.match(pagina, /Bassam/, 'mas continua no painel');
 
   assert.equal((await app.call(`/api/admin/team/${id}`, { method: 'DELETE' })).status, 200);
-  assert.deepEqual(await nomes(), ['Nicolly', 'Larissa', 'Livia']);
+  assert.deepEqual(await nomes(), ['Nicolly', 'Larissa', 'Livia', 'Ali']);
   const lixeira = await app.db.prepare("SELECT COUNT(*) AS n FROM upload_trash WHERE key LIKE 'equipe/%'").first();
   assert.equal(lixeira.n, 1, 'a foto removida vai para a lixeira de 90 dias');
 });
