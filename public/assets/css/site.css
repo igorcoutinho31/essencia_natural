@@ -117,7 +117,7 @@ section{position:relative}
   font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;overflow:hidden;
 }
 .faixa i{font-style:normal;color:var(--malva-2);font-size:.55rem}
-.faixa-trilho{display:flex;width:max-content;animation:faixa-anda 36s linear infinite}
+.faixa-trilho{display:flex;width:max-content;animation:faixa-anda 36s linear infinite;will-change:transform}
 .faixa-item{display:inline-flex;align-items:center;gap:10px;padding-right:10px}
 @keyframes faixa-anda{to{transform:translateX(-50%)}}
 /* menos movimento: parada, só a primeira frase, centralizada */
@@ -334,8 +334,13 @@ body.nav-aberto{overflow:hidden}
 .top-item .prod-marca{display:block;margin-top:12px}
 .top-item h3{font-size:1.24rem;font-weight:600;margin-top:2px}
 
-.marcas-faixa{margin-top:clamp(18px,4vw,30px);padding:10px 0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.marquee{display:flex;align-items:center;gap:clamp(36px,7vw,72px);width:max-content;animation:marquee 50s linear infinite}
+.marcas-faixa{margin-top:clamp(18px,4vw,30px);padding:10px 0;overflow:hidden;position:relative;}
+/* bordas que somem (no lugar de mask-image: no Safari do iPhone/iPad a
+   máscara congelava a animação das marcas) */
+.marcas-faixa::before,.marcas-faixa::after{content:"";position:absolute;top:0;bottom:0;width:8%;z-index:1;pointer-events:none}
+.marcas-faixa::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.marcas-faixa::after{right:0;background:linear-gradient(270deg,var(--bg),transparent)}
+.marquee{display:flex;align-items:center;gap:clamp(36px,7vw,72px);width:max-content;animation:marquee 50s linear infinite;will-change:transform}
 /* Pausa para clicar: com o mouse em cima (só onde existe mouse — no
    celular o "hover" fica grudado depois de um toque e a faixa parava), com
    o dedo apertando e na navegação por teclado. */
@@ -560,6 +565,9 @@ dialog.pd::backdrop{background:rgba(6,5,4,.8);-webkit-backdrop-filter:blur(3px);
   display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
   background:rgba(14,12,10,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);
 }
+/* Safari novo (barra de endereço flutuante): a página aparecia num vão
+   embaixo da barra — o fundo da barra se estende para baixo e cobre. */
+.barra-app::after{content:"";position:absolute;left:0;right:0;top:100%;height:120px;background:rgba(14,12,10,.97)}
 .barra-app a,.barra-app button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:0;color:var(--ink-2);font-size:.68rem;letter-spacing:.04em;cursor:pointer;position:relative}
 .barra-app svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .barra-app .wa{color:var(--gold)}
