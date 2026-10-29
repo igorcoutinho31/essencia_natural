@@ -55,6 +55,7 @@ function layout({ title, user, active, body }) {
         ${user.role === 'admin' ? `<a href="/admin/produtos"${active === 'produtos' ? ' class="a-nav-ativo"' : ''}>Produtos</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/fotos"${active === 'fotos' ? ' class="a-nav-ativo"' : ''}>Fotos</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/equipe"${active === 'equipe' ? ' class="a-nav-ativo"' : ''}>Equipe</a>` : ''}
+        ${user.role === 'admin' ? `<a href="/admin/contas"${active === 'contas' ? ' class="a-nav-ativo"' : ''}>Contas</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/ferramentas"${active === 'ferramentas' ? ' class="a-nav-ativo"' : ''}>Ferramentas</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/estoque"${active === 'estoque' ? ' class="a-nav-ativo"' : ''}>Estoque</a>` : ''}
         <a href="/admin/trocar-senha">Trocar senha</a>
@@ -840,6 +841,115 @@ export function lojaPage(user) {
     })();
   </script>`;
   return html(200, layout({ title: 'Loja', user, active: 'loja', body }));
+}
+
+/** Contas (/admin/contas — só administração): quem entra no painel.
+ *  Usuário (login) fica em minúsculas; o nome pode mudar quando quiser. */
+export function contasPage(user) {
+  const body = `
+  <div class="a-wrap">
+    <h1>Contas</h1>
+    <p class="a-sub">Quem entra no painel. <b>Vendedora</b> usa a tela simples da Loja; <b>Administração</b> vê tudo. O usuário (para entrar) não muda; o nome pode mudar quando quiser.</p>
+    <div id="ct-aviso" aria-live="polite"></div>
+
+    <div class="a-card">
+      <h2>Nova conta</h2>
+      <form id="ct-nova" class="ct-form">
+        <label>Nome<input name="nome" maxlength="60" required placeholder="Ex.: Maria"></label>
+        <label>Usuário (para entrar)<input name="usuario" maxlength="40" required placeholder="Ex.: maria" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+        <label>Tipo<select name="papel"><option value="vendedora">Vendedora</option><option value="admin">Administração</option></select></label>
+        <label>Senha<input name="senha" type="text" autocomplete="off" placeholder="Em branco = o painel cria uma"></label>
+        <label class="ct-check"><input type="checkbox" name="trocar" checked> Pedir para a pessoa trocar a senha no primeiro acesso</label>
+        <button class="btn btn-gold" type="submit">Criar conta</button>
+      </form>
+      <p class="a-help">A senha precisa ter pelo menos 10 caracteres. Entregue a senha pessoalmente (não mande por mensagem).</p>
+    </div>
+
+    <div class="ct-lista" id="ct-lista"></div>
+  </div>
+  <script>
+    (function(){
+      ${JS_AJUDA}
+      var aviso = document.getElementById('ct-aviso'), lista = document.getElementById('ct-lista');
+      function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+      function erro(e){ msg(aviso, (e && e.message) || 'Não deu certo. Tente de novo.', false); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      function mostrarSenha(usuario, senha){
+        aviso.textContent = '';
+        var box = el('div', 'a-msg a-msg-ok ct-senha');
+        box.appendChild(el('b', null, 'Anote agora — esta senha não aparece de novo.'));
+        var linha = el('div', 'ct-senha-linha');
+        linha.append(el('span', null, 'Usuário: '), el('code', null, usuario), el('span', null, ' · Senha: '), el('code', null, senha));
+        var copiar = el('button', 'btn btn-ghost btn-sm', 'Copiar'); copiar.type = 'button';
+        copiar.addEventListener('click', function(){ if (navigator.clipboard) navigator.clipboard.writeText(senha).then(function(){ copiar.textContent = 'Copiada'; }); });
+        linha.appendChild(copiar);
+        var fechar = el('button', 'btn btn-ghost btn-sm', 'Já anotei'); fechar.type = 'button'; fechar.addEventListener('click', function(){ box.remove(); });
+        box.append(linha, fechar);
+        aviso.appendChild(box);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      function carregar(){
+        fetch('/api/admin/contas').then(function(r){ return r.json(); }).then(function(d){
+          lista.textContent = '';
+          d.contas.forEach(function(c){ lista.appendChild(linha(c, c.id === d.eu)); });
+        }).catch(erro);
+      }
+      function linha(c, souEu){
+        var card = el('div', 'a-card ct-conta' + (c.active ? '' : ' ct-conta--off'));
+        var topo = el('div', 'ct-conta-topo');
+        var nome = el('input', 'ct-nome'); nome.value = c.name; nome.maxLength = 60; nome.setAttribute('aria-label', 'Nome');
+        var salvar = el('button', 'btn btn-gold btn-sm', 'Salvar nome'); salvar.type = 'button';
+        salvar.addEventListener('click', function(){ post('/api/admin/contas/' + c.id, 'PUT', { nome: nome.value }).then(function(){ msg(aviso, 'Nome salvo.', true); carregar(); }).catch(erro); });
+        topo.append(nome, salvar);
+        var info = el('p', 'a-help ct-info');
+        info.append(el('span', null, 'Usuário: '), el('code', null, c.username));
+        var tags = el('span', 'ct-tags');
+        tags.appendChild(el('span', 'ct-tag', c.role === 'admin' ? 'Administração' : 'Vendedora'));
+        if (souEu) tags.appendChild(el('span', 'ct-tag ct-tag--eu', 'você'));
+        if (!c.active) tags.appendChild(el('span', 'ct-tag ct-tag--off', 'desativada'));
+        else if (c.trocarSenha) tags.appendChild(el('span', 'ct-tag ct-tag--aviso', 'troca a senha no próximo acesso'));
+        info.appendChild(tags);
+        var acoes = el('div', 'ct-acoes');
+        if (!souEu) {
+          var tipo = el('select'); tipo.setAttribute('aria-label', 'Tipo');
+          [['vendedora', 'Vendedora'], ['admin', 'Administração']].forEach(function(o){ var op = el('option', null, o[1]); op.value = o[0]; tipo.appendChild(op); });
+          tipo.value = c.role;
+          tipo.addEventListener('change', function(){
+            if (!confirm('Mudar o tipo da conta de ' + c.name + '? A pessoa precisa entrar de novo.')) { tipo.value = c.role; return; }
+            post('/api/admin/contas/' + c.id, 'PUT', { papel: tipo.value }).then(carregar).catch(function(e){ tipo.value = c.role; erro(e); });
+          });
+          acoes.appendChild(tipo);
+          var nova = el('button', 'btn btn-ghost btn-sm', 'Gerar senha nova'); nova.type = 'button';
+          nova.addEventListener('click', function(){
+            if (!confirm('Gerar uma senha nova para ' + c.name + '? A senha atual deixa de funcionar.')) return;
+            post('/api/admin/contas/' + c.id + '/senha', 'POST').then(function(r){ mostrarSenha(r.username, r.senhaGerada); carregar(); }).catch(erro);
+          });
+          acoes.appendChild(nova);
+          var at = el('button', 'btn btn-sm ' + (c.active ? 'btn-danger' : 'btn-ghost'), c.active ? 'Desativar' : 'Reativar'); at.type = 'button';
+          at.addEventListener('click', function(){
+            if (c.active && !confirm('Desativar a conta de ' + c.name + '? Ela não consegue mais entrar (o histórico fica).')) return;
+            post('/api/admin/contas/' + c.id, 'PUT', { ativo: !c.active }).then(carregar).catch(erro);
+          });
+          acoes.appendChild(at);
+        } else {
+          acoes.appendChild(el('a', null, 'Trocar a minha senha')).href = '/admin/trocar-senha';
+        }
+        card.append(topo, info, acoes);
+        return card;
+      }
+      document.getElementById('ct-nova').addEventListener('submit', function(ev){
+        ev.preventDefault();
+        var f = ev.target;
+        post('/api/admin/contas', 'POST', { nome: f.nome.value, usuario: f.usuario.value, papel: f.papel.value, senha: f.senha.value, trocar: f.trocar.checked })
+          .then(function(r){
+            f.reset(); carregar();
+            if (r.senhaGerada) mostrarSenha(r.username, r.senhaGerada);
+            else msg(aviso, 'Conta criada: ' + r.name + ' (usuário ' + r.username + ').', true);
+          }).catch(erro);
+      });
+      carregar();
+    })();
+  </script>`;
+  return html(200, layout({ title: 'Contas', user, active: 'contas', body }));
 }
 
 /** Equipe (/admin/equipe): quem aparece em "Nossa equipe" e na escolha de

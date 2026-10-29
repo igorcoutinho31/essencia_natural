@@ -17,8 +17,9 @@ function sql(target, command, { json = false } = {}) {
 }
 
 function validUsername(u) {
-  if (!/^[A-Za-z0-9._-]{3,40}$/.test(u || '')) throw new Error('Usuário inválido: use 3–40 caracteres (letras, números, ponto, hífen ou underscore).');
-  return u;
+  const v = String(u || '').trim().toLowerCase(); // usuário sempre em minúsculas (igual ao /admin/contas)
+  if (!/^[a-z0-9._-]{3,40}$/.test(v)) throw new Error('Usuário inválido: use 3–40 caracteres (letras, números, ponto, hífen ou underscore).');
+  return v;
 }
 
 function mostrarSenha(username, senha) {

@@ -9,6 +9,7 @@ import * as olisek from '../services/olisek.js';
 import * as team from '../services/team.js';
 import * as ferramentas from '../services/ferramentas.js';
 import * as loja from '../services/loja.js';
+import * as contas from '../services/contas.js';
 import { exportDataJSON, readSnapshotJSON, trashUpload } from '../services/autoBackup.js';
 import { optimizeImage } from '../images.js';
 import { json, readJson, readBytes, HttpError } from '../http.js';
@@ -49,7 +50,9 @@ export async function login(ctx) {
     return json(429, { error: 'too_many_attempts', message: `Muitas tentativas erradas. Tente de novo em ${min} minuto${min === 1 ? '' : 's'}.` },
       { 'Retry-After': String(locked) });
   }
-  const user = await ctx.db.prepare('SELECT * FROM users WHERE username = ? AND active = 1').bind(username).first();
+  // Usuário sem diferenciar maiúsculas (o teclado do celular costuma pôr
+  // a primeira letra maiúscula).
+  const user = await ctx.db.prepare('SELECT * FROM users WHERE lower(username) = lower(?) AND active = 1').bind(username).first();
   const senhaCerta = user ? auth.verifyPassword(password, user.password_salt, user.password_hash) : auth.dummyVerify(password);
   if (!senhaCerta) {
     await auth.registerLoginFailure(ctx.db, ctx.clientIp, username);
@@ -379,6 +382,36 @@ export async function lojaSite(ctx, id) {
   if (r.erro === 'not_found') return json(404, { error: 'not_found' });
   if (r.erro === 'sem_foto') return json(400, { error: 'sem_foto', message: 'Coloque uma foto antes de mostrar no site.' });
   return json(200, r);
+}
+
+// ---- contas (/admin/contas) — só administração ----
+
+export async function contasLista(ctx) {
+  requireAdmin(ctx);
+  return json(200, { contas: await contas.listar(ctx.db), eu: ctx.user.id });
+}
+
+export async function contasCriar(ctx) {
+  requireAdmin(ctx);
+  const b = await readJson(ctx.request, 8 * 1024);
+  const r = await contas.criar(ctx.db, { usuario: b.usuario, nome: b.nome, papel: b.papel, senha: b.senha, trocar: b.trocar !== false });
+  return r.erro ? json(400, { error: 'invalid', message: r.erro }) : json(201, r);
+}
+
+export async function contasAlterar(ctx, id) {
+  requireAdmin(ctx);
+  const b = await readJson(ctx.request, 8 * 1024);
+  const r = await contas.alterar(ctx.db, Number(id), ctx.user.id, {
+    nome: b.nome, papel: b.papel === undefined ? undefined : String(b.papel), ativo: typeof b.ativo === 'boolean' ? b.ativo : undefined,
+  });
+  if (r.erro === 'not_found') return json(404, { error: 'not_found' });
+  return r.erro ? json(400, { error: 'invalid', message: r.erro }) : json(200, r);
+}
+
+export async function contasNovaSenha(ctx, id) {
+  requireAdmin(ctx);
+  const r = await contas.novaSenha(ctx.db, Number(id));
+  return r.erro ? json(404, { error: 'not_found' }) : json(200, r);
 }
 
 // ---- equipe (/admin/equipe) — só administração ----

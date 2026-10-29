@@ -146,6 +146,12 @@ async function adminRoutes(ctx) {
     if (pathname === '/api/admin/loja/opcoes' && method === 'GET') return adminApi.lojaOpcoes(ctx);
     m = pathname.match(/^\/api\/admin\/loja\/produtos\/(\d+)\/site$/);
     if (m && method === 'PUT') return adminApi.lojaSite(ctx, m[1]);
+    if (pathname === '/api/admin/contas' && method === 'GET') return adminApi.contasLista(ctx);
+    if (pathname === '/api/admin/contas' && method === 'POST') return adminApi.contasCriar(ctx);
+    m = pathname.match(/^\/api\/admin\/contas\/(\d+)$/);
+    if (m && method === 'PUT') return adminApi.contasAlterar(ctx, m[1]);
+    m = pathname.match(/^\/api\/admin\/contas\/(\d+)\/senha$/);
+    if (m && method === 'POST') return adminApi.contasNovaSenha(ctx, m[1]);
     if (pathname === '/api/admin/team' && method === 'POST') return adminApi.createTeamMember(ctx);
     if (pathname === '/api/admin/team/order' && method === 'PUT') return adminApi.reorderTeam(ctx);
     m = pathname.match(/^\/api\/admin\/team\/(\d+)$/);
@@ -215,6 +221,10 @@ async function adminRoutes(ctx) {
     });
   }
   if (pathname === '/admin/loja') return adminPages.lojaPage(user);
+  if (pathname === '/admin/contas') {
+    if (user.role !== 'admin') return redirect('/admin/loja');
+    return adminPages.contasPage(user);
+  }
   if (pathname === '/admin/ferramentas') {
     if (user.role !== 'admin') return redirect('/admin/produtos');
     return adminPages.ferramentasPage(user);

@@ -237,3 +237,27 @@ tr:hover td{background:#fbf9f2}
   .a-top .a-user > span{flex-basis:100%;font-size:12px}
   .lj-foto-grande{max-height:40dvh}
 }
+
+/* ---- contas (/admin/contas) ---- */
+.ct-form{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:760px){.ct-form{grid-template-columns:1fr 1fr}.ct-form .ct-check,.ct-form .btn{grid-column:1 / -1;justify-self:start}}
+.ct-form label{display:flex;flex-direction:column;gap:5px;margin:0}
+.ct-form input:not([type=checkbox]),.ct-form select,.ct-conta select,.ct-nome{height:44px;padding:0 12px;border:1px solid var(--a-line);border-radius:8px;font:inherit;font-size:16px;background:#fff;color:var(--a-ink)}
+.ct-check{flex-direction:row !important;align-items:center;gap:8px !important;font-size:14px;color:var(--a-ink)}
+.ct-check input{width:20px;height:20px}
+.ct-lista{display:grid;gap:12px;grid-template-columns:1fr;margin-top:16px}
+@media (min-width:900px){.ct-lista{grid-template-columns:1fr 1fr}}
+.ct-conta{margin:0;display:flex;flex-direction:column;gap:10px}
+.ct-conta--off{opacity:.65}
+.ct-conta-topo{display:flex;gap:8px;align-items:center}
+.ct-nome{flex:1;min-width:0;font-weight:600}
+.ct-info{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0}
+.ct-tags{display:inline-flex;flex-wrap:wrap;gap:6px}
+.ct-tag{font-size:12px;padding:2px 9px;border-radius:999px;background:#efe9dc;color:#5c5240}
+.ct-tag--eu{background:#1a140b;color:#fff}
+.ct-tag--off{background:#f6e2e2;color:var(--a-danger)}
+.ct-tag--aviso{background:#fbf1d9;color:#8a6516}
+.ct-acoes{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ct-senha{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.ct-senha-linha{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:15px}
+.ct-senha code{font-size:17px;padding:2px 8px;border-radius:6px;background:#fff;color:var(--a-ink);user-select:all}
