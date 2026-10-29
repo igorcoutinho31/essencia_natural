@@ -340,7 +340,8 @@ body.nav-aberto{overflow:hidden}
 .marcas-faixa::before,.marcas-faixa::after{content:"";position:absolute;top:0;bottom:0;width:8%;z-index:1;pointer-events:none}
 .marcas-faixa::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
 .marcas-faixa::after{right:0;background:linear-gradient(270deg,var(--bg),transparent)}
-.marquee{display:flex;align-items:center;gap:clamp(36px,7vw,72px);width:max-content;animation:marquee 50s linear infinite;will-change:transform}
+.marquee{display:flex;align-items:center;gap:clamp(36px,7vw,72px);width:max-content;will-change:transform}
+.marquee.anda{animation:marquee 50s linear infinite}
 /* Pausa para clicar: com o mouse em cima (só onde existe mouse — no
    celular o "hover" fica grudado depois de um toque e a faixa parava), com
    o dedo apertando e na navegação por teclado. */
@@ -677,7 +678,7 @@ dialog.bag:not(.vazia) .bag-vazia{display:none}
   .aurora,.selo-anel::before,.selo-brilho::after{animation:none !important}
   .hero-particulas{display:none}
   .js .hero-title .linha > span,.js .hero-anim{transform:none;opacity:1}
-  .marquee{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
+  .marquee,.marquee.anda{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
 }
 
 /* ---- convite para instalar o app (assets/js/app.js) ---- */
