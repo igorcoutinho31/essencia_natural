@@ -67,6 +67,15 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
 
 ## Telas
 
+- `/admin/contas` (só administração) — **quem entra no painel**, sem
+  terminal: criar conta (nome, usuário, tipo Vendedora/Administração e
+  senha — digitada ou criada pelo painel, mostrada uma vez), trocar o nome
+  (o usuário de entrar não muda), mudar o tipo, gerar senha nova e
+  desativar/reativar. O usuário fica sempre em minúsculas e o login não
+  diferencia maiúsculas; os nomes ganham iniciais maiúsculas ("vendedora1"
+  vira "Vendedora 1"). Ninguém desativa ou rebaixa a própria conta, e
+  sempre sobra uma administração ativa. Código: `src/services/contas.js`.
+
 - `/admin/loja` — **painel da loja**, a tela simples do dia a dia (é onde a
   vendedora cai ao entrar; a administração também tem o atalho "Loja").
   Funciona no celular, tablet e computador (a grade se ajusta). Procurar
