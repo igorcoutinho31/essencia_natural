@@ -34,18 +34,25 @@ também, passaram a ser só de admin/gerente (o zero de estoque de um produto
 recém-cadastrado não é uma afirmação de ninguém, e decidir isso é uma
 responsabilidade da administração, não da venda do dia a dia).
 
+**Atualizado em 29/10/2026 (painel da loja):** a pedido da loja, a
+vendedora passou a **cadastrar perfume novo** (nome, marca, volume e tipo)
+e a **mostrar/tirar do site** pela tela simples `/admin/loja` — só com
+foto: perfume sem foto não vai para o site. Estoque, OliSek, edição
+completa do cadastro e ações em lote continuam só da administração.
+
 | Pode fazer...                                    | Vendedora | Admin/Gerente |
 |---------------------------------------------------|:---------:|:--------------:|
 | Ver e buscar produtos, usar as abas de filtro (Sem preço, Sem imagem, etc.) | ✅ | ✅ |
 | Editar preço e preço "de" (promoção)                | ✅         | ✅              |
 | Marcar/desmarcar como destaque                      | ✅         | ✅              |
 | Trocar as fotos (subir, reordenar, definir principal, excluir) | ✅ | ✅        |
-| Publicar/ocultar um produto no site (`active`)      | ❌         | ✅              |
+| Mostrar/tirar do site (`active`) — pelo `/admin/loja`, só com foto | ✅ | ✅ |
 | Movimentar estoque (entrada, saída, ajuste) e ver o histórico | ❌ | ✅     |
 | Tela `/admin/estoque`, CSV e backups                  | ❌         | ✅              |
 | Editar nome, marca, categoria, notas, descrição      | ❌         | ✅              |
 | Editar o vínculo OliSek (ID, nome, status)           | ❌         | ✅              |
-| Criar produto novo                                  | ❌         | ✅              |
+| Cadastro rápido (nome, marca, volume, tipo) pelo `/admin/loja` | ✅ | ✅ |
+| Criar produto com todos os campos (`/admin/produtos/novo`) | ❌ | ✅ |
 | Despublicar em definitivo / apagar                  | ❌         | ✅ (soft-delete — histórico fica) |
 | Ver o histórico completo de alterações de preço      | ❌         | ✅              |
 | Importar relatório da OliSek / confirmar vínculo     | ❌         | ✅              |
@@ -59,6 +66,16 @@ recusada pelo servidor com `403` (a vendedora nem vê os campos de
 estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
 
 ## Telas
+
+- `/admin/loja` — **painel da loja**, a tela simples do dia a dia (é onde a
+  vendedora cai ao entrar; a administração também tem o atalho "Loja").
+  Funciona no celular, tablet e computador (a grade se ajusta). Procurar
+  perfume por nome ou marca; filtros Todos / No site / Fora do site /
+  ★ Destaques / Sem foto; tocar no perfume abre a ficha: tirar ou trocar a
+  foto (direto da câmera), escolher a principal, apagar foto, ligar
+  "Aparece no site" e "★ Destaque", e salvar o preço. "＋ Cadastrar
+  perfume" faz o cadastro rápido com foto e já pode mostrar no site.
+  Código: `src/services/loja.js` e `lojaPage` em `src/routes/adminPages.js`.
 
 - `/admin/login` — usuário e senha.
 - `/admin/trocar-senha` — obrigatória no primeiro acesso; disponível a

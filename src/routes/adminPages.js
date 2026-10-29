@@ -48,10 +48,11 @@ const JS_AJUDA = `
 function layout({ title, user, active, body }) {
   const nav = user ? `
     <header class="a-top">
-      <a class="a-brand" href="/admin/produtos">Essência Natural · Admin</a>
+      <a class="a-brand" href="/admin">Essência Natural · Admin</a>
       <div class="a-user">
         <span>${escapeHTML(user.name)} · ${user.role === 'admin' ? 'Administração' : 'Vendedora'}</span>
-        <a href="/admin/produtos"${active === 'produtos' ? ' class="a-nav-ativo"' : ''}>Produtos</a>
+        <a href="/admin/loja"${active === 'loja' ? ' class="a-nav-ativo"' : ''}>Loja</a>
+        ${user.role === 'admin' ? `<a href="/admin/produtos"${active === 'produtos' ? ' class="a-nav-ativo"' : ''}>Produtos</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/fotos"${active === 'fotos' ? ' class="a-nav-ativo"' : ''}>Fotos</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/equipe"${active === 'equipe' ? ' class="a-nav-ativo"' : ''}>Equipe</a>` : ''}
         ${user.role === 'admin' ? `<a href="/admin/ferramentas"${active === 'ferramentas' ? ' class="a-nav-ativo"' : ''}>Ferramentas</a>` : ''}
@@ -112,7 +113,7 @@ export function loginPage({ error } = {}) {
       }).then(function(r){ return r.json().then(function(d){ return { ok:r.ok, d:d }; }); })
         .then(function(res){
           if (!res.ok) { location.href = '/admin/login?erro=' + encodeURIComponent(res.d.message || 'Não foi possível entrar.'); return; }
-          location.href = res.d.user.mustChangePassword ? '/admin/trocar-senha' : '/admin/produtos';
+          location.href = res.d.user.mustChangePassword ? '/admin/trocar-senha' : '/admin';
         })
         .catch(function(){ location.href = '/admin/login?erro=Erro de conexão. Tente novamente.'; });
     });
@@ -145,7 +146,7 @@ export function changePasswordPage(user) {
         .then(function(res){
           var msg = document.getElementById('a-msg');
           if (!res.ok) { msg.innerHTML = ''; var d = document.createElement('div'); d.className = 'a-msg a-msg-err'; d.textContent = res.d.message || 'Erro.'; msg.appendChild(d); return; }
-          location.href = '/admin/produtos';
+          location.href = '/admin';
         });
     });
   </script>`;
@@ -598,6 +599,247 @@ export function ferramentasPage(user) {
     }));
   </script>`;
   return html(200, layout({ title: 'Ferramentas', user, active: 'ferramentas', body }));
+}
+
+/** Painel da loja (/admin/loja): a tela simples do dia a dia — procurar,
+ *  foto, destaque, preço, mostrar/tirar do site e cadastrar perfume novo.
+ *  Feita para celular, tablet e computador (a grade se ajusta). */
+export function lojaPage(user) {
+  const isAdmin = user.role === 'admin';
+  const body = `
+  <div class="a-wrap lj">
+    <div class="lj-topo">
+      <div>
+        <h1>Olá, ${escapeHTML(String(user.name).split(' ')[0])}</h1>
+        <p class="a-sub">Procure um perfume para trocar a foto, marcar destaque, colocar preço ou tirar do site.</p>
+      </div>
+      <button class="btn btn-gold lj-novo-btn" type="button" id="lj-novo-abrir">＋ Cadastrar perfume</button>
+    </div>
+    <div class="lj-busca">
+      <input type="search" id="lj-q" placeholder="Procurar perfume ou marca" autocomplete="off" enterkeyhint="search" aria-label="Procurar perfume ou marca">
+    </div>
+    <div class="lj-filtros" role="group" aria-label="Filtro">
+      <button type="button" class="lj-chip ativo" data-filtro="todos">Todos</button>
+      <button type="button" class="lj-chip" data-filtro="site">No site</button>
+      <button type="button" class="lj-chip" data-filtro="fora">Fora do site</button>
+      <button type="button" class="lj-chip" data-filtro="destaques">★ Destaques</button>
+      <button type="button" class="lj-chip" data-filtro="semfoto">Sem foto</button>
+    </div>
+    <div id="lj-aviso" aria-live="polite"></div>
+    <p class="a-help" id="lj-total"></p>
+    <ul class="lj-lista" id="lj-lista"></ul>
+    <button class="btn btn-ghost lj-mais" type="button" id="lj-mais" hidden>Ver mais</button>
+  </div>
+
+  <dialog class="lj-dialogo" id="lj-ficha" aria-label="Perfume">
+    <div class="lj-ficha" id="lj-ficha-corpo"></div>
+  </dialog>
+
+  <dialog class="lj-dialogo" id="lj-novo" aria-label="Cadastrar perfume">
+    <form class="lj-ficha lj-form" id="lj-novo-form" method="dialog">
+      <div class="lj-ficha-cab"><h2>Cadastrar perfume</h2><button type="button" class="lj-fechar" data-fechar aria-label="Fechar">×</button></div>
+      <label class="lj-foto-escolher" id="lj-novo-foto-rot">
+        <span class="lj-foto-prev" id="lj-novo-prev">📷<small>Tirar ou escolher foto</small></span>
+        <input type="file" accept="image/jpeg,image/png,image/webp" id="lj-novo-foto" hidden>
+      </label>
+      <label>Nome do perfume<input name="name" required maxlength="200" placeholder="Ex.: Khamrah"></label>
+      <label>Marca<select name="brandId" id="lj-novo-marca"><option value="">— sem marca —</option></select></label>
+      <div class="lj-dupla">
+        <label>Volume<input name="volume" maxlength="40" list="lj-volumes" placeholder="Ex.: 100 ml"></label>
+        <label>Tipo<select name="category" id="lj-novo-cat"></select></label>
+      </div>
+      <datalist id="lj-volumes"><option value="100 ml"><option value="90 ml"><option value="80 ml"><option value="50 ml"><option value="30 ml"><option value="200 ml"><option value="250 ml"></datalist>
+      <label class="lj-check"><input type="checkbox" name="mostrar" checked> Mostrar no site agora (precisa de foto)</label>
+      <button class="btn btn-gold" type="submit">Cadastrar</button>
+      <p class="a-help" id="lj-novo-msg"></p>
+    </form>
+  </dialog>
+
+  <script>
+    (function(){
+      ${JS_AJUDA}
+      var IS_ADMIN = ${isAdmin ? 'true' : 'false'};
+      var est = { q: '', filtro: 'todos', pagina: 1 };
+      var lista = document.getElementById('lj-lista'), total = document.getElementById('lj-total');
+      var mais = document.getElementById('lj-mais'), aviso = document.getElementById('lj-aviso');
+      var ficha = document.getElementById('lj-ficha'), fichaCorpo = document.getElementById('lj-ficha-corpo');
+      var mudou = false;
+      function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+      function preco(v){ return v == null ? 'Consulte' : 'R$ ' + Number(v).toFixed(2).replace('.', ','); }
+      function erro(e){ msg(aviso, (e && e.message) || 'Não deu certo. Tente de novo.', false); }
+
+      function item(p){
+        var li = el('li');
+        var b = el('button', 'lj-item' + (p.active ? '' : ' lj-item--fora')); b.type = 'button';
+        var f = el('span', 'lj-thumb');
+        if (p.image) { var im = new Image(); im.src = p.image; im.alt = ''; im.loading = 'lazy'; f.appendChild(im); } else f.appendChild(el('small', null, 'sem foto'));
+        var t = el('span', 'lj-item-txt');
+        t.appendChild(el('b', null, p.name));
+        var sub = [p.brand, p.volume].filter(Boolean).join(' · '); if (sub) t.appendChild(el('span', 'lj-sub', sub));
+        var tags = el('span', 'lj-tags');
+        tags.appendChild(el('span', 'lj-tag ' + (p.active ? 'lj-tag--site' : 'lj-tag--fora'), p.active ? 'No site' : 'Fora do site'));
+        if (p.featured) tags.appendChild(el('span', 'lj-tag lj-tag--estrela', '★ Destaque'));
+        tags.appendChild(el('span', 'lj-preco', preco(p.price)));
+        t.appendChild(tags);
+        b.append(f, t);
+        b.addEventListener('click', function(){ abrirFicha(p.id); });
+        li.appendChild(b); return li;
+      }
+      function carregar(somar){
+        if (!somar) est.pagina = 1;
+        var qs = new URLSearchParams({ q: est.q, filtro: est.filtro, pagina: est.pagina });
+        return fetch('/api/admin/loja/produtos?' + qs).then(function(r){ if (!r.ok) throw new Error('Não foi possível carregar.'); return r.json(); }).then(function(d){
+          if (!somar) lista.textContent = '';
+          d.itens.forEach(function(p){ lista.appendChild(item(p)); });
+          total.textContent = d.total ? d.total + ' perfume(s)' : 'Nenhum perfume encontrado.';
+          mais.hidden = d.pagina * d.porPagina >= d.total;
+        }).catch(erro);
+      }
+      var espera;
+      document.getElementById('lj-q').addEventListener('input', function(ev){
+        clearTimeout(espera); espera = setTimeout(function(){ est.q = ev.target.value.trim(); carregar(); }, 300);
+      });
+      document.querySelectorAll('.lj-chip').forEach(function(c){
+        c.addEventListener('click', function(){
+          document.querySelectorAll('.lj-chip').forEach(function(x){ x.classList.toggle('ativo', x === c); });
+          est.filtro = c.dataset.filtro; carregar();
+        });
+      });
+      mais.addEventListener('click', function(){ est.pagina += 1; carregar(true); });
+
+      // ---- ficha do perfume ----
+      function interruptor(rotulo, ligado, aoMudar){
+        var l = el('label', 'lj-switch');
+        var i = el('input'); i.type = 'checkbox'; i.checked = ligado;
+        l.append(i, el('span', 'lj-switch-ui'), el('span', null, rotulo));
+        i.addEventListener('change', function(){ i.disabled = true; aoMudar(i.checked).catch(function(e){ i.checked = !i.checked; erroFicha(e); }).then(function(){ i.disabled = false; }); });
+        return l;
+      }
+      var fichaMsg;
+      function erroFicha(e){ if (fichaMsg) msg(fichaMsg, (e && e.message) || 'Não deu certo. Tente de novo.', false); }
+      function abrirFicha(id){
+        fetch('/api/admin/products/' + id).then(function(r){ if (!r.ok) throw new Error('Não foi possível abrir.'); return r.json(); })
+          .then(function(d){ montarFicha(d.product); if (!ficha.open) ficha.showModal(); }).catch(erro);
+      }
+      function montarFicha(p){
+        fichaCorpo.textContent = '';
+        var cab = el('div', 'lj-ficha-cab');
+        var tit = el('div'); tit.appendChild(el('h2', null, p.name));
+        var sub = [p.brand, p.volume].filter(Boolean).join(' · '); if (sub) tit.appendChild(el('p', 'lj-sub', sub));
+        var x = el('button', 'lj-fechar', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar'); x.addEventListener('click', function(){ ficha.close(); });
+        cab.append(tit, x); fichaCorpo.appendChild(cab);
+        fichaMsg = el('div'); fichaCorpo.appendChild(fichaMsg);
+
+        var grade = el('div', 'lj-ficha-grade');
+        // fotos
+        var colFoto = el('div', 'lj-ficha-fotos');
+        var imgs = p.images || [];
+        var principal = imgs.filter(function(i){ return i.isMain; })[0] || imgs[0];
+        var grande = el('div', 'lj-foto-grande');
+        if (principal) { var g = new Image(); g.src = principal.path; g.alt = p.name; grande.appendChild(g); } else grande.appendChild(el('span', 'lj-sem-foto', 'Sem foto'));
+        colFoto.appendChild(grande);
+        if (imgs.length > 1) {
+          var tira = el('div', 'lj-tira');
+          imgs.forEach(function(i){
+            var c = el('div', 'lj-mini' + (principal && i.id === principal.id ? ' ativo' : ''));
+            var im = new Image(); im.src = i.path; im.alt = ''; c.appendChild(im);
+            if (!(principal && i.id === principal.id)) {
+              var usar = el('button', 'lj-mini-btn', 'Principal'); usar.type = 'button';
+              usar.addEventListener('click', function(){ post('/api/admin/products/' + p.id + '/images/' + i.id + '/main', 'PUT').then(function(){ mudou = true; abrirFicha(p.id); }).catch(erroFicha); });
+              c.appendChild(usar);
+            }
+            var apagar = el('button', 'lj-mini-del', '🗑'); apagar.type = 'button'; apagar.setAttribute('aria-label', 'Apagar foto');
+            apagar.addEventListener('click', function(){ if (!confirm('Apagar esta foto?')) return; post('/api/admin/products/' + p.id + '/images/' + i.id, 'DELETE').then(function(){ mudou = true; abrirFicha(p.id); }).catch(erroFicha); });
+            c.appendChild(apagar); tira.appendChild(c);
+          });
+          colFoto.appendChild(tira);
+        }
+        var rot = el('label', 'btn btn-ghost lj-foto-btn', principal ? '📷 Trocar foto' : '📷 Colocar foto');
+        var inp = el('input'); inp.type = 'file'; inp.accept = 'image/jpeg,image/png,image/webp'; inp.hidden = true; rot.appendChild(inp);
+        inp.addEventListener('change', function(){
+          if (!inp.files[0]) return;
+          msg(fichaMsg, 'Enviando foto…', true);
+          prepararFoto(inp.files[0]).then(function(dataUrl){ return post('/api/admin/products/' + p.id + '/images', 'POST', { dataUrl: dataUrl, isMain: true }); })
+            .then(function(){ mudou = true; abrirFicha(p.id); }).catch(erroFicha);
+        });
+        colFoto.appendChild(rot);
+        grade.appendChild(colFoto);
+
+        // ações
+        var col = el('div', 'lj-ficha-acoes');
+        col.appendChild(interruptor('Aparece no site', !!p.active, function(v){
+          return post('/api/admin/loja/produtos/' + p.id + '/site', 'PUT', { ativo: v }).then(function(){ mudou = true; p.active = v; verSite.hidden = !v; });
+        }));
+        col.appendChild(interruptor('★ Destaque na página inicial', !!p.featured, function(v){
+          return post('/api/admin/products/' + p.id + '/featured', 'PUT', { featured: v }).then(function(){ mudou = true; });
+        }));
+        var pr = el('form', 'lj-preco-form');
+        var rotP = el('label', null, 'Preço (deixe em branco para "Consulte")');
+        var campo = el('input'); campo.inputMode = 'decimal'; campo.placeholder = 'Ex.: 199,90';
+        campo.value = p.price == null ? '' : Number(p.price).toFixed(2).replace('.', ',');
+        rotP.appendChild(campo);
+        var salvar = el('button', 'btn btn-gold', 'Salvar preço'); salvar.type = 'submit';
+        pr.append(rotP, salvar);
+        pr.addEventListener('submit', function(ev){
+          ev.preventDefault();
+          var v = campo.value.trim().replace(/\\./g, '').replace(',', '.');
+          if (v && !(Number(v) >= 0)) { msg(fichaMsg, 'Preço inválido.', false); return; }
+          post('/api/admin/products/' + p.id + '/price', 'PUT', { price: v === '' ? null : Number(v), comparePrice: p.comparePrice == null ? null : p.comparePrice })
+            .then(function(){ mudou = true; msg(fichaMsg, 'Preço salvo.', true); }).catch(erroFicha);
+        });
+        col.appendChild(pr);
+        var links = el('div', 'lj-links');
+        var verSite = el('a', null, 'Ver no site ↗'); verSite.href = '/produto/' + p.slug; verSite.target = '_blank'; verSite.rel = 'noopener'; verSite.hidden = !p.active;
+        links.appendChild(verSite);
+        if (IS_ADMIN) { var comp = el('a', null, 'Cadastro completo'); comp.href = '/admin/produtos/' + p.id; links.appendChild(comp); }
+        col.appendChild(links);
+        grade.appendChild(col);
+        fichaCorpo.appendChild(grade);
+      }
+      ficha.addEventListener('close', function(){ if (mudou) { mudou = false; carregar(); } });
+      ficha.addEventListener('click', function(ev){ if (ev.target === ficha) ficha.close(); });
+
+      // ---- cadastro rápido ----
+      var novo = document.getElementById('lj-novo'), form = document.getElementById('lj-novo-form');
+      var fotoIn = document.getElementById('lj-novo-foto'), prev = document.getElementById('lj-novo-prev'), novoMsg = document.getElementById('lj-novo-msg');
+      var opcoesProntas = false;
+      document.getElementById('lj-novo-abrir').addEventListener('click', function(){
+        form.reset(); fotoIn.value = ''; prev.textContent = '📷'; prev.appendChild(el('small', null, 'Tirar ou escolher foto')); novoMsg.textContent = '';
+        if (!opcoesProntas) {
+          fetch('/api/admin/loja/opcoes').then(function(r){ return r.json(); }).then(function(d){
+            var sm = document.getElementById('lj-novo-marca'), sc = document.getElementById('lj-novo-cat');
+            d.marcas.forEach(function(m){ var o = el('option', null, m.name); o.value = m.id; sm.appendChild(o); });
+            d.categorias.forEach(function(c){ var o = el('option', null, c); o.value = c; sc.appendChild(o); });
+            opcoesProntas = true;
+          });
+        }
+        novo.showModal();
+      });
+      novo.querySelector('[data-fechar]').addEventListener('click', function(){ novo.close(); });
+      novo.addEventListener('click', function(ev){ if (ev.target === novo) novo.close(); });
+      fotoIn.addEventListener('change', function(){
+        var f = fotoIn.files[0]; if (!f) return;
+        prev.textContent = ''; var im = new Image(); im.src = URL.createObjectURL(f); im.alt = ''; prev.appendChild(im);
+      });
+      form.addEventListener('submit', function(ev){
+        ev.preventDefault();
+        var dados = { name: form.name.value, brandId: form.brandId.value || null, volume: form.volume.value, category: form.category.value };
+        var foto = fotoIn.files[0], mostrar = form.mostrar.checked;
+        var btn = form.querySelector('button[type=submit]'); btn.disabled = true; novoMsg.textContent = 'Cadastrando…';
+        post('/api/admin/loja/produtos', 'POST', dados).then(function(r){
+          var id = r.id;
+          var passo = Promise.resolve();
+          if (foto) passo = passo.then(function(){ novoMsg.textContent = 'Enviando foto…'; return prepararFoto(foto); })
+            .then(function(dataUrl){ return post('/api/admin/products/' + id + '/images', 'POST', { dataUrl: dataUrl, isMain: true }); });
+          if (foto && mostrar) passo = passo.then(function(){ return post('/api/admin/loja/produtos/' + id + '/site', 'PUT', { ativo: true }); });
+          return passo.then(function(){ novo.close(); carregar(); abrirFicha(id); msg(aviso, foto && mostrar ? 'Perfume cadastrado e já aparece no site.' : 'Perfume cadastrado. Ele aparece no site depois de ter foto e de ligar "Aparece no site".', true); });
+        }).catch(function(e){ novoMsg.textContent = (e && e.message) || 'Não deu certo. Tente de novo.'; }).then(function(){ btn.disabled = false; });
+      });
+
+      carregar();
+    })();
+  </script>`;
+  return html(200, layout({ title: 'Loja', user, active: 'loja', body }));
 }
 
 /** Equipe (/admin/equipe): quem aparece em "Nossa equipe" e na escolha de

@@ -141,6 +141,11 @@ async function adminRoutes(ctx) {
     if (pathname === '/api/admin/ferramentas/hd' && method === 'GET') return adminApi.ferramentasHdLista(ctx);
     if (pathname === '/api/admin/ferramentas/hd/original' && method === 'GET') return adminApi.ferramentasHdOriginal(ctx);
     if (pathname === '/api/admin/ferramentas/hd' && method === 'POST') return adminApi.ferramentasHdGravar(ctx);
+    if (pathname === '/api/admin/loja/produtos' && method === 'GET') return adminApi.lojaBusca(ctx);
+    if (pathname === '/api/admin/loja/produtos' && method === 'POST') return adminApi.lojaCriar(ctx);
+    if (pathname === '/api/admin/loja/opcoes' && method === 'GET') return adminApi.lojaOpcoes(ctx);
+    m = pathname.match(/^\/api\/admin\/loja\/produtos\/(\d+)\/site$/);
+    if (m && method === 'PUT') return adminApi.lojaSite(ctx, m[1]);
     if (pathname === '/api/admin/team' && method === 'POST') return adminApi.createTeamMember(ctx);
     if (pathname === '/api/admin/team/order' && method === 'PUT') return adminApi.reorderTeam(ctx);
     m = pathname.match(/^\/api\/admin\/team\/(\d+)$/);
@@ -179,9 +184,12 @@ async function adminRoutes(ctx) {
   }
 
   // ---- páginas do admin (HTML) ----
-  if (pathname === '/admin' || pathname === '/admin/') return redirect('/admin/produtos');
+  // Início do painel: vendedora cai na tela simples da loja; administração
+  // na lista completa de produtos.
+  const inicio = ctx.user && ctx.user.role === 'admin' ? '/admin/produtos' : '/admin/loja';
+  if (pathname === '/admin' || pathname === '/admin/') return redirect(ctx.user ? inicio : '/admin/login');
   if (pathname === '/admin/login' && method === 'GET') {
-    if (ctx.user) return redirect('/admin/produtos');
+    if (ctx.user) return redirect(inicio);
     return adminPages.loginPage({ error: (ctx.url.searchParams.get('erro') || '').slice(0, 200) || undefined });
   }
   if (!pathname.startsWith('/admin/') || method !== 'GET') return null;
@@ -206,6 +214,7 @@ async function adminRoutes(ctx) {
       brands: await catalog.listBrandsAdmin(db), categories: await catalog.listCategories(db),
     });
   }
+  if (pathname === '/admin/loja') return adminPages.lojaPage(user);
   if (pathname === '/admin/ferramentas') {
     if (user.role !== 'admin') return redirect('/admin/produtos');
     return adminPages.ferramentasPage(user);

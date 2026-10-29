@@ -153,3 +153,87 @@ tr:hover td{background:#fbf9f2}
 .a-ferr-prog{width:100%;height:10px;accent-color:var(--a-gold)}
 .a-ferr-hd{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px}
 .a-ferr-hd img{width:100%;aspect-ratio:4/5;object-fit:contain;background:#f4efe7;border-radius:6px;padding:4px}
+
+/* ---- painel da loja (/admin/loja): celular, tablet e computador ---- */
+.lj{max-width:1180px}
+.lj-topo{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;margin-bottom:14px}
+.lj-topo h1{margin-bottom:4px}
+.lj-topo .a-sub{margin:0}
+.lj-novo-btn{min-height:48px;padding:0 22px;font-size:16px}
+.lj-busca input{width:100%;height:52px;padding:0 18px;border:1px solid var(--a-line);border-radius:999px;background:var(--a-card);font:inherit;font-size:17px}
+.lj-busca input:focus{outline:2px solid var(--a-gold-dim);outline-offset:1px}
+.lj-filtros{display:flex;gap:8px;overflow-x:auto;padding:12px 0 6px;scrollbar-width:none}
+.lj-filtros::-webkit-scrollbar{display:none}
+.lj-chip{flex:none;min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--a-line);background:var(--a-card);color:var(--a-ink);font:inherit;font-size:15px;cursor:pointer}
+.lj-chip.ativo{background:#1a140b;border-color:#1a140b;color:#fff}
+.lj-lista{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:1fr}
+@media (min-width:700px){.lj-lista{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1100px){.lj-lista{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.lj-item{width:100%;display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center;padding:10px;border:1px solid var(--a-line);border-radius:14px;background:var(--a-card);text-align:left;font:inherit;color:inherit;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.lj-item:hover{border-color:var(--a-gold-dim);box-shadow:0 6px 18px -12px rgba(0,0,0,.35)}
+.lj-item--fora .lj-thumb{opacity:.6}
+.lj-thumb{width:76px;height:94px;border-radius:10px;overflow:hidden;background:#f3eee4;display:grid;place-items:center;color:#9a8f78;font-size:12px}
+.lj-thumb img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.lj-item-txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.lj-item-txt b{font-size:16px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.lj-sub{color:#7a6f5a;font-size:14px;margin:0}
+.lj-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}
+.lj-tag{font-size:12px;padding:3px 9px;border-radius:999px;background:#efe9dc;color:#5c5240}
+.lj-tag--site{background:#e4f3e9;color:var(--a-ok)}
+.lj-tag--fora{background:#f1ece2;color:#8a7f6a}
+.lj-tag--estrela{background:#fbf1d9;color:#8a6516}
+.lj-preco{font-size:13px;color:#5c5240;margin-left:auto}
+.lj-mais{display:block;margin:16px auto 0;min-height:46px}
+
+.lj-dialogo{border:0;padding:0;border-radius:18px;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);background:var(--a-card);color:var(--a-ink);box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+.lj-dialogo::backdrop{background:rgba(20,15,8,.55)}
+#lj-ficha{width:min(920px,calc(100vw - 24px))}
+@media (max-width:600px){
+  .lj-dialogo,#lj-ficha{width:100vw;max-width:100vw;max-height:94dvh;margin:auto 0 0;border-radius:18px 18px 0 0}
+}
+.lj-ficha{padding:18px 18px 22px;display:flex;flex-direction:column;gap:12px}
+.lj-ficha-cab{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.lj-ficha-cab h2{margin:0;font-size:22px;line-height:1.2}
+.lj-fechar{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--a-line);background:none;font-size:24px;line-height:1;cursor:pointer;color:inherit}
+.lj-ficha-grade{display:grid;gap:18px;grid-template-columns:1fr}
+@media (min-width:760px){.lj-ficha-grade{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
+.lj-ficha-fotos{display:flex;flex-direction:column;gap:10px}
+.lj-foto-grande{aspect-ratio:4/5;max-height:52dvh;border-radius:14px;overflow:hidden;background:radial-gradient(120% 90% at 50% 40%,#fbf8f3,#efe8dc);display:grid;place-items:center}
+.lj-foto-grande img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.lj-sem-foto{color:#9a8f78}
+.lj-foto-btn{min-height:48px;justify-content:center;cursor:pointer;font-size:16px}
+.lj-tira{display:flex;gap:8px;overflow-x:auto}
+.lj-mini{position:relative;flex:none;width:76px;border:2px solid transparent;border-radius:10px;overflow:hidden;background:#f3eee4}
+.lj-mini.ativo{border-color:var(--a-gold)}
+.lj-mini img{width:100%;height:92px;object-fit:contain;display:block;mix-blend-mode:multiply}
+.lj-mini-btn{width:100%;border:0;background:#1a140b;color:#fff;font:inherit;font-size:11px;padding:4px 0;cursor:pointer}
+.lj-mini-del{position:absolute;top:3px;right:3px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.9);cursor:pointer;font-size:13px}
+.lj-ficha-acoes{display:flex;flex-direction:column;gap:14px}
+.lj-switch{display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;border:1px solid var(--a-line);border-radius:12px;cursor:pointer;font-size:16px}
+.lj-switch input{position:absolute;opacity:0;width:1px;height:1px}
+.lj-switch-ui{flex:none;width:48px;height:28px;border-radius:999px;background:#d9d1bf;position:relative;transition:background-color .2s}
+.lj-switch-ui::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.lj-switch input:checked + .lj-switch-ui{background:var(--a-ok)}
+.lj-switch input:checked + .lj-switch-ui::after{transform:translateX(20px)}
+.lj-switch input:focus-visible + .lj-switch-ui{outline:2px solid var(--a-gold-dim);outline-offset:2px}
+.lj-preco-form{display:flex;flex-direction:column;gap:8px}
+.lj-preco-form label,.lj-form label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:#5c5240}
+.lj-preco-form input,.lj-form input:not([type=checkbox]),.lj-form select{height:48px;padding:0 14px;border:1px solid var(--a-line);border-radius:10px;font:inherit;font-size:17px;background:#fff;color:var(--a-ink)}
+.lj-preco-form .btn,.lj-form .btn{min-height:48px;font-size:16px}
+.lj-links{display:flex;gap:18px;flex-wrap:wrap;font-size:15px}
+.lj-dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lj-check{flex-direction:row !important;align-items:center;gap:10px !important;font-size:15px !important;color:var(--a-ink) !important}
+.lj-check input{width:22px;height:22px}
+.lj-foto-escolher{cursor:pointer;align-self:center}
+.lj-foto-prev{width:150px;height:186px;border:2px dashed var(--a-line);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:34px;background:#faf7f0;overflow:hidden}
+.lj-foto-prev small{font-size:13px;color:#7a6f5a;text-align:center;padding:0 8px}
+.lj-foto-prev img{width:100%;height:100%;object-fit:cover}
+
+/* topo do painel compacto no celular */
+@media (max-width:600px){
+  .a-top{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 16px}
+  .a-top .a-brand{font-size:15px;white-space:nowrap}
+  .a-top .a-user{gap:6px 14px;font-size:14px}
+  .a-top .a-user > span{flex-basis:100%;font-size:12px}
+  .lj-foto-grande{max-height:40dvh}
+}
