@@ -132,6 +132,9 @@ async function adminRoutes(ctx) {
     if (pathname === '/api/admin/stock/movements' && method === 'GET') return adminApi.listMovements(ctx);
     if (pathname === '/api/admin/stock/olisek-sync' && method === 'POST') return adminApi.syncAllOlisek(ctx);
     if (pathname === '/api/admin/backup' && method === 'GET') return adminApi.backup(ctx);
+    if (pathname === '/api/admin/ferramentas/produtos' && method === 'GET') return adminApi.ferramentasLista(ctx);
+    if (pathname === '/api/admin/ferramentas/nomes' && method === 'POST') return adminApi.ferramentasNomes(ctx);
+    if (pathname === '/api/admin/ferramentas/fotos' && method === 'POST') return adminApi.ferramentasFotos(ctx);
     if (pathname === '/api/admin/team' && method === 'POST') return adminApi.createTeamMember(ctx);
     if (pathname === '/api/admin/team/order' && method === 'PUT') return adminApi.reorderTeam(ctx);
     m = pathname.match(/^\/api\/admin\/team\/(\d+)$/);
@@ -196,6 +199,10 @@ async function adminRoutes(ctx) {
       ...pagina, q, filtroAtivo, brandId, category, source,
       brands: await catalog.listBrandsAdmin(db), categories: await catalog.listCategories(db),
     });
+  }
+  if (pathname === '/admin/ferramentas') {
+    if (user.role !== 'admin') return redirect('/admin/produtos');
+    return adminPages.ferramentasPage(user);
   }
   if (pathname === '/admin/equipe') {
     if (user.role !== 'admin') return redirect('/admin/produtos');

@@ -79,6 +79,13 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
   grade, 120 por página, para bater o olho e tocar em **Tirar foto** nas
   que tiverem logo, nome de loja ou marca d'água de outra empresa. O
   produto fica com a imagem padrão até a loja enviar outra.
+- `/admin/ferramentas` (só administração) — arrumações em lote, com prévia
+  antes de gravar: **Arrumar nomes** (tira marca/volume/concentração
+  repetidos e arruma MAIÚSCULAS) e **Padronizar fotos** (cadastros antigos
+  da loja ganham a foto de fundo limpo do mesmo perfume do catálogo
+  importado; cada par aparece com as duas fotos para conferir). As regras
+  rodam no navegador (`public/assets/js/regras-catalogo.mjs`); o servidor só
+  grava o que foi aprovado (`src/services/ferramentas.js`).
 - `/admin/equipe` (só administração) — quem aparece em "Nossa equipe" e na
   escolha de atendimento da sacola: adicionar, renomear, trocar a foto,
   esconder do site, mudar a ordem e remover. Ver `docs/TEAM.md`.

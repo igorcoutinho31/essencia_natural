@@ -148,7 +148,7 @@ async function main() {
   }
 }
 
-// Só roda quando chamado direto (tools/cf-fotos.js importa otimizarFoto daqui).
+// Só roda quando chamado direto (os testes importam funções daqui).
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   main().catch((e) => { console.error('\nErro:', e.message); process.exit(1); });
 }

@@ -71,8 +71,8 @@ nesta lista deve virar afirmação definitiva no site sem checar aqui primeiro.
 - O texto de venda da ONUH NÃO foi importado (regra do projeto: não copiar
   texto de benchmark). Descrições próprias, se a loja quiser, precisam ser
   escritas — nunca copiadas.
-- Nomes: `npm run cf:limpar-nomes` tira marca, volume e concentração
-  repetidos do nome (ver `docs/CATALOGO.md`). Ainda vale revisar o nome
+- Nomes: `/admin/ferramentas` → "Arrumar nomes" tira marca, volume e
+  concentração repetidos do nome (ver `docs/CATALOGO.md`). Ainda vale revisar o nome
   antes de publicar quando estiver estranho.
 
 ## Envios

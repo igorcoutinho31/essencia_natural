@@ -7,6 +7,7 @@ import * as catalog from '../services/catalog.js';
 import * as inventory from '../services/inventory.js';
 import * as olisek from '../services/olisek.js';
 import * as team from '../services/team.js';
+import * as ferramentas from '../services/ferramentas.js';
 import { exportDataJSON, readSnapshotJSON, trashUpload } from '../services/autoBackup.js';
 import { optimizeImage } from '../images.js';
 import { json, readJson, HttpError } from '../http.js';
@@ -288,6 +289,29 @@ export async function uploadImage(ctx, id) {
   const filePath = `/uploads/${key}`;
   const imageId = await catalog.addImage(ctx.db, productId, filePath, { isMain: !!body.isMain });
   return json(201, { image: { id: imageId, path: filePath, optimized: img.optimized, bytes: img.bytes.length } });
+}
+
+// ---- ferramentas (/admin/ferramentas) — só administração ----
+
+export async function ferramentasLista(ctx) {
+  requireAdmin(ctx);
+  const depois = parseInt(ctx.url.searchParams.get('depois') || '0', 10) || 0;
+  const produtos = await ferramentas.listaLeve(ctx.db, depois);
+  return json(200, { produtos, fim: produtos.length < ferramentas.LISTA_LIMITE });
+}
+
+export async function ferramentasNomes(ctx) {
+  requireAdmin(ctx);
+  const body = await readJson(ctx.request, 512 * 1024);
+  const r = await ferramentas.aplicarNomes(ctx.db, body.mudancas);
+  return r.erro ? json(400, { error: r.erro, message: 'Lista de nomes inválida.' }) : json(200, r);
+}
+
+export async function ferramentasFotos(ctx) {
+  requireAdmin(ctx);
+  const body = await readJson(ctx.request, 64 * 1024);
+  const r = await ferramentas.aplicarFotos(ctx.db, body.pares);
+  return r.erro ? json(400, { error: r.erro, message: 'Lista de fotos inválida.' }) : json(200, r);
 }
 
 // ---- equipe (/admin/equipe) — só administração ----

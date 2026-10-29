@@ -27,7 +27,7 @@ export function escapeHTML(s) {
 
 export const MIME_BY_EXT = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8', '.mjs': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
   '.webp': 'image/webp', '.ico': 'image/x-icon', '.xml': 'application/xml; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8', '.woff2': 'font/woff2',

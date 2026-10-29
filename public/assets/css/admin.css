@@ -123,3 +123,25 @@ tr:hover td{background:#fbf9f2}
 .a-pessoa-foto span{display:flex; width:90px; height:120px; align-items:center; justify-content:center; background:#f6f3ec; border-radius:6px; font-size:12px; color:#8a7f6a}
 .a-pessoa-dados{flex:1; min-width:0}
 .a-pessoa-dados input[type=text]{width:100%; max-width:320px}
+
+/* Ferramentas (/admin/ferramentas) */
+.a-ferr{margin-bottom:16px}
+.a-ferr .btn{margin-top:10px}
+.a-ferr-res{margin-top:14px}
+.a-ferr-acoes{gap:14px;align-items:center;margin:10px 0;position:sticky;top:0;background:#fff;padding:8px 0;z-index:2}
+.a-ferr-lista{display:grid;gap:4px;max-height:60vh;overflow:auto;border:1px solid var(--a-line);border-radius:8px;padding:6px}
+.a-ferr-linha{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr);gap:4px 10px;align-items:center;padding:8px;border-radius:6px;font-size:14px;cursor:pointer}
+.a-ferr-linha:nth-child(odd){background:#faf7f0}
+.a-ferr-linha .a-help{grid-column:2 / -1;margin:0}
+.a-ferr-antes{color:#8a7f6a;text-decoration:line-through;overflow-wrap:anywhere}
+.a-ferr-depois{font-weight:600;overflow-wrap:anywhere}
+.a-ferr-seta{color:var(--a-gold)}
+.a-ferr-pares{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.a-ferr-par{display:flex;flex-direction:column;gap:8px;padding:10px;border:1px solid var(--a-line);border-radius:8px;background:#fff;cursor:pointer;position:relative}
+.a-ferr-par .a-ferr-cb{position:absolute;top:10px;left:10px;width:20px;height:20px}
+.a-ferr-par--confira{border-color:#e2b35b}
+.a-ferr-fotos{display:flex;align-items:center;gap:8px;justify-content:center}
+.a-ferr-fotos img{width:96px;height:120px;object-fit:cover;border-radius:6px;background:#f6f3ec}
+.a-ferr-txt{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.a-ferr-sem{margin-top:14px}
+.a-ferr-sem ul{margin:8px 0 0;padding-left:18px;columns:2;font-size:14px}
