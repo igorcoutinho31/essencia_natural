@@ -191,3 +191,13 @@ test('Google: trilha sempre, ficha de produto só com preço e foto no sitemap',
   assert.match(xml, /<loc>[^<]*\/produto\/sem-preco<\/loc><lastmod>[^<]+<\/lastmod><image:image><image:loc>https:\/\/www\.lojaessencianatural\.com\.br\/uploads\/biblioteca\/abc-hd\.webp<\/image:loc><\/image:image><\/url>/);
   assert.ok(!/com-preco<\/loc>(<lastmod>[^<]+<\/lastmod>)?<image:image>/.test(xml), 'sem foto real, sem imagem no sitemap');
 });
+
+test('equipe: Ali entra com foto pela migração', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  const team = (await (await app.call('/api/team')).json()).team;
+  const ali = team.find((m) => m.name === 'Ali');
+  assert.ok(ali, 'Ali aparece na equipe');
+  assert.equal(ali.photo, '/assets/team/ali.webp');
+  assert.equal((await app.call('/assets/team/ali.webp')).status, 200);
+});

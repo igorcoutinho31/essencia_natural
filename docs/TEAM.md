@@ -80,3 +80,10 @@ A seção `#equipe` da home e o modal "Escolher atendimento" da sacola
 primeiro nome e foto). A lista escrita em `index.html` ficou só de reserva,
 para o caso de a API falhar. Fotos enviadas pelo painel ficam em
 `/uploads/equipe/` e a foto trocada vai para a lixeira de 90 dias.
+
+## Atualização (29/10/2026)
+Confirmado pela loja: Bassam continua; Nicolly, Larissa e Livia saíram
+(escondidas pelo painel); **Ali** (irmão do Bassam) entrou, com a foto
+enviada pela loja (`assets/team/ali.webp`, `migrations/0009_equipe_ali.sql`).
+Há meninas novas na equipe — entram pelo painel quando a loja confirmar os
+nomes (e, se houver, as fotos).
