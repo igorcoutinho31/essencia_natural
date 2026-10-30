@@ -132,15 +132,6 @@ async function adminRoutes(ctx) {
     if (pathname === '/api/admin/stock/movements' && method === 'GET') return adminApi.listMovements(ctx);
     if (pathname === '/api/admin/stock/olisek-sync' && method === 'POST') return adminApi.syncAllOlisek(ctx);
     if (pathname === '/api/admin/backup' && method === 'GET') return adminApi.backup(ctx);
-    if (pathname === '/api/admin/ferramentas/produtos' && method === 'GET') return adminApi.ferramentasLista(ctx);
-    if (pathname === '/api/admin/ferramentas/nomes' && method === 'POST') return adminApi.ferramentasNomes(ctx);
-    if (pathname === '/api/admin/ferramentas/fotos' && method === 'POST') return adminApi.ferramentasFotos(ctx);
-    if (pathname === '/api/admin/ferramentas/vitrine' && method === 'GET') return adminApi.ferramentasVitrine(ctx);
-    if (pathname === '/api/admin/ferramentas/vitrine' && method === 'POST') return adminApi.ferramentasVitrineAplicar(ctx);
-    if (pathname === '/api/admin/ferramentas/origens' && method === 'POST') return adminApi.ferramentasOrigens(ctx);
-    if (pathname === '/api/admin/ferramentas/hd' && method === 'GET') return adminApi.ferramentasHdLista(ctx);
-    if (pathname === '/api/admin/ferramentas/hd/original' && method === 'GET') return adminApi.ferramentasHdOriginal(ctx);
-    if (pathname === '/api/admin/ferramentas/hd' && method === 'POST') return adminApi.ferramentasHdGravar(ctx);
     if (pathname === '/api/admin/loja/produtos' && method === 'GET') return adminApi.lojaBusca(ctx);
     if (pathname === '/api/admin/loja/produtos' && method === 'POST') return adminApi.lojaCriar(ctx);
     if (pathname === '/api/admin/loja/opcoes' && method === 'GET') return adminApi.lojaOpcoes(ctx);
@@ -225,10 +216,7 @@ async function adminRoutes(ctx) {
     if (user.role !== 'admin') return redirect('/admin/loja');
     return adminPages.contasPage(user);
   }
-  if (pathname === '/admin/ferramentas') {
-    if (user.role !== 'admin') return redirect('/admin/produtos');
-    return adminPages.ferramentasPage(user);
-  }
+  if (pathname === '/admin/ferramentas') return redirect('/admin'); // tela removida: o que ela fazia agora é automático
   if (pathname === '/admin/equipe') {
     if (user.role !== 'admin') return redirect('/admin/produtos');
     return adminPages.teamPage(user, { members: await team.listAdmin(db) });

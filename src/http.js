@@ -27,15 +27,6 @@ export function redirect(location, status = 302, headers = {}) {
   return new Response(null, { status, headers: { Location: location, ...headers } });
 }
 
-/** Corpo bruto (bytes) com limite de tamanho. */
-export async function readBytes(request, limit) {
-  const declared = Number(request.headers.get('content-length') || 0);
-  if (declared > limit) throw new HttpError(413, 'payload_too_large');
-  const bytes = new Uint8Array(await request.arrayBuffer());
-  if (bytes.length > limit) throw new HttpError(413, 'payload_too_large');
-  return bytes;
-}
-
 export async function readJson(request, limit = 8 * 1024 * 1024) {
   const declared = Number(request.headers.get('content-length') || 0);
   if (declared > limit) throw new HttpError(413, 'payload_too_large');

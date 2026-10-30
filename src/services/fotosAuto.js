@@ -1,14 +1,79 @@
 // Fotos em alta automáticas (cron, src/worker.js): sem ninguém abrir o
 // painel, as fotos dos produtos PUBLICADOS que ainda estão na versão da
 // importação são trocadas pela melhor versão do original do fornecedor
-// (endereços em foto_origem, preenchida uma vez pelo /admin/ferramentas).
+// (endereços em foto_origem, gravada pela importação do catálogo).
 // - original grande (> 1300 px): reduzido para 1200 px WEBP pelo Cloudflare
 //   Images (binding IMAGES; cota grátis de 5 mil por mês);
 // - original do mesmo tamanho, mas menos comprimido: gravado como veio.
 // Produtos ocultos não gastam espaço do banco: ganham a foto em alta quando
 // forem publicados. Cada foto é tentada uma vez (falha: de novo no dia
 // seguinte) — ver a tabela foto_hd_tentativas.
-import { baixarOriginal, gravarHD, MAX_HD } from './ferramentas.js';
+import { sniffImage } from '../util.js';
+
+// ---------- original do fornecedor ----------
+// foto_origem guarda, para cada foto do catálogo importado, o endereço do
+// original no fornecedor (gravado pela importação, tools/cf-biblioteca.js).
+export const ORIGEM_HOSTS = ['media-n.atlanticostor.com.br', 's3.amazonaws.com'];
+export const MAX_ORIGINAL = 12 * 1024 * 1024;
+export const MAX_HD = 3 * 1024 * 1024;
+const SHA = /^[0-9a-f]{64}$/;
+
+export function urlOrigemValida(u) {
+  let x;
+  try { x = new URL(String(u)); } catch { return false; }
+  if (x.protocol !== 'https:' || x.username || x.password || x.port || !ORIGEM_HOSTS.includes(x.hostname)) return false;
+  return x.hostname !== 's3.amazonaws.com' || x.pathname.startsWith('/tiny-anexos-us/');
+}
+
+/** Guarda [{ sha, url }] (vindos do catalog.json). Itens inválidos são ignorados. */
+export async function gravarOrigens(db, itens) {
+  if (!Array.isArray(itens) || !itens.length) return { erro: 'lista_invalida' };
+  const validos = itens.filter((i) => i && SHA.test(String(i.sha)) && urlOrigemValida(i.url) && String(i.url).length <= 500);
+  if (validos.length) {
+    await db.batch(validos.map((i) => db.prepare('INSERT INTO foto_origem (sha, url) VALUES (?, ?) ON CONFLICT(sha) DO UPDATE SET url = excluded.url')
+      .bind(String(i.sha), String(i.url))));
+  }
+  return { gravadas: validos.length, ignoradas: itens.length - validos.length };
+}
+
+/** Busca o original no fornecedor. Só por `sha` já guardado (nunca um
+ *  endereço vindo do pedido) e só nos hosts permitidos. */
+export async function baixarOriginal(db, sha, fetchFn = fetch) {
+  if (!SHA.test(String(sha))) return { erro: 'sha_invalido' };
+  const row = await db.prepare('SELECT url FROM foto_origem WHERE sha = ?').bind(sha).first();
+  if (!row || !urlOrigemValida(row.url)) return { erro: 'sem_origem' };
+  let r;
+  try {
+    r = await fetchFn(row.url, { redirect: 'manual', signal: AbortSignal.timeout(20000), headers: { Accept: 'image/webp,image/jpeg,image/png,image/*' } });
+  } catch { return { erro: 'fornecedor_fora' }; }
+  if (r.status !== 200) return { erro: 'fornecedor_' + r.status };
+  if (Number(r.headers.get('content-length') || 0) > MAX_ORIGINAL) return { erro: 'grande_demais' };
+  const bytes = new Uint8Array(await r.arrayBuffer());
+  if (bytes.length > MAX_ORIGINAL) return { erro: 'grande_demais' };
+  const ext = sniffImage(bytes);
+  if (!ext) return { erro: 'nao_e_imagem' };
+  return { bytes, contentType: { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }[ext] };
+}
+
+/** Grava a versão em alta (WEBP ou JPEG já reduzida no navegador) e troca
+ *  em todos os produtos que usam a foto pequena. A pequena vai para a
+ *  lixeira de 90 dias. */
+export async function gravarHD(db, storage, sha, bytes) {
+  if (!SHA.test(String(sha))) return { erro: 'sha_invalido' };
+  const ext = sniffImage(bytes);
+  if (ext !== 'webp' && ext !== 'jpg') return { erro: 'formato' };
+  if (bytes.length > MAX_HD) return { erro: 'grande_demais' };
+  const antiga = `/uploads/biblioteca/${sha}.webp`;
+  const usada = await db.prepare('SELECT COUNT(*) AS n FROM product_images WHERE file_path = ?').bind(antiga).first();
+  if (!usada || !usada.n) return { erro: 'nao_encontrada' };
+  const key = `biblioteca/${sha}-hd.${ext}`;
+  await storage.put(key, bytes, ext === 'jpg' ? 'image/jpeg' : 'image/webp');
+  await db.batch([
+    db.prepare('UPDATE product_images SET file_path = ? WHERE file_path = ?').bind('/uploads/' + key, antiga),
+    db.prepare("INSERT INTO upload_trash (key) VALUES (?) ON CONFLICT(key) DO UPDATE SET deleted_at = datetime('now')").bind(antiga.slice('/uploads/'.length)),
+  ]);
+  return { image: '/uploads/' + key, produtos: usada.n };
+}
 
 const LADO_MAX = 1300;
 

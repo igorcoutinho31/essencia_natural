@@ -88,7 +88,7 @@ Um pacote coletado de sites de fornecedores (**Atlântico**, 997 itens, e
 **ONUH**, 1.913 — `catalog.json` + pasta `images/`, ~610 MB) entra no
 admin como **biblioteca**: tudo **oculto**, para a loja escolher o que
 publicar. Importação: `npm run cf:biblioteca` (`tools/cf-biblioteca.js`;
-regras em `public/assets/js/regras-catalogo.mjs` e `tools/biblioteca-plano.js`).
+regras em `tools/biblioteca-regras.js` e `tools/biblioteca-plano.js`).
 
 **Decisões (confirmadas pelo responsável pelo site em 28/10/2026):**
 
@@ -105,14 +105,11 @@ regras em `public/assets/js/regras-catalogo.mjs` e `tools/biblioteca-plano.js`).
 - **Nome de vitrine limpo**: o nome não repete marca, volume nem
   concentração, que têm campo próprio ("AL WATANIAH EQAAB EDP H 100ML" vira
   "Eqaab", marca Al Wataniah, EDP, 100 ml — `tituloProduto` em
-  `public/assets/js/regras-catalogo.mjs`). O título da página, o Google e a
-  mensagem de WhatsApp juntam tudo ("Al Wataniah Eqaab 100 ml"). Produtos já
-  cadastrados: `/admin/ferramentas` → **Arrumar nomes** (prévia, desmarcar o
-  que não quiser, aplicar; o endereço das páginas não muda).
-- **Fotos padronizadas**: `/admin/ferramentas` → **Padronizar fotos** troca
-  a foto antiga dos cadastros da loja pela foto de fundo limpo do mesmo
-  perfume no catálogo importado (pares conferidos na tela; as antigas ficam
-  90 dias na lixeira).
+  `tools/biblioteca-regras.js`). O título da página, o Google e a
+  mensagem de WhatsApp juntam tudo ("Al Wataniah Eqaab 100 ml").
+- **Fotos em alta**: a importação guarda o endereço do original de cada foto
+  (`foto_origem`); quando o produto é publicado, o site troca sozinho pela
+  melhor versão (ver `docs/ADMIN.md`).
 - **Uma foto por produto**, reduzida no PC para 800 px/WEBP (~30–60 KB).
   As fotos ficam no D1; o importador para antes de passar de ~380 MB
   (o banco grátis vai até 500 MB) e aceita `--lado 600` para caber mais.
@@ -122,8 +119,7 @@ regras em `public/assets/js/regras-catalogo.mjs` e `tools/biblioteca-plano.js`).
   `/#marcas` quando tiverem produto publicado). "OPENBOX", "Miniaturas"
   etc. não viram marca.
 - **Caixa aberta:** itens "OPENBOX" (produto de caixa aberta) não são
-  importados — a loja não vende. Os que já estavam no banco saem do site
-  pelo passo "Montar a vitrine" do `/admin/ferramentas`.
+  importados — a loja não vende.
 - **Categorias** limpas: Perfume, Body Splash, Kit, Miniatura, Skincare,
   Cuidados corporais, Óleo perfumado, Cabelos, Casa e ambiente, Outros.
 - **Relatório da loja:** cada item é comparado com os nomes do relatório de

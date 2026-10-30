@@ -105,34 +105,19 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
   grade, 120 por página, para bater o olho e tocar em **Tirar foto** nas
   que tiverem logo, nome de loja ou marca d'água de outra empresa. O
   produto fica com a imagem padrão até a loja enviar outra.
-- `/admin/ferramentas` (só administração) — arrumações em lote, com prévia
-  antes de gravar, em passos numerados:
-  1. **Arrumar nomes** — tira marca/volume/concentração repetidos e arruma
-     MAIÚSCULAS.
-  2. **Montar a vitrine** — publica os produtos do relatório da loja que
-     têm foto e oculta os do catálogo importado que não estão no relatório
-     (cadastros feitos pela loja não mudam). Produtos de caixa aberta
-     ("OPENBOX" no nome) a loja não vende: saem do site e nunca são
-     publicados. Mostra as contagens e alguns nomes antes.
-  3. **Padronizar fotos** — cadastros antigos da loja ganham a foto de
-     fundo limpo do mesmo perfume do catálogo importado; cada par aparece
-     com as duas fotos para conferir.
-  4. **Fotos em alta definição** — na primeira vez pede o `catalog.json` do
-     pacote e guarda o endereço da foto original de cada foto (tabela
-     `foto_origem`, uso interno). Depois, para os produtos publicados, o
-     Worker busca o original no fornecedor (só por foto conhecida e só nos
-     hosts permitidos), o navegador reduz para até 1200 px e o servidor
-     grava como `biblioteca/<sha>-hd.webp`, trocando em todos os produtos.
-     Só troca quando há ganho; a versão pequena vai para a lixeira de 90
-     dias. **Automático desde 30/10/2026:** o cron (a cada 10 min) faz o
-     mesmo sozinho, 4 fotos por vez, para todo produto publicado
-     (`src/services/fotosAuto.js`); originais grandes são reduzidos pelo
-     Cloudflare Images (binding `IMAGES`, cota grátis de 5 mil por mês).
-     Produtos ocultos não ocupam espaço até serem publicados (limite de
-     500 MB do D1). O botão do painel só adianta.
-  As regras rodam no navegador (`public/assets/js/regras-catalogo.mjs` e o
-  script da página); o servidor só grava o que foi aprovado
-  (`src/services/ferramentas.js`).
+- **Fotos em alta, automático (sem tela):** a cada 10 min o site troca
+  sozinho, 4 por vez, as fotos dos produtos publicados que ainda estão na
+  versão da importação pela melhor versão do original do fornecedor
+  (`src/services/fotosAuto.js`): reduzida para 1200 px pelo Cloudflare
+  Images (binding `IMAGES`, cota grátis de 5 mil/mês) quando o original é
+  grande, ou o próprio original quando é do mesmo tamanho e mais nítido. O
+  endereço do original vem da importação (tabela `foto_origem`). Produtos
+  ocultos não ocupam espaço (limite de 500 MB do D1) até serem publicados.
+  A versão antiga fica 90 dias na lixeira.
+- A antiga tela `/admin/ferramentas` (arrumar nomes, montar a vitrine,
+  padronizar fotos, fotos em alta) foi retirada em 30/10/2026: cada passo
+  foi aplicado uma vez e o que precisa continuar é automático (fotos) ou já
+  é feito pela importação (nomes limpos, caixa aberta fora).
 - `/admin/equipe` (só administração) — quem aparece em "Nossa equipe" e na
   escolha de atendimento da sacola: adicionar, renomear, trocar a foto,
   esconder do site, mudar a ordem e remover. Ver `docs/TEAM.md`.

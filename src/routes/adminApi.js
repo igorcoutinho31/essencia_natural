@@ -7,12 +7,11 @@ import * as catalog from '../services/catalog.js';
 import * as inventory from '../services/inventory.js';
 import * as olisek from '../services/olisek.js';
 import * as team from '../services/team.js';
-import * as ferramentas from '../services/ferramentas.js';
 import * as loja from '../services/loja.js';
 import * as contas from '../services/contas.js';
 import { exportDataJSON, readSnapshotJSON, trashUpload } from '../services/autoBackup.js';
 import { optimizeImage } from '../images.js';
-import { json, readJson, readBytes, HttpError } from '../http.js';
+import { json, readJson, HttpError } from '../http.js';
 import { decodeImageDataUrl, randomId } from '../util.js';
 
 export function isAdmin(ctx) { return ctx.user && ctx.user.role === 'admin'; }
@@ -294,69 +293,6 @@ export async function uploadImage(ctx, id) {
   const filePath = `/uploads/${key}`;
   const imageId = await catalog.addImage(ctx.db, productId, filePath, { isMain: !!body.isMain });
   return json(201, { image: { id: imageId, path: filePath, optimized: img.optimized, bytes: img.bytes.length } });
-}
-
-// ---- ferramentas (/admin/ferramentas) — só administração ----
-
-export async function ferramentasLista(ctx) {
-  requireAdmin(ctx);
-  const depois = parseInt(ctx.url.searchParams.get('depois') || '0', 10) || 0;
-  const produtos = await ferramentas.listaLeve(ctx.db, depois);
-  return json(200, { produtos, fim: produtos.length < ferramentas.LISTA_LIMITE });
-}
-
-export async function ferramentasNomes(ctx) {
-  requireAdmin(ctx);
-  const body = await readJson(ctx.request, 512 * 1024);
-  const r = await ferramentas.aplicarNomes(ctx.db, body.mudancas);
-  return r.erro ? json(400, { error: r.erro, message: 'Lista de nomes inválida.' }) : json(200, r);
-}
-
-export async function ferramentasFotos(ctx) {
-  requireAdmin(ctx);
-  const body = await readJson(ctx.request, 64 * 1024);
-  const r = await ferramentas.aplicarFotos(ctx.db, body.pares);
-  return r.erro ? json(400, { error: r.erro, message: 'Lista de fotos inválida.' }) : json(200, r);
-}
-
-export async function ferramentasVitrine(ctx) {
-  requireAdmin(ctx);
-  return json(200, await ferramentas.previaVitrine(ctx.db));
-}
-
-export async function ferramentasVitrineAplicar(ctx) {
-  requireAdmin(ctx);
-  const body = await readJson(ctx.request, 4 * 1024);
-  const r = await ferramentas.aplicarVitrine(ctx.db, { publicar: body.publicar === true, ocultar: body.ocultar === true });
-  return r.erro ? json(400, { error: r.erro, message: 'Escolha o que aplicar.' }) : json(200, r);
-}
-
-export async function ferramentasOrigens(ctx) {
-  requireAdmin(ctx);
-  const body = await readJson(ctx.request, 512 * 1024);
-  const r = await ferramentas.gravarOrigens(ctx.db, body.itens);
-  return r.erro ? json(400, { error: r.erro, message: 'Lista de fotos inválida.' }) : json(200, r);
-}
-
-export async function ferramentasHdLista(ctx) {
-  requireAdmin(ctx);
-  return json(200, await ferramentas.listaHD(ctx.db));
-}
-
-/** Repassa a foto original do fornecedor para o navegador do painel
- *  (mesma origem: o navegador pode reduzir a foto num canvas). */
-export async function ferramentasHdOriginal(ctx) {
-  requireAdmin(ctx);
-  const r = await ferramentas.baixarOriginal(ctx.db, ctx.url.searchParams.get('sha') || '');
-  if (r.erro) return json(r.erro === 'sha_invalido' || r.erro === 'sem_origem' ? 404 : 502, { error: r.erro });
-  return new Response(r.bytes, { status: 200, headers: { 'Content-Type': r.contentType, 'Cache-Control': 'no-store' } });
-}
-
-export async function ferramentasHdGravar(ctx) {
-  requireAdmin(ctx);
-  const bytes = await readBytes(ctx.request, ferramentas.MAX_HD);
-  const r = await ferramentas.gravarHD(ctx.db, ctx.storage, ctx.url.searchParams.get('sha') || '', bytes);
-  return r.erro ? json(r.erro === 'nao_encontrada' ? 404 : 400, { error: r.erro, message: 'Foto não gravada.' }) : json(200, r);
 }
 
 // ---- painel da loja (/admin/loja) — vendedoras e administração ----
