@@ -124,7 +124,12 @@ estoque/OliSek na tela — eles não são só desabilitados, são omitidos).
      hosts permitidos), o navegador reduz para até 1200 px e o servidor
      grava como `biblioteca/<sha>-hd.webp`, trocando em todos os produtos.
      Só troca quando há ganho; a versão pequena vai para a lixeira de 90
-     dias. Rodar de novo depois de publicar produtos novos.
+     dias. **Automático desde 30/10/2026:** o cron (a cada 10 min) faz o
+     mesmo sozinho, 4 fotos por vez, para todo produto publicado
+     (`src/services/fotosAuto.js`); originais grandes são reduzidos pelo
+     Cloudflare Images (binding `IMAGES`, cota grátis de 5 mil por mês).
+     Produtos ocultos não ocupam espaço até serem publicados (limite de
+     500 MB do D1). O botão do painel só adianta.
   As regras rodam no navegador (`public/assets/js/regras-catalogo.mjs` e o
   script da página); o servidor só grava o que foi aprovado
   (`src/services/ferramentas.js`).

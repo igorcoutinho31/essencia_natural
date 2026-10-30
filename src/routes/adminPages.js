@@ -349,7 +349,7 @@ export function ferramentasPage(user) {
 
     <div class="a-card a-ferr" id="f-hd">
       <h2><span class="a-passo">4</span> Fotos em alta definição</h2>
-      <p class="a-help">As fotos do catálogo importado foram guardadas pequenas e comprimidas. Aqui o painel busca de novo a foto original no fornecedor e grava a melhor versão possível: maior (até 1200 px) quando o fornecedor tem, e sem a compressão da importação quando ele só tem do mesmo tamanho. A versão antiga fica guardada por 90 dias. Deixe esta página aberta até terminar.</p>
+      <p class="a-help">As fotos do catálogo importado foram guardadas pequenas e comprimidas. Aqui o painel busca de novo a foto original no fornecedor e grava a melhor versão possível: maior (até 1200 px) quando o fornecedor tem, e sem a compressão da importação quando ele só tem do mesmo tamanho. A versão antiga fica guardada por 90 dias. <b>Isso agora é automático:</b> a cada 10 minutos o site melhora sozinho as fotos dos produtos publicados (inclusive os que forem publicados depois). Este botão só adianta o serviço.</p>
       <button class="btn btn-gold" type="button" data-acao="hd">Procurar fotos</button>
       <div class="a-ferr-res" aria-live="polite"></div>
     </div>
