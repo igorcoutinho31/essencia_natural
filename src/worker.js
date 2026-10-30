@@ -26,8 +26,12 @@ function deps(env, request) {
 }
 
 export default {
-  async fetch(request, env) {
-    return handle(request, deps(env, request));
+  async fetch(request, env, ctx) {
+    return handle(request, {
+      ...deps(env, request),
+      cache: typeof caches !== 'undefined' ? caches.default : null, // cache na borda (ver src/app.js)
+      waitUntil: (p) => ctx.waitUntil(p),
+    });
   },
 
   /** Cron (wrangler.toml, a cada 30 min): cópia semanal automática dos
@@ -41,7 +45,9 @@ export default {
       if (copia) console.log('[cron] cópia automática dos dados criada:', copia);
       await purgeTrash(d.db, d.storage);
       await purgeExpired(d.db);
-      await normalizarCategoriasGravadas(d.db);
+      // lê todos os produtos: uma vez por dia basta (às 03h UTC)
+      const quando = new Date(event.scheduledTime || Date.now());
+      if (quando.getUTCHours() === 3 && quando.getUTCMinutes() < 30) await normalizarCategoriasGravadas(d.db);
       if (d.config.olisekAutoSync && apiConfigured(d.config)) {
         const report = await syncAllFromOlisek(d.db, d.config, { user: { id: null, name: 'Sincronização automática' } });
         console.log('[cron] OliSek:', JSON.stringify(report));

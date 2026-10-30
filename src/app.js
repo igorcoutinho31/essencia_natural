@@ -318,6 +318,38 @@ async function route(ctx) {
   return notFoundPage();
 }
 
+// ---- cache na borda da Cloudflare (Cache API) ----
+// O banco grátis (D1) tem limite de 5 milhões de linhas lidas por dia. Sem
+// cache, cada visita lia o catálogo inteiro de novo. O que é público e igual
+// para todos fica guardado na borda: as fotos pelo tempo que a própria
+// resposta diz (1 ano — foto nova ganha endereço novo); catálogo, marcas,
+// equipe, páginas de produto e sitemap por pouco tempo (mudança feita no
+// painel aparece no site em até 1 minuto). O painel nunca passa por aqui.
+const BORDA = [
+  [/^\/uploads\//, 'resposta'],
+  [/^\/api\/(products|brands|team)(\/|$)/, 60],
+  [/^\/produto\//, 60],
+  [/^\/sitemap\.xml$/, 300],
+];
+export function regraBorda(pathname) {
+  for (const [re, ttl] of BORDA) if (re.test(pathname)) return ttl;
+  return null;
+}
+
+async function guardarNaBorda(deps, chave, response, regra) {
+  if (response.status !== 200) return;
+  let copia;
+  if (regra === 'resposta') {
+    if (!/^public\b/.test(response.headers.get('Cache-Control') || '')) return; // foto de admin (private) não
+    copia = response.clone();
+  } else {
+    copia = new Response(response.clone().body, response);
+    copia.headers.set('Cache-Control', `public, max-age=${regra}`);
+  }
+  const put = deps.cache.put(chave, copia).catch(() => {});
+  if (deps.waitUntil) deps.waitUntil(put); else await put;
+}
+
 export async function handle(request, deps) {
   const url = new URL(request.url);
   const https = url.protocol === 'https:';
@@ -326,6 +358,19 @@ export async function handle(request, deps) {
   if (config.redirectHosts && config.redirectHosts.includes(url.hostname)) {
     return redirect(config.siteUrl + url.pathname + url.search, 301);
   }
+
+  const regra = deps.cache && request.method === 'GET' ? regraBorda(url.pathname) : null;
+  if (regra) {
+    const guardada = await deps.cache.match(url.toString()).catch(() => null);
+    if (guardada) return guardada;
+    const response = await responder(request, deps, url, https);
+    await guardarNaBorda(deps, url.toString(), response, regra);
+    return response;
+  }
+  return responder(request, deps, url, https);
+}
+
+async function responder(request, deps, url, https) {
 
   let pathname;
   try { pathname = decodeURIComponent(url.pathname); } catch { return withSecurityHeaders(notFoundPage(), { https }); }

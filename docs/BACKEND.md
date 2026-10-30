@@ -266,3 +266,20 @@ para a regra de 28/10/2026: publicado/oculto + "Consulte disponibilidade"
   delas.
 - Apagar o projeto antigo no painel do Railway (o serviço já está parado
   desde o fim do período de teste; ver `docs/CLOUDFLARE.md`, "Histórico").
+
+## Limite de leituras do D1 e cache na borda (30/10/2026)
+O plano grátis do D1 permite **5 milhões de linhas lidas por dia** (zera às
+00:00 UTC = 21:00 de Brasília). Em 29/10 o limite estourou: cada visita
+lia o catálogo inteiro, o Google começou a ler as 316 páginas do sitemap e
+o painel foi muito usado. Desde então:
+- **Cache na borda** (`handle` em `src/app.js`, Cache API da Cloudflare):
+  fotos (`/uploads/*`) ficam guardadas pelo tempo da própria resposta (1
+  ano — foto nova ganha endereço novo); `/api/products`, `/api/brands`,
+  `/api/team`, `/produto/*` por 60 s e `/sitemap.xml` por 5 min. Mudança
+  feita no painel aparece no site em até 1 minuto. O painel não passa pelo
+  cache.
+- A arrumação automática das categorias roda uma vez por dia (não a cada
+  30 min).
+- Índice `idx_products_updated` para a tela da Loja.
+Para acompanhar: Cloudflare → Storage & Databases → D1 → `essencia-natural`
+→ Metrics (linhas lidas por hora) e Queries (consultas que mais leem).
