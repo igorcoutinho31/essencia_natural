@@ -349,13 +349,13 @@ export function ferramentasPage(user) {
 
     <div class="a-card a-ferr" id="f-hd">
       <h2><span class="a-passo">4</span> Fotos em alta definição</h2>
-      <p class="a-help">As fotos do catálogo importado foram guardadas pequenas. Aqui o painel busca de novo a foto original no fornecedor e grava uma versão maior e mais nítida (até 1200 px) dos produtos publicados. A versão pequena fica guardada por 90 dias. Deixe esta página aberta até terminar.</p>
+      <p class="a-help">As fotos do catálogo importado foram guardadas pequenas e comprimidas. Aqui o painel busca de novo a foto original no fornecedor e grava a melhor versão possível: maior (até 1200 px) quando o fornecedor tem, e sem a compressão da importação quando ele só tem do mesmo tamanho. A versão antiga fica guardada por 90 dias. Deixe esta página aberta até terminar.</p>
       <button class="btn btn-gold" type="button" data-acao="hd">Procurar fotos</button>
       <div class="a-ferr-res" aria-live="polite"></div>
     </div>
   </div>
   <script type="module">
-    const R = await import('/assets/js/regras-catalogo.mjs?v=20261029-4');
+    const R = await import('/assets/js/regras-catalogo.mjs?v=20261030-1');
     let cache = null;
     function el(tag, cls, txt){ const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
     async function lerTodos(aviso){
@@ -536,9 +536,20 @@ export function ferramentasPage(user) {
       const [orig, atual] = await Promise.all([blobDe('/api/admin/ferramentas/hd/original?sha=' + f.sha), blobDe(f.image)]);
       const [bo, ba] = await Promise.all([createImageBitmap(orig), createImageBitmap(atual)]);
       const ladoNovo = Math.min(LADO_HD, Math.max(bo.width, bo.height)), ladoAtual = Math.max(ba.width, ba.height);
-      // Só troca se ganha tamanho, ou se o original é bem mais nítido (menos comprimido).
-      if (ladoNovo < ladoAtual * 1.15 && orig.size < atual.size * 2.5) return 'igual';
-      const { blob } = await codificar(bo);
+      let blob;
+      if (ladoNovo >= ladoAtual * 1.15) {
+        blob = (await codificar(bo)).blob; // ganha tamanho: reduz para até 1200 px
+      } else {
+        // Mesmo tamanho: o fornecedor não tem maior. Se o original é mais
+        // nítido (menos comprimido) que o guardado, grava o próprio original
+        // (JPEG/WEBP), sem perder mais nada; PNG vira WEBP quase sem perda.
+        if (orig.size <= atual.size * 1.1) return 'igual';
+        const tipo = (orig.type || '').toLowerCase();
+        blob = (tipo === 'image/jpeg' || tipo === 'image/webp') && orig.size <= 3 * 1024 * 1024
+          ? orig
+          : await new Promise((ok) => { const cv = document.createElement('canvas'); cv.width = bo.width; cv.height = bo.height; const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); g.drawImage(bo, 0, 0); cv.toBlob(ok, 'image/webp', 0.95); });
+        if (!blob) return 'igual';
+      }
       const r = await fetch('/api/admin/ferramentas/hd?sha=' + f.sha, { method: 'POST', headers: { 'Content-Type': blob.type }, body: blob });
       if (!r.ok) throw new Error('gravar ' + r.status);
       return (await r.json()).image;
