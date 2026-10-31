@@ -26,7 +26,8 @@ export async function buscar(db, { q = '', filtro = 'todos', pagina = 1 } = {}) 
   const pg = Math.max(1, Math.min(500, parseInt(pagina, 10) || 1));
   const sql = `FROM products p LEFT JOIN brands b ON b.id = p.brand_id WHERE ${where.join(' AND ')}`;
   const [total, lista] = await db.batch([
-    db.prepare(`SELECT COUNT(*) AS n ${sql}`).bind(...params),
+    // sem busca por texto, a contagem não precisa juntar as marcas (lê menos linhas)
+    db.prepare(`SELECT COUNT(*) AS n ${termos.length ? sql : `FROM products p WHERE ${where.join(' AND ')}`}`).bind(...params),
     db.prepare(`SELECT p.id, p.slug, p.name, b.name AS brand, p.volume, p.price, p.active, p.featured,
         (SELECT pi.file_path FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.is_main DESC, pi.sort_order ASC LIMIT 1) AS image
       ${sql} ORDER BY ${termos.length ? 'p.active DESC, p.name ASC' : 'p.updated_at DESC, p.id DESC'} LIMIT ? OFFSET ?`)

@@ -162,3 +162,19 @@ test('importação ponta a ponta: tudo oculto, foto pública só com o produto p
   r = await app.call('/api/admin/products/bulk', { method: 'POST', body: { action: 'publicar', criteria: { q: 'Teste 1', source: 'onuh' } } });
   assert.equal((await r.json()).affected, 11, '"Teste 1", "Teste 10".."Teste 19"');
 });
+
+test('importação guarda o endereço do original de cada foto (fotos em alta automáticas)', async (t) => {
+  const app = createTestApp();
+  t.after(app.cleanup);
+  const S = (c) => c.repeat(64);
+  const catalogo = { schemaVersion: 2, products: [
+    item({ sourceId: 'onuh:a', name: 'A', images: [{ localPath: 'images/a.webp', sha256: S('a'), url: 'https://s3.amazonaws.com/tiny-anexos-us/erp/a.webp' }] }),
+    item({ sourceId: 'onuh:b', name: 'B', images: [{ localPath: 'images/b.webp', sha256: S('b'), url: 'https://evil.com/b.webp' }] }),
+    item({ sourceId: 'atlantico:c', name: 'C', images: [{ localPath: 'images/c.webp', sha256: S('c'), url: 'https://media-n.atlanticostor.com.br/x/c.webp' }] }),
+  ] };
+  const plano = planejar(catalogo, vazio, []);
+  assert.deepEqual(plano.origens.map((o) => o.sha), [S('a'), S('c')], 'só fornecedores conhecidos');
+  app.db.raw.exec(sqlCadastros(plano));
+  app.db.raw.exec(sqlCadastros(plano)); // de novo não duplica
+  assert.equal(app.db.raw.prepare('SELECT COUNT(*) AS n FROM foto_origem').get().n, 2);
+});

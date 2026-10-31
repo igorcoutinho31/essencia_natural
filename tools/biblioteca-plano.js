@@ -4,6 +4,7 @@
 // (tools/cf-biblioteca.js) busca o estado atual do banco, chama isto e
 // executa o SQL; os testes chamam isto direto contra um banco em memória.
 import { slugify } from '../src/util.js';
+import { urlOrigemValida } from '../src/services/fotosAuto.js';
 import { ehCaixaAberta, chave, chaveMarca, chaveProduto, limparNome, tituloProduto, categoria, extrairNotas, tokens, indiceRelatorio, casarRelatorio } from './biblioteca-regras.js';
 
 export { chaveProduto };
@@ -99,7 +100,14 @@ export function planejar(catalogo, estado, relatorio = []) {
   }
   resumo.marcasNovas = marcasNovas.length;
   resumo.fotosNovas = [...fotos.values()].filter((f) => !f.existe).length;
-  return { produtos, marcasNovas, fotos: [...fotos.values()], resumo };
+  // Endereço do original de cada foto do pacote (todas, não só as novas):
+  // é o que deixa o site trocar sozinho pela foto em alta quando o produto
+  // for publicado (src/services/fotosAuto.js).
+  const origens = new Map();
+  for (const it of catalogo.products) for (const im of it.images || []) {
+    if (im && im.sha256 && /^[0-9a-f]{64}$/.test(im.sha256) && urlOrigemValida(im.url) && !origens.has(im.sha256)) origens.set(im.sha256, im.url);
+  }
+  return { produtos, marcasNovas, fotos: [...fotos.values()], origens: [...origens].map(([sha, url]) => ({ sha, url })), resumo };
 }
 
 /** SQL dos cadastros (marcas novas + produtos ocultos). Idempotente. */
@@ -113,6 +121,9 @@ export function sqlCadastros(plano) {
   description, price, compare_price, stock, stock_source, active, featured, olisek_link_status, source, source_id, source_url, in_store_report, store_report_name)
 VALUES (${q(p.slug)}, ${q(p.name)}, ${p.brandSlug ? `(SELECT id FROM brands WHERE slug = ${q(p.brandSlug)})` : 'NULL'}, ${q(p.category)}, ${q(p.volume)}, ${q(p.concentration)}, ${q(p.family)}, ${q(p.notesTop)}, ${q(p.notesHeart)}, ${q(p.notesBase)},
   NULL, NULL, NULL, 0, 'none', 0, 0, 'unlinked', ${q(p.source)}, ${q(p.sourceId)}, NULL, ${p.inStoreReport}, ${q(p.storeReportName)});`);
+  }
+  for (const o of plano.origens || []) {
+    out.push(`INSERT INTO foto_origem (sha, url) VALUES (${q(o.sha)}, ${q(o.url)}) ON CONFLICT(sha) DO UPDATE SET url = excluded.url;`);
   }
   return out.join('\n') + '\n';
 }

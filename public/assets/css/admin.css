@@ -124,35 +124,6 @@ tr:hover td{background:#fbf9f2}
 .a-pessoa-dados{flex:1; min-width:0}
 .a-pessoa-dados input[type=text]{width:100%; max-width:320px}
 
-/* Ferramentas (/admin/ferramentas) */
-.a-ferr{margin-bottom:16px}
-.a-ferr .btn{margin-top:10px}
-.a-ferr-res{margin-top:14px}
-.a-ferr-acoes{gap:14px;align-items:center;margin:10px 0;position:sticky;top:0;background:#fff;padding:8px 0;z-index:2}
-.a-ferr-lista{display:grid;gap:4px;max-height:60vh;overflow:auto;border:1px solid var(--a-line);border-radius:8px;padding:6px}
-.a-ferr-linha{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr);gap:4px 10px;align-items:center;padding:8px;border-radius:6px;font-size:14px;cursor:pointer}
-.a-ferr-linha:nth-child(odd){background:#faf7f0}
-.a-ferr-linha .a-help{grid-column:2 / -1;margin:0}
-.a-ferr-antes{color:#8a7f6a;text-decoration:line-through;overflow-wrap:anywhere}
-.a-ferr-depois{font-weight:600;overflow-wrap:anywhere}
-.a-ferr-seta{color:var(--a-gold)}
-.a-ferr-pares{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-.a-ferr-par{display:flex;flex-direction:column;gap:8px;padding:10px;border:1px solid var(--a-line);border-radius:8px;background:#fff;cursor:pointer;position:relative}
-.a-ferr-par .a-ferr-cb{position:absolute;top:10px;left:10px;width:20px;height:20px}
-.a-ferr-par--confira{border-color:#e2b35b}
-.a-ferr-fotos{display:flex;align-items:center;gap:8px;justify-content:center}
-.a-ferr-fotos img{width:96px;height:120px;object-fit:cover;border-radius:6px;background:#f6f3ec}
-.a-ferr-txt{display:flex;flex-direction:column;gap:2px;font-size:14px}
-.a-ferr-sem{margin-top:14px}
-.a-ferr-sem ul{margin:8px 0 0;padding-left:18px;columns:2;font-size:14px}
-.a-passo{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-right:6px;border-radius:50%;background:var(--a-gold);color:#fff;font-size:15px;vertical-align:2px}
-.a-ferr-op{display:flex;gap:10px;align-items:flex-start;padding:12px;margin:8px 0;border:1px solid var(--a-line);border-radius:8px;cursor:pointer}
-.a-ferr-op .a-ferr-cb{width:20px;height:20px;flex:none;margin-top:2px}
-.a-ferr-op ul{margin:6px 0 0;padding-left:18px;font-size:14px;columns:2}
-.a-ferr-arquivo{padding:12px;border:1px dashed var(--a-line);border-radius:8px;margin-top:8px}
-.a-ferr-prog{width:100%;height:10px;accent-color:var(--a-gold)}
-.a-ferr-hd{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px}
-.a-ferr-hd img{width:100%;aspect-ratio:4/5;object-fit:contain;background:#f4efe7;border-radius:6px;padding:4px}
 
 /* ---- painel da loja (/admin/loja): celular, tablet e computador ---- */
 .lj{max-width:1180px}

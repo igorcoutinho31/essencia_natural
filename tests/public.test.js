@@ -201,3 +201,35 @@ test('equipe: Ali entra com foto pela migração', async (t) => {
   assert.equal(ali.photo, '/assets/team/ali.webp');
   assert.equal((await app.call('/assets/team/ali.webp')).status, 200);
 });
+
+test('cache na borda: público fica guardado, painel e foto privada não', async (t) => {
+  const { handle, regraBorda } = await import('../src/app.js');
+  assert.equal(regraBorda('/api/products'), 60);
+  assert.equal(regraBorda('/produto/x'), 60);
+  assert.equal(regraBorda('/uploads/products/x/a.webp'), 'resposta');
+  assert.equal(regraBorda('/api/admin/products'), null);
+  assert.equal(regraBorda('/admin/loja'), null);
+
+  const app = createTestApp();
+  t.after(app.cleanup);
+  await app.insertProduct({ slug: 'p1', name: 'P1' });
+  const guardado = new Map();
+  const cache = { match: async (k) => (guardado.has(k) ? guardado.get(k).clone() : undefined), put: async (k, r) => { guardado.set(k, r); } };
+  const deps = { ...app.deps, cache };
+  const pedir = (p) => handle(new Request(ORIGIN + p), deps);
+
+  let r = await pedir('/api/products');
+  assert.equal(r.status, 200);
+  assert.ok(guardado.has(ORIGIN + '/api/products'), 'catálogo guardado na borda');
+  assert.equal(guardado.get(ORIGIN + '/api/products').headers.get('Cache-Control'), 'public, max-age=60');
+  // a segunda vez vem da borda, sem passar pelo banco
+  app.db.raw.exec("UPDATE products SET name = 'Mudou' WHERE slug = 'p1'");
+  r = await pedir('/api/products');
+  assert.equal((await r.json()).products[0].name, 'P1');
+
+  await pedir('/api/admin/products');
+  await pedir('/admin/loja');
+  assert.ok(![...guardado.keys()].some((k) => k.includes('/admin')), 'painel nunca vai para a borda');
+  await pedir('/uploads/nao-existe.webp');
+  assert.ok(!guardado.has(ORIGIN + '/uploads/nao-existe.webp'), 'só resposta 200');
+});

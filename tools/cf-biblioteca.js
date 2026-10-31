@@ -100,7 +100,7 @@ async function main() {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'essencia-biblioteca-'));
   try {
     console.log('\n1/2 Gravando os cadastros (ocultos)...');
-    if (plano.produtos.length || plano.marcasNovas.length) executarArquivo(target, sqlCadastros(plano), tmp, 'cadastros.sql');
+    if (plano.produtos.length || plano.marcasNovas.length || plano.origens.length) executarArquivo(target, sqlCadastros(plano), tmp, 'cadastros.sql');
 
     // Fotos que já estão no banco mas ainda não ligadas a produto (rodada
     // anterior interrompida): só liga.

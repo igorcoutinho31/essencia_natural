@@ -62,8 +62,8 @@ GitHub. Nada do que você faz no computador mexe no site no ar.
 | Endereço oficial, domínio, banco | `wrangler.toml` |
 
 Produtos, preços, fotos de produto, equipe e contas **não ficam no código**:
-são cuidados pelo `/admin` do site no ar. Arrumações em lote (nomes e fotos)
-ficam em `/admin/ferramentas`, com prévia antes de gravar — sem terminal.
+são cuidados pelo `/admin` do site no ar. As fotos dos produtos publicados
+ficam na melhor qualidade sozinhas (automático, a cada 10 minutos).
 
 ## Estrutura
 

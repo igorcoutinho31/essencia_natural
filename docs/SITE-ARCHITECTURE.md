@@ -16,7 +16,7 @@ Pedido do responsável pelo site depois de ver a V4 no ar:
   (trocar por foto profissional quando houver).
 - Títulos em Playfair Display (o Cormorant desenhava o acento do "ê" torto)
   e legendas em Cinzel; Amiri no toque em árabe.
-- Nomes e fotos em lote: tela `/admin/ferramentas` (sem terminal).
+- Fotos dos produtos publicados em alta automaticamente (`src/services/fotosAuto.js`).
 
 ## V4 — home nova (proposta "D · Essência", aprovada em 28/10/2026)
 Visual: base escura (`#0e0c0a`) com dourado champanhe (`#c8a46a`), e o

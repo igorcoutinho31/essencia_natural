@@ -43,15 +43,16 @@ migrations_dir = "migrations"
 # binding = "UPLOADS"
 # bucket_name = "essencia-natural-uploads"
 
-# Otimização extra das fotos pelo Cloudflare Images — DESLIGADA para ficar
-# 100% no plano grátis: o navegador já reduz cada foto para 1600px/WEBP
-# antes do envio. Para ligar (cota grátis de 5 mil transformações/mês),
-# descomente as duas linhas abaixo. Ver src/images.js.
-# [images]
-# binding = "IMAGES"
+# Cloudflare Images (cota grátis de 5 mil transformações por mês): reduz as
+# fotos originais grandes do fornecedor para 1200 px (fotos em alta
+# automáticas, src/services/fotosAuto.js) e otimiza as fotos enviadas pelo
+# painel (src/images.js). Se a cota acabar ou falhar, nada quebra: a foto
+# fica como está e o cron tenta de novo depois.
+[images]
+binding = "IMAGES"
 
 [triggers]
-crons = ["*/30 * * * *"]
+crons = ["*/10 * * * *"]
 
 [vars]
 SITE_URL = "https://www.lojaessencianatural.com.br"
